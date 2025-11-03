@@ -1,0 +1,7 @@
+{
+  "name": "AppMultipizza",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

@@ -1,0 +1,76 @@
+<app-header></app-header>
+
+<ion-content class="ion-padding inicio-content">
+  <!-- Search estilizado -->
+  <ion-searchbar
+    class="searchbar-custom"
+    placeholder="Buscar productos..."
+    debounce="300"
+    (ionInput)="onSearchInput($event)"
+    showClearButton="focus"
+  ></ion-searchbar>
+
+  <!-- Si hay término de búsqueda: mostrar sólo la lista de resultados -->
+  <ng-container *ngIf="searchTerm && searchTerm.length > 0; else fullView">
+    <ion-list [class.result-list]="true" [class.fade-in]="animateResults">
+      <ion-list-header>
+        <ion-label>Resultados ({{ filteredProducts.length }})</ion-label>
+      </ion-list-header>
+
+      <!-- skeleton mientras carga -->
+      <ng-container *ngIf="loadingProducts">
+        <ion-item *ngFor="let s of [1,2,3]" lines="none">
+          <ion-thumbnail slot="start">
+            <div class="skeleton-thumbnail"></div>
+          </ion-thumbnail>
+          <ion-label>
+            <h3><span class="skeleton-line short"></span></h3>
+            <p><span class="skeleton-line"></span></p>
+          </ion-label>
+        </ion-item>
+      </ng-container>
+
+      <ion-item *ngFor="let p of filteredProducts; trackBy: trackById" button (click)="onSearchSelect(p)">
+        <ion-thumbnail slot="start" *ngIf="p['imagen']">
+          <img [src]="p['imagen']" [alt]="p['nombre'] || 'producto'">
+        </ion-thumbnail>
+
+        <ion-label>
+          <h3>{{ p['nombre'] }}</h3>
+          <p class="muted" *ngIf="p['descripcion']">{{ p['descripcion'] }}</p>
+        </ion-label>
+
+        <!-- mostrar precio con S/. -->
+        <ion-note slot="end" *ngIf="p['precio'] != null">
+          S/. {{ p['precio'] | number:'1.2-2' }}
+        </ion-note>
+      </ion-item>
+
+      <!-- mostrar icono sad-outline cuando no hay resultados -->
+      <div *ngIf="!loadingProducts && filteredProducts.length === 0" class="no-results-wrap">
+        <ion-icon name="sad-outline" class="no-results-icon"></ion-icon>
+        <div class="no-results-text">No se encontraron productos</div>
+      </div>
+    </ion-list>
+  </ng-container>
+
+  <!-- Vista completa (promos + sliders) cuando no hay búsqueda -->
+  <ng-template #fullView>
+    <app-promo-slider
+      [promos]="promos"
+      [loading]="loadingPromos"
+      (select)="onPromoSelect($event)"
+      (verMas)="onPromoVerMas()"
+    ></app-promo-slider>
+
+    <app-category-sliders
+      (verMas)="onProductVerMas($event)"
+      (select)="onProductSelect($event)"
+      (toggleFavorite)="onProductToggleFavorite($event)"
+    ></app-category-sliders>
+  </ng-template>
+</ion-content>
+
+<ion-footer>
+  <app-footer></app-footer>
+</ion-footer>

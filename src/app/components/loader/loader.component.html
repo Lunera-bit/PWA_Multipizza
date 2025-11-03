@@ -1,0 +1,7 @@
+<div class="loader-root" *ngIf="show" aria-live="assertive" aria-label="Cargando">
+  <div class="backdrop" aria-hidden="true"></div>
+  <div class="panel" role="status" aria-live="polite">
+    <ion-spinner name="crescent"></ion-spinner>
+    <div class="msg">{{ message || 'Cargando...' }}</div>
+  </div>
+</div>

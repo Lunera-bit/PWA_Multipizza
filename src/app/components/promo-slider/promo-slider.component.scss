@@ -1,0 +1,46 @@
+:host { display:block; }
+
+/* mantengo header/pagination; card ahora solo imagen rectangular */
+.promo-slider { display:block; gap:12px; }
+
+.section-header { display:flex; justify-content:space-between; align-items:center; padding: 0 6px 8px; }
+.section-header .title { font-weight:700; font-size:1.05rem; }
+.section-header .ver-mas { background: transparent; border: none; color: var(--ion-color-primary); font-weight:600; cursor:pointer; }
+
+.slider { padding-bottom:18px; }
+.swiper-wrapper { display:flex; gap:12px; padding:8px 6px; align-items:stretch; }
+.swiper-slide { width: 86%; max-width:900px; flex-shrink:0; display:flex; justify-content:center; }
+
+/* tarjeta rectangular basada únicamente en la imagen */
+.card {
+  width:100%;
+  height: 180px;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 8px 22px rgba(0,0,0,0.06);
+  background:#fff;
+  cursor:pointer;
+  display:block;
+}
+.img-wrap {
+  width:100%;
+  height:100%;
+  position:relative;
+  background:#f6f6f6;
+}
+.img-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
+
+/* pagination bullets */
+.swiper-pagination { display:flex; justify-content:center; gap:6px; margin-top:8px; }
+.swiper-pagination .swiper-pagination-bullet { width:8px; height:8px; border-radius:50%; background:var(--ion-color-medium); opacity:0.9; }
+.swiper-pagination .swiper-pagination-bullet-active { background: var(--ion-color-primary); transform: scale(1.2); }
+
+/* skeleton */
+.skeleton .skeleton-image { width:100%; height:100%; background: linear-gradient(90deg,#eee 25%,#f6f6f6 50%,#eee 75%); background-size:200% 100%; animation: shimmer 1.2s linear infinite; }
+
+@keyframes shimmer { 0%{background-position:200% 0}100%{background-position:-200% 0} }
+
+@media (max-width:480px) {
+  .swiper-slide { width: 92%; }
+  .card { height: 150px; }
+}

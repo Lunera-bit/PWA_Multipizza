@@ -1,0 +1,53 @@
+<ion-content class="login-page" fullscreen>
+  <div class="banner-box" role="img" aria-label="Banner decorativo">
+    <button class="skip" (click)="skip()" aria-label="Ahora no">Ahora no</button>
+
+    <div class="logo-wrap" role="img" aria-label="Marca">
+      <img src="assets/img/image.png" alt="Logo" class="logo" />
+    </div>
+  </div>
+
+  <!-- binding de clases: centered cuando NO hay formulario, expanded cuando SÍ -->
+  <div class="brand-card"
+       [class.centered]="!showEmailForm"
+       [class.expanded]="showEmailForm"
+       role="main">
+    <h2 class="title">Elige cómo quieres ingresar</h2>
+
+    <ion-button shape="round" class="btn-google" (click)="loginGoogle()" aria-label="Google">
+      <img src="assets/icon/google-icon.png" alt="Google" class="btn-icon" />
+      <span class="btn-text">Continuar con Google</span>
+    </ion-button>
+
+    <ion-button shape="round" class="btn-apple" (click)="loginApple()" aria-label="Apple">
+      <img src="assets/icon/apple-icon.png" alt="Apple" class="btn-icon" />
+      <span class="btn-text">Continuar con Apple</span>
+    </ion-button>
+
+    <ion-button expand="block" fill="clear" class="btn-other" (click)="toggleEmailForm()" aria-controls="email-form">
+      Otro método
+    </ion-button>
+
+    <div class="divider">O ingresa con correo</div>
+
+    <form id="email-form" *ngIf="showEmailForm" [formGroup]="form" (ngSubmit)="loginEmail()" class="email-form" novalidate>
+      <ion-item class="login-item" lines="full">
+        <ion-label position="stacked">Correo</ion-label>
+        <ion-input type="email" formControlName="email" inputmode="email" autocomplete="email"></ion-input>
+      </ion-item>
+
+      <ion-item class="login-item" lines="full">
+        <ion-label position="stacked">Contraseña</ion-label>
+        <ion-input type="password" formControlName="password" autocomplete="current-password"></ion-input>
+      </ion-item>
+
+      <div class="forgot-row">
+        <button type="button" class="link-forgot" (click)="resetPassword()">¿Olvidaste tu contraseña?</button>
+      </div>
+
+      <ion-button expand="block" class="btn-submit" type="submit" [disabled]="form.invalid">Iniciar sesión</ion-button>
+      <ion-button expand="block" fill="outline" class="btn-create" (click)="registerEmail()">Crear cuenta</ion-button>
+    </form>
+  </div>
+
+</ion-content>

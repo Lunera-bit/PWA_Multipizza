@@ -1,0 +1,122 @@
+:host {
+  display: block;
+}
+
+/* Evitar que el contenido quede oculto bajo el footer */
+.inicio-content {
+  padding-bottom: 120px; /* ajustar según la altura de tu app-footer */
+}
+
+ion-content {
+  --background: #fafafa;
+}
+
+.muted {
+  color: var(--ion-color-medium);
+  font-size: 0.9rem;
+}
+
+/* SEARCHBAR personalizado */
+.searchbar-custom {
+  --background: #fff;
+  --border-radius: 12px;
+  --box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  margin: 8px 0 16px;
+  --placeholder-color: #9a9a9a;
+  --icon-color: #666;
+  --color: #222;
+}
+
+/* skeleton */
+.skeleton-thumbnail {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #eee 25%, #f6f6f6 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+.skeleton-line {
+  display: inline-block;
+  height: 12px;
+  width: 160px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #eee 25%, #f6f6f6 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+.skeleton-line.short {
+  width: 100px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* RESULT LIST animation: fade + translate + stagger */
+.result-list ion-item {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: transform 360ms cubic-bezier(.2,.8,.2,1), opacity 360ms ease;
+  pointer-events: auto;
+}
+
+/* when animateResults true add fade-in class */
+.result-list.fade-in ion-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* stagger delays for first items */
+.result-list.fade-in ion-item:nth-child(1)  { transition-delay: 40ms; }
+.result-list.fade-in ion-item:nth-child(2)  { transition-delay: 80ms; }
+.result-list.fade-in ion-item:nth-child(3)  { transition-delay: 120ms; }
+.result-list.fade-in ion-item:nth-child(4)  { transition-delay: 160ms; }
+.result-list.fade-in ion-item:nth-child(5)  { transition-delay: 200ms; }
+.result-list.fade-in ion-item:nth-child(6)  { transition-delay: 240ms; }
+.result-list.fade-in ion-item:nth-child(7)  { transition-delay: 280ms; }
+.result-list.fade-in ion-item:nth-child(8)  { transition-delay: 320ms; }
+
+/* no-results */
+.no-results-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 12px;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.no-results-icon {
+  font-size: 48px;
+  color: var(--ion-color-medium);
+}
+
+.no-results-text {
+  color: var(--ion-color-medium);
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* pequeños ajustes visuales para separar secciones */
+app-search {
+  display: block;
+  margin-bottom: 8px;
+}
+
+app-promo-slider {
+  display: block;
+  margin-bottom: 12px;
+}
+
+app-product-grid {
+  display: block;
+  margin-top: 6px;
+}

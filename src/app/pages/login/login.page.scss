@@ -1,0 +1,308 @@
+:host { display:block; color-scheme: light; }
+
+.login-page {
+  --background: #fff !important;
+  background: #fff !important;
+  color: #071428 !important;
+  padding-top: env(safe-area-inset-top);
+  --banner-height: 220px;
+}
+
+/* banner full width (sin cambios aquí) */
+.banner-box {
+  width: 100%;
+  height: 300px;
+  margin: 0;
+  border-radius: 0 0 22px 22px;
+  background: linear-gradient(180deg,#e9426a 0%,#d81b60 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* botón "Ahora no" plano y con cápsula */
+.skip {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.95);
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 999px;
+  box-shadow: none;
+}
+
+/* logo centrado */
+.logo-wrap {
+  /* centrado horizontal y control de posición vertical */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -15px;              /* sube o baja el logo según quieras */
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200%;
+  pointer-events: none;
+}
+
+.logo {
+  /* tamaño principal: usa width para controlar escalado y max-width para responsividad */
+  width: 250px;    /* tamaño deseado: cambia a 200px/160px según prefieras */
+  max-width: 100%;  /* evita que ocupe más del ancho en pantallas pequeñas */
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* tarjeta SIN sombra y SIN borde */
+.brand-card {
+  margin: -48px auto 0;
+  width: min(720px, calc(200% - 40px));
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: none;
+  border: none;
+  z-index: 10;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  transition: all 220ms ease;
+}
+
+/* Transiciones suaves del contenedor (altura / padding) */
+.brand-card {
+  transition: min-height 360ms cubic-bezier(.2,.9,.2,1),
+              padding 300ms cubic-bezier(.2,.9,.2,1);
+}
+
+/* Centrado <-> expanded animado */
+.brand-card.centered {
+  min-height: calc(100vh - var(--banner-height));
+  justify-content: center;
+  padding-top: 0;
+  padding-bottom: 20px;
+  transition: min-height 420ms cubic-bezier(.2,.9,.2,1),
+              padding 320ms cubic-bezier(.2,.9,.2,1);
+}
+
+.brand-card.expanded {
+  min-height: auto;
+  justify-content: flex-start;
+  padding-top: 16px;
+  padding-bottom: 24px;
+  transition: min-height 420ms cubic-bezier(.2,.9,.2,1),
+              padding 320ms cubic-bezier(.2,.9,.2,1);
+}
+
+/* Asegurar que los botones no estén sobre ninguna capa extra y estén centrados */
+.brand-card ion-button {
+  margin: 8px 0;
+  width: 88%;
+  max-width: 520px;
+  justify-content: flex-start; /* icono a la izquierda */
+  transition: width 320ms cubic-bezier(.2,.9,.2,1),
+              margin 280ms cubic-bezier(.2,.9,.2,1),
+              transform 200ms cubic-bezier(.2,.9,.2,1),
+              opacity 240ms ease;
+  will-change: width, transform, opacity;
+  opacity: 1;
+}
+
+/* Cuando está centrado, damos un ligero "stack" con ligera elevación visual al entrar */
+.brand-card.centered ion-button {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* En estado expanded reducimos un poco los márgenes y hacemos los botones más anchos */
+.brand-card.expanded ion-button {
+  width: 100%;
+  margin: 8px 0;
+  transform: translateY(0);
+}
+
+/* título centrado */
+.title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #071428;
+  margin: 6px 0 12px 0;
+  text-align:center;
+  width:100%;
+}
+
+/* quitar wrapper innecesario: botones directos en la card */
+.socials { display:block; }
+
+/* Aplicar border-radius y eliminar sombras en todos los botones de la página.
+   No forzar mayúsculas: text-transform: none */
+.login-page ion-button,
+.login-page .link-forgot,
+.login-page .skip {
+  border-radius: 999px !important;
+  overflow: visible;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent;
+  text-transform: none !important;
+  -webkit-box-shadow: none !important;
+  --box-shadow: none !important;
+}
+
+/* cápsulas delgadas y centradas */
+
+
+/* efecto "presionado" manteniendo la cápsula */
+.login-page ion-button:active,
+.login-page ion-button:focus,
+.login-page ion-button:focus-visible {
+  transform: translateY(1px);
+  filter: brightness(0.94);
+  outline: none;
+  box-shadow: none;
+  border-radius: 999px !important;
+}
+
+/* variantes limpias: Google y Apple */
+ion-button.btn-google {
+  --background: #fbfbfb;
+  --color: #111827;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: none;
+}
+
+ion-button.btn-apple {
+  --background: #ffffff !important; /* blanco */
+  --color: #000000 !important;      /* texto negro */
+  border: 1px solid #000000 !important; /* borde negro */
+  box-shadow: none;
+}
+
+/* "Otro método" plano y centrado, sin borde de fondo */
+ion-button.btn-other {
+  --background: transparent;
+  --color: #334155;
+  border: none;
+  width: 64%;
+}
+
+/* iconos y texto dentro de botones */
+.btn-icon { width:18px; height:18px; object-fit:contain; display:inline-block; margin-right:8px; background: transparent; }
+.btn-text { display:inline-block; font-weight: 100; }
+
+/* inputs y botones de formulario */
+.login-item { --background: #fbfbfc; border-radius: 10px; margin: 8px 0; width:100%; }
+.forgot-row { width:100%; display:flex; justify-content:flex-end; margin-bottom:8px; }
+.link-forgot { background: transparent; border: none; color: #0b61ff; font-weight:600; font-size: 13px; padding:6px 10px; cursor:pointer; border-radius: 999px; }
+
+/* submit/create */
+.btn-submit { --background: #001f3f; --color: #fff; height:44px; border-radius: 999px; font-weight:800; width: 100%; }
+.btn-create { --color: #001f3f; border-color: rgba(0,0,0,0.06); height:44px; border-radius:999px; font-weight:700; width: 100%; }
+
+/* asegurar inputs legibles */
+.login-page ion-label, .login-page ion-input { color: #071428 !important; }
+
+/* responsive */
+@media (max-width:520px) {
+  .banner-box { height:240px; border-radius: 0 0 18px 18px; }
+  .brand-card { margin: -44px auto 0; padding:14px; width: calc(100% - 28px); border-radius:10px; }
+  .btn-icon { width:16px; height:16px; }
+  .logo { width: 220px; max-width: 80%; }
+  .login-page { --banner-height: 180px; }
+  .brand-card.centered { min-height: calc(100vh - var(--banner-height)); }
+  .brand-card ion-button { width: 92%; }
+}
+
+/* Botones round más largos, gris claro y sin borde */
+.login-page ion-button[shape="round"] {
+  width: 92% !important;           /* más largos */
+  height: 44px;
+  min-height: 44px;
+  --background: #f3f4f6;           /* gris claro */
+  --color: #111827;
+  border: none !important;
+  box-shadow: none !important;
+  justify-content: flex-start;     /* icono a la izquierda */
+  padding-left: 18px;
+  padding-right: 18px;
+  border-radius: 999px !important;
+}
+
+/* Evitar overlay/efecto activado de Ionic */
+.login-page ion-button[shape="round"] {
+  --background-activated: transparent !important;
+  --ripple-color: transparent !important;
+}
+
+/* Ajustes de icono dentro del round */
+.login-page ion-button[shape="round"] .btn-icon,
+.login-page ion-button[shape="round"] img.btn-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 12px;
+  display: inline-block;
+}
+
+/* Estado presionado: mantiene cápsula y cambia leve brillo */
+.login-page ion-button[shape="round"]:active {
+  transform: translateY(1px);
+  filter: brightness(0.96);
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Animación suave de los botones: ancho, margen, transform y opacidad */
+.brand-card ion-button {
+  margin: 10px 0;
+  width: 88%;
+  max-width: 520px;
+  justify-content: flex-start;
+  transition: width 320ms cubic-bezier(.2,.9,.2,1),
+              margin 280ms cubic-bezier(.2,.9,.2,1),
+              transform 200ms cubic-bezier(.2,.9,.2,1),
+              opacity 240ms ease;
+  will-change: width, transform, opacity;
+  opacity: 1;
+}
+
+/* Cuando está centrado, damos un ligero "stack" con ligera elevación visual al entrar */
+.brand-card.centered ion-button {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* En estado expanded reducimos un poco los márgenes y hacemos los botones más anchos */
+.brand-card.expanded ion-button {
+  width: 100%;
+  margin: 8px 0;
+  transform: translateY(0);
+}
+
+/* Animar la aparición del formulario (fade + slide) */
+.email-form {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 320ms cubic-bezier(.2,.9,.2,1),
+              transform 320ms cubic-bezier(.2,.9,.2,1);
+  pointer-events: none;
+}
+
+.brand-card.expanded .email-form {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Pequeño "stagger" visual: retrasos usando nth-child para botones */
+.brand-card ion-button:nth-of-type(1) { transition-delay: 0ms; }
+.brand-card ion-button:nth-of-type(2) { transition-delay: 30ms; }
+.brand-card ion-button:nth-of-type(3) { transition-delay: 60ms; }
+
+/* Mantener el estado presionado con transición suave */
+.login-page ion-button:active {
+  transition: transform 90ms linear, filter 90ms linear;
+  transform: translateY(1px);
+}

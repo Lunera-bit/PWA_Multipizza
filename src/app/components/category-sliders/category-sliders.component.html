@@ -1,0 +1,51 @@
+<div class="category-sliders">
+  <ng-container *ngFor="let cat of categories">
+    <div class="section">
+      <div class="section-header">
+        <div class="title">{{ cat | titlecase }}</div>
+        <button class="ver-mas" (click)="onVerMas(cat)">Ver más</button>
+      </div>
+
+      <div #swiperEl class="category-swiper swiper" [class.loading]="loading" aria-label="{{cat}} slider">
+        <div class="swiper-wrapper">
+          <!-- skeletons mientras carga -->
+          <ng-container *ngIf="loading">
+            <div class="swiper-slide" *ngFor="let i of [1,2,3]">
+              <div class="cat-card skeleton">
+                <div class="cat-card-image"><div class="skeleton-image"></div></div>
+                <div class="cat-card-body">
+                  <div class="skeleton-line big"></div>
+                  <div class="skeleton-line"></div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- datos -->
+          <ng-container *ngIf="!loading">
+            <div class="swiper-slide" *ngFor="let p of productsBy(cat); trackBy: trackByIdx">
+              <div class="cat-card" role="button" tabindex="0" (click)="openProduct(p)">
+                <div class="cat-card-image">
+                  <img [src]="p.imagen ?? p.image ?? 'assets/img/placeholder.png'" (error)="onImgError($event)" [alt]="p.nombre ?? p.name ?? ''" />
+                  <div class="fav-btn">
+                    <app-favorite [favorited]="!!p.favorited" (toggle)="onToggleFav(p, $event)"></app-favorite>
+                  </div>
+                </div>
+
+                <div class="cat-card-body">
+                  <div class="name" title="{{ p.nombre ?? p.name }}">{{ p.nombre ?? p.name }}</div>
+                  <div class="price">S/. {{ (p.precio ?? p.price ?? 0) | number:'1.2-2' }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide" *ngIf="!productsBy(cat)?.length">
+              <div class="cat-card empty">No hay elementos</div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+<br><br><br><br><br>

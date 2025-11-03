@@ -1,0 +1,46 @@
+.loader-root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  pointer-events: auto;
+}
+
+/* fondo transparente con difuminado */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.16); /* semitransparente */
+  backdrop-filter: blur(6px);     /* difuminado */
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* panel simple y legible encima del fondo */
+.panel {
+  position: relative;
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.575);
+  color: #fff;
+  min-width: 160px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.342);
+}
+
+.panel ion-spinner {
+  width: 40px;
+  height: 40px;
+  --color: var(--ion-color-primary, #0a84ff);
+}
+
+.msg {
+  font-weight: 600;
+  font-size: 13px;
+  color: #fff;
+}

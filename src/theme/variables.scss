@@ -1,0 +1,16 @@
+// For information on how to create your own theme, please see:
+// http://ionicframework.com/docs/theming/
+/* Colores personalizados para tu paleta */
+:root {
+  --ion-color-primary: #001f3f;        /* azul marino */
+  --ion-color-primary-contrast: #ffffff;
+
+  --ion-color-danger: #c62828;         /* rojo */
+  --ion-color-danger-contrast: #ffffff;
+
+  --ion-color-warning: #ff6600;        /* amarillo */
+  --ion-color-warning-contrast: #000000;
+
+  --ion-color-dark: #6b6b6b;           /* negro */
+  --ion-color-dark-contrast: #ffffff;
+}

@@ -1,0 +1,48 @@
+/* breadcrumbs */
+.breadcrumbs {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding: 6px 0 12px;
+  font-size: 0.95rem;
+  color: var(--ion-text-color);
+}
+.breadcrumbs .crumb { color: var(--ion-color-primary); text-decoration: none; }
+.breadcrumbs .sep { color: var(--ion-color-medium); }
+.breadcrumbs .current { font-weight:600; color:var(--ion-text-color); }
+
+/* toolbar spacing (si hace falta) */
+.page-toolbar { margin-bottom: 6px; }
+
+/* mantener estilos previos */
+.media-actions {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  z-index: 2;
+}
+
+/* badge que muestra cantidad en carrito */
+.qty-badge {
+  background: var(--ion-color-primary);
+  color: #fff;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.card-media {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}

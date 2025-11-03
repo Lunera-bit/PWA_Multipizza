@@ -1,0 +1,126 @@
+<ion-header>
+  <ion-toolbar class="app-header-toolbar">
+    <!-- botón programático que abre el ion-menu -->
+    <ion-buttons slot="start">
+      <ion-button class="menu-btn" aria-label="Abrir menú" (click)="openMenu()">
+        <ion-icon slot="icon-only" name="menu"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title class="app-title">{{ title }}</ion-title>
+
+    <ion-buttons slot="end" class="header-actions">
+      <div class="actions-group">
+        <!-- Notificaciones (sin tocar) -->
+        <div class="action-item">
+          <ion-button fill="clear" class="icon-button" routerLink="/notificaciones" aria-label="Notificaciones">
+            <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+          </ion-button>
+          <ion-badge class="action-badge notif-badge" *ngIf="notificacionesCount > 0" color="light">{{ notificacionesCount }}</ion-badge>
+        </div>
+
+        <!-- Carrito (sin tocar) -->
+        <div class="action-item">
+          <ion-button fill="clear" class="icon-button cart-button" [class.pulse]="cartPulse" (click)="openCart()" aria-label="Carrito">
+            <ion-icon slot="icon-only" [name]="cartIcon"></ion-icon>
+          </ion-button>
+          <ion-badge class="action-badge cart-badge" *ngIf="carritoCount > 0" aria-live="polite">{{ carritoCount }}</ion-badge>
+        </div>
+      </div>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-menu side="start" menuId="profileMenu" contentId="main">
+  <ion-header translucent>
+    <ion-toolbar>
+      <ion-title>Perfil</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="closeMenu()" aria-label="Cerrar menú">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="profile-menu-root">
+    <!-- FOTO centrada + nombre/email debajo -->
+    <div class="menu-head centered">
+      <div class="avatar-wrap">
+        <img [src]="photo" (error)="onImgError()" alt="Avatar" />
+      </div>
+      <div class="user-info">
+        <div class="user-name">{{ displayName }}</div>
+        <div class="user-email" *ngIf="displayEmail">{{ displayEmail }}</div>
+      </div>
+    </div>
+
+    <!-- Acordiones: sólo si hay sesión -->
+    <ng-container *ngIf="isLoggedIn">
+      <ion-accordion-group class="accordion-wrap">
+        <ion-accordion value="gestion">
+          <ion-item slot="header" button>
+            <ion-label>
+              <h3>Gestión</h3>
+              <p>Cambiar datos del perfil</p>
+            </ion-label>
+          </ion-item>
+
+          <div class="accordion-content" slot="content">
+            <ion-item lines="none">
+              <ion-label>Nombre</ion-label>
+              <ion-note slot="end">{{ displayName }}</ion-note>
+            </ion-item>
+            <ion-item lines="none">
+              <ion-button expand="block" (click)="editName()">Cambiar nombre</ion-button>
+            </ion-item>
+          </div>
+        </ion-accordion>
+
+        <ion-accordion value="config">
+          <ion-item slot="header" button>
+            <ion-label>
+              <h3>Configuración</h3>
+              <p>Ajustes visuales y de idioma</p>
+            </ion-label>
+          </ion-item>
+
+          <div class="accordion-content" slot="content">
+            <ion-list>
+              <ion-item>
+                <ion-label>Tema oscuro</ion-label>
+                <ion-toggle slot="end"></ion-toggle>
+              </ion-item>
+
+              <ion-item>
+                <ion-label>Idioma (EN)</ion-label>
+                <ion-toggle slot="end"></ion-toggle>
+              </ion-item>
+            </ion-list>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+    </ng-container>
+
+  </ion-content>
+
+  <ion-footer>
+    <ion-toolbar>
+      <div class="footer-actions">
+        <ng-container *ngIf="isLoggedIn; else loginTpl">
+          <!-- cerrar sesión cierra también el menú y usa auth.logout en TS -->
+          <ion-button expand="block" color="danger" (click)="logout()" menuClose>
+            <ion-icon slot="start" name="exit"></ion-icon>
+            cerrar sesión
+          </ion-button>
+        </ng-container>
+
+        <ng-template #loginTpl>
+          <ion-button expand="block" color="primary" (click)="goToLogin()" menuClose>
+            Iniciar sesión
+          </ion-button>
+        </ng-template>
+      </div>
+    </ion-toolbar>
+  </ion-footer>
+</ion-menu>

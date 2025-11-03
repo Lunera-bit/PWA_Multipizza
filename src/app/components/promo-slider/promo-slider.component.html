@@ -1,0 +1,35 @@
+<div class="promo-slider">
+  <div class="section-header">
+    <div class="title">{{ title }}</div>
+    <button class="ver-mas" (click)="onVerMas()">Ver más</button>
+  </div>
+
+  <div #swiperEl class="slider swiper" aria-label="Promociones">
+    <div class="swiper-wrapper">
+      <!-- skeletons -->
+      <ng-container *ngIf="loading">
+        <div class="swiper-slide" *ngFor="let i of [1,2,3]">
+          <div class="card skeleton">
+            <div class="img-wrap"><div class="skeleton-image"></div></div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- datos: SOLO IMAGEN rectangular -->
+      <ng-container *ngIf="!loading">
+        <div class="swiper-slide" *ngFor="let p of promos">
+          <div class="card" role="button" tabindex="0" (click)="onSelectPromo(p)">
+            <div class="img-wrap">
+              <img [src]="p.imagen ?? p.image ?? 'assets/img/placeholder.png'"
+                   (error)="onImgError($event)"
+                   [alt]="p.nombre ?? p.name ?? ''" />
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- pagination bullets -->
+    <div class="swiper-pagination"></div>
+  </div>
+</div>

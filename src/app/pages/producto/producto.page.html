@@ -1,0 +1,76 @@
+<ion-content class="ion-padding producto-content">
+  <!-- toolbar con back (sin breadcrumb aquí) -->
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/inicio"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- SKELETON mientras carga -->
+  <ng-container *ngIf="loading">
+    <ion-card class="product-card skeleton-card">
+      <div class="image-wrap">
+        <div class="skeleton-thumbnail"></div>
+      </div>
+
+      <div class="product-body">
+        <div class="skeleton-line short"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+        <div style="height:12px;"></div>
+        <div class="skeleton-line short" style="width:140px;"></div>
+      </div>
+    </ion-card>
+  </ng-container>
+
+  <!-- PRODUCTO -->
+  <ng-container *ngIf="!loading && product">
+    <!-- breadcrumbs colocados arriba de la imagen -->
+    <div class="breadcrumbs">
+      <a routerLink="/inicio" class="crumb">Inicio</a>
+      <span class="sep">›</span>
+      <a *ngIf="product.categoria" [routerLink]="['/productos']" [queryParams]="{ category: product.categoria }" class="crumb">{{ product.categoria }}</a>
+      <span *ngIf="product.categoria" class="sep">›</span>
+      <span class="current">{{ product.nombre }}</span>
+    </div>
+
+    <ion-card class="product-card">
+      <div class="image-wrap">
+        <img [src]="product.imagen || 'assets/img/placeholder.png'" [alt]="product.nombre" />
+        <div class="fav-overlay">
+          <app-favorite [favorited]="isFavorited" (toggle)="toggleFavorite()"></app-favorite>
+        </div>
+      </div>
+
+      <div class="product-body">
+        <!-- título eliminado bajo la imagen según petición -->
+
+        <div class="price">S/. {{ product.precio | number:'1.2-2' }}</div>
+
+        <div class="descripcion" *ngIf="product.descripcion">
+          <h3>Descripción</h3>
+          <p>{{ product.descripcion }}</p>
+        </div>
+
+        <div class="actions">
+          <!-- usa tu componente add-to-cart -->
+          <app-add-to-cart [product]="product"></app-add-to-cart>
+        </div>
+      </div>
+    </ion-card>
+  </ng-container>
+
+  <!-- NO ENCONTRADO -->
+  <ng-container *ngIf="!loading && !product">
+    <div class="not-found">
+      <ion-icon name="sad-outline" class="not-found-icon"></ion-icon>
+      <div>No se encontró el producto</div>
+      <ion-button (click)="goHome()">Volver al inicio</ion-button>
+    </div>
+  </ng-container>
+</ion-content>
+<br>  
+<br>
+<ion-footer>
+  <app-footer></app-footer>
+</ion-footer>

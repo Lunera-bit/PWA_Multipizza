@@ -1,0 +1,26 @@
+<ion-footer class="app-footer" role="navigation" aria-label="Barra inferior">
+  <ion-toolbar [color]="toolbarColor" class="toolbar-elevated">
+    <nav class="footer-inner" role="menubar" aria-orientation="horizontal">
+      <ion-button fill="clear" (click)="navigate('/inicio')" class="tab-btn" [class.active]="isActive('/inicio')" [class.animated]="animatedRoute === '/inicio'" role="menuitem" aria-label="Inicio">
+        <div class="icon-wrap"><ion-icon name="home-outline"></ion-icon></div><span class="label">Inicio</span>
+      </ion-button>
+
+      <ion-button fill="clear" (click)="navigate('/chat')" class="tab-btn" [class.active]="isActive('/promociones')" [class.animated]="animatedRoute === '/promociones'" role="menuitem" aria-label="Promociones">
+        <div class="icon-wrap"><ion-icon name="logo-octocat"></ion-icon></div><span class="label">Chat</span>
+      </ion-button>
+
+      <ion-button fill="clear" (click)="navigate('/pedidos')" class="tab-btn cart-btn" [class.active]="isActive('/pedidos')" [class.animated]="animatedRoute === '/pedidos'" role="menuitem" aria-label="Pedido">
+        <div class="icon-wrap">
+          <ion-icon name="cart-outline"></ion-icon>
+          <ion-badge *ngIf="cartCount > 0" class="cart-badge">{{ cartCount }}</ion-badge>
+        </div>
+        <span class="label">Pedido</span>
+      </ion-button>
+
+      <ion-button fill="clear" (click)="navigate('/favoritos')" class="tab-btn" [class.active]="isActive('/favoritos')" [class.animated]="animatedRoute === '/favoritos'" role="menuitem" aria-label="Favoritos">
+        <div class="icon-wrap"><ion-icon name="heart-outline"></ion-icon></div><span class="label">Favoritos</span>
+      </ion-button>
+      
+    </nav>
+  </ion-toolbar>
+</ion-footer>

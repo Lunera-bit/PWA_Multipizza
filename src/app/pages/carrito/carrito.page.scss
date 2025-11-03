@@ -1,0 +1,49 @@
+ion-item {
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+  .name { font-weight: 600; }
+  .meta { font-size: 0.85rem; color: var(--ion-color-medium); margin-top: 2px; }
+  .qty { min-width: 28px; text-align: center; font-weight: 700; margin: 0 8px; }
+}
+
+/* botones + / - estilados */
+ion-button.inc-btn {
+  --background: var(--ion-color-success);
+  background: var(--ion-color-success) !important;
+  color: #fff !important;
+  border-radius: 8px;
+  min-width: 36px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+ion-button.dec-btn {
+  --background: var(--ion-color-danger);
+  background: var(--ion-color-danger) !important;
+  color: #fff !important;
+  border-radius: 8px;
+  min-width: 36px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Total */
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 18px 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+ion-button.dec-btn ion-icon,
+ion-button.inc-btn ion-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+}
