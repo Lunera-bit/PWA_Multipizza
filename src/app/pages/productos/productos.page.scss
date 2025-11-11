@@ -35,8 +35,31 @@ ion-chip.active { background: var(--ion-color-primary); color:#fff; }
 .empty { text-align:center; padding:36px 12px; color:var(--ion-color-medium); }
 .empty ion-icon { font-size:48px; margin-bottom:8px; color:var(--ion-color-medium); }
 
-/* responsive tweaks */
-@media (max-width:480px) {
+/* acordeón / tags */
+.tags-accordion { margin-left:8px; }
+.accordion-header { --padding-start:12px; --padding-end:12px; }
+.accordion-content { padding:12px; display:flex; flex-direction:column; gap:8px; }
+.chips { display:flex; gap:8px; flex-wrap:wrap; }
+ion-chip { cursor:pointer; border-radius:16px; }
+ion-chip.active { background: var(--ion-color-primary); color:#fff; }
+
+/* acciones dentro del acordeón */
+.accordion-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:6px; }
+
+/* pequeño ajuste responsive */
+@media (max-width:720px) {
+  .filters-row { flex-direction:column; gap:10px; }
   .card-media { height:150px; }
   .price-badge { top:8px; right:8px; padding:4px 8px; font-size:0.85rem; }
 }
+
+/* quick tags */
+.quick-tags {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding: 10px 12px;
+}
+.quick-tags ion-segment { --background: transparent; }
+.quick-tags ion-segment-button { min-width: auto; padding: 6px 10px; border-radius: 14px; }
+.quick-tags ion-button { margin-left: auto; }

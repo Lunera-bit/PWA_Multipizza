@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -9,17 +10,22 @@ import { ProductService } from '../../services/product.service';
 @Component({
   selector: 'app-productos',
   standalone: true,
-  imports: [IonicModule, CommonModule],
+  imports: [IonicModule, CommonModule, FormsModule],
   templateUrl: './productos.page.html',
   styleUrls: ['./productos.page.scss']
 })
 export class ProductosPage implements OnInit, OnDestroy {
   productos: any[] = [];
   filtered: any[] = [];
+  // orden actual
+  sortBy: 'price_desc' | 'price_asc' | 'name_asc' | 'name_desc' = 'price_desc';
   loading = true;
 
   // filtros UI
   selectedTags = new Set<string>();
+  // selección rápida (single-select) mostrada fuera del acordeón
+  selectedTagSingle: string | null = null;
+
   maxPrice = 0;
   priceFilter = { min: 0, max: 0 };
 
@@ -74,9 +80,19 @@ export class ProductosPage implements OnInit, OnDestroy {
   toggleTag(tag: string) {
     if (this.selectedTags.has(tag)) this.selectedTags.delete(tag);
     else this.selectedTags.add(tag);
+    // si hay selección rápida, limpiar para evitar conflicto
+    this.selectedTagSingle = null;
     this.applyFilters();
   }
 
+  // seleccionar sólo UN tag (quick segment fuera del acordeón)
+  onSelectSingleTag(tag: string | null) {
+    this.selectedTagSingle = tag;
+    this.selectedTags.clear();
+    if (tag) this.selectedTags.add(tag);
+    this.applyFilters();
+  }
+  
   // aceptar number, CustomEvent (ionChange) o Event (input)
   onPriceChange(v: any) {
     let val = 0;
@@ -95,6 +111,11 @@ export class ProductosPage implements OnInit, OnDestroy {
     this.applyFilters();
   }
 
+  onSortChange(value: string) {
+    this.sortBy = (value as any) || 'price_desc';
+    this.applyFilters();
+  }
+
   applyFilters() {
     const tags = Array.from(this.selectedTags).map(t => t.toLowerCase());
     this.filtered = this.productos.filter(p => {
@@ -109,6 +130,21 @@ export class ProductosPage implements OnInit, OnDestroy {
       }
       return true;
     });
+    // aplicar orden
+    switch (this.sortBy) {
+      case 'price_asc':
+        this.filtered.sort((a,b) => (Number(a.precio) || 0) - (Number(b.precio) || 0));
+        break;
+      case 'price_desc':
+        this.filtered.sort((a,b) => (Number(b.precio) || 0) - (Number(a.precio) || 0));
+        break;
+      case 'name_asc':
+        this.filtered.sort((a,b) => String(a.nombre ?? a.name ?? '').localeCompare(String(b.nombre ?? b.name ?? ''), 'es', { sensitivity: 'base' }));
+        break;
+      case 'name_desc':
+        this.filtered.sort((a,b) => String(b.nombre ?? b.name ?? '').localeCompare(String(a.nombre ?? a.name ?? ''), 'es', { sensitivity: 'base' }));
+        break;
+    }
   }
 
   openProduct(p: any) {

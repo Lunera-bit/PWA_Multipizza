@@ -8,25 +8,48 @@
 </ion-header>
 
 <ion-content class="productos-page">
-  <!-- filtros: sólo visibles para categoría pizza -->
-  <div class="filters" *ngIf="isPizzaCategory">
-    <div class="filters-row">
-      <div class="price-filter">
-        <label>Precio máximo: S/. {{ maxPrice }}</label>
-        <ion-range min="{{ priceFilter.min }}" max="{{ priceFilter.max }}" step="1" snaps="false" [value]="maxPrice" (ionChange)="onPriceChange($event.detail)"></ion-range>
-      </div>
 
-      <div class="tags-filter" *ngIf="availableTags.length">
-        <label>Tags:</label>
-        <div class="chips">
-          <ion-chip *ngFor="let t of availableTags" (click)="toggleTag(t)" [class.active]="selectedTags.has(t)">
-            <ion-label>{{ t }}</ion-label>
-          </ion-chip>
+
+  <!-- acordeón de filtros (orden + tags) -->
+  <div class="filters">
+    <ion-accordion-group>
+      <ion-accordion value="filtros">
+        <ion-item slot="header" lines="none" class="accordion-header">
+          <ion-label>Filtros y orden</ion-label>
+          <ion-note slot="end" *ngIf="selectedTags.size">Tags: {{ selectedTags.size }}</ion-note>
+        </ion-item>
+
+        <div slot="content" class="accordion-content">
+          <!-- orden (desplegable para las 4 opciones) -->
+          <div class="sort-filter">
+            <ion-item lines="full">
+              <ion-label>Ordenar por</ion-label>
+              <ion-select placeholder="Seleccionar" [(ngModel)]="sortBy" (ionChange)="onSortChange($event.detail.value)">
+                <ion-select-option value="price_desc">Precio: mayor → menor</ion-select-option>
+                <ion-select-option value="price_asc">Precio: menor → mayor</ion-select-option>
+                <ion-select-option value="name_asc">Nombre: A → Z</ion-select-option>
+                <ion-select-option value="name_desc">Nombre: Z → A</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </div>
+
+          <!-- tags: sólo para pizzas (detalle en el acordeón) -->
+          <div class="tags-filter" *ngIf="isPizzaCategory">
+            <label>Tags :</label>
+            <div class="chips">
+              <ion-chip *ngFor="let t of availableTags" (click)="toggleTag(t)" [class.active]="selectedTags.has(t)">
+                <ion-label>{{ t }}</ion-label>
+              </ion-chip>
+            </div>
+
+            
+          </div>
         </div>
-      </div>
-    </div>
+      </ion-accordion>
+    </ion-accordion-group>
   </div>
 
+  <!-- grid de productos (compact cards) -->
   <div class="grid-wrap">
     <ion-grid>
       <ion-row>

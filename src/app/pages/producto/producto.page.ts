@@ -84,6 +84,22 @@ export class ProductoPage implements OnInit, OnDestroy {
     // persistir con servicio si existe
   }
 
+  shareProduct(p: any) {
+    // uso simple de Web Share API o fallback
+    try {
+      if ((navigator as any).share) {
+        (navigator as any).share({
+          title: p.nombre,
+          text: p.descripcion ?? '',
+          url: location.href
+        });
+      } else {
+        // fallback: copiar URL
+        navigator.clipboard?.writeText(location.href);
+      }
+    } catch { /* ignore */ }
+  }
+
   goHome() {
     void this.router.navigate(['/inicio']);
   }

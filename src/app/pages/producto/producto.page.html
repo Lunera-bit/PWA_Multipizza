@@ -34,18 +34,27 @@
       <span class="current">{{ product.nombre }}</span>
     </div>
 
-    <ion-card class="product-card">
+    <ion-card class="product-card improved">
       <div class="image-wrap">
-        <img [src]="product.imagen || 'assets/img/placeholder.png'" [alt]="product.nombre" />
-        <div class="fav-overlay">
+        <img [src]="product.imagen || 'assets/img/placeholder.png'" [alt]="product.nombre" (error)="onImgError($event)" />
+        <div class="fav-overlay" *ngIf="isFavorited !== undefined">
           <app-favorite [favorited]="isFavorited" (toggle)="toggleFavorite()"></app-favorite>
         </div>
+
+        <!-- price badge overlay -->
+        <div class="price-badge">S/. {{ product.precio | number:'1.2-2' }}</div>
       </div>
 
       <div class="product-body">
-        <!-- título eliminado bajo la imagen según petición -->
+        <!-- título visible y destacado -->
+        <h1 class="product-title">{{ product.nombre }}</h1>
 
-        <div class="price">S/. {{ product.precio | number:'1.2-2' }}</div>
+        <!-- tags (si existen) -->
+        <div class="tags" *ngIf="product.tags?.length">
+          <ion-chip *ngFor="let t of product.tags" color="light" outline>
+            <ion-label>{{ t }}</ion-label>
+          </ion-chip>
+        </div>
 
         <div class="descripcion" *ngIf="product.descripcion">
           <h3>Descripción</h3>
@@ -55,6 +64,9 @@
         <div class="actions">
           <!-- usa tu componente add-to-cart -->
           <app-add-to-cart [product]="product"></app-add-to-cart>
+          <ion-button fill="clear" (click)="shareProduct(product)" aria-label="Compartir">
+            <ion-icon name="share-social-outline"></ion-icon>
+          </ion-button>
         </div>
       </div>
     </ion-card>
