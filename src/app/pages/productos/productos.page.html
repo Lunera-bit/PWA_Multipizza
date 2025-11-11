@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/inicio"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Productos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="productos-page">
+  <!-- filtros: sólo visibles para categoría pizza -->
+  <div class="filters" *ngIf="isPizzaCategory">
+    <div class="filters-row">
+      <div class="price-filter">
+        <label>Precio máximo: S/. {{ maxPrice }}</label>
+        <ion-range min="{{ priceFilter.min }}" max="{{ priceFilter.max }}" step="1" snaps="false" [value]="maxPrice" (ionChange)="onPriceChange($event.detail)"></ion-range>
+      </div>
+
+      <div class="tags-filter" *ngIf="availableTags.length">
+        <label>Tags:</label>
+        <div class="chips">
+          <ion-chip *ngFor="let t of availableTags" (click)="toggleTag(t)" [class.active]="selectedTags.has(t)">
+            <ion-label>{{ t }}</ion-label>
+          </ion-chip>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-wrap">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" size-sm="4" size-md="3" *ngFor="let p of filtered; trackBy: trackById">
+          <ion-card class="product-card compact" (click)="openProduct(p)">
+            <div class="card-media">
+              <img [src]="p.imagen ?? p.image ?? 'assets/img/placeholder.png'" (error)="onImgError($event)" />
+            </div>
+            <ion-card-content class="compact-content">
+              <div class="title">{{ p.nombre ?? p.name }}</div>
+              <div class="price">S/. {{ (p.precio ?? 0) | number:'1.2-2' }}</div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <div *ngIf="!loading && filtered.length === 0" class="empty">
+      <ion-icon name="sad-outline"></ion-icon>
+      <p>No se encontraron productos.</p>
+    </div>
+  </div>
+</ion-content>

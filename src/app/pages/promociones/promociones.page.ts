@@ -15,7 +15,7 @@ import { LoaderService } from '../../services/loader.service';
 @Component({
   selector: 'app-promociones',
   standalone: true,
-  imports: [IonicModule, CommonModule, AddToCartComponent, FooterComponent],
+  imports: [IonicModule, CommonModule, AddToCartComponent],
   templateUrl: './promociones.page.html',
   styleUrls: ['./promociones.page.scss'],
 })
