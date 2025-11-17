@@ -113,8 +113,15 @@ export class InicioPage implements OnInit, OnDestroy {
     setTimeout(() => this.animateResults = true, 30);
   }
 
-  onSearchSelect(p: Product) {
-    void this.router.navigate(['/productos'], { queryParams: { id: (p as any).id } });
+  onSearchSelect(p: any) {
+    const id = p?.id ?? p?._id ?? p?.idProducto ?? p?.['id'];
+    if (id) {
+      // navega pasando el id como query param
+      void this.router.navigate(['/producto'], { queryParams: { id } });
+    } else {
+      // si el producto no tiene id, pasa el objeto por state como fallback
+      void this.router.navigate(['/producto'], { state: { product: p } });
+    }
   }
 
   onPromoSelect(p: Promocion) {

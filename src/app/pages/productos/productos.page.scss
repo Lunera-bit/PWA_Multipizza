@@ -1,0 +1,65 @@
+:host { display:block; }
+
+/* filtros */
+.filters { padding: 12px 16px; background: var(--ion-background-color); border-bottom: 1px solid rgba(0,0,0,0.04); }
+.filters-row { display:flex; flex-direction:column; gap:12px; }
+@media (min-width:720px) { .filters-row { flex-direction:row; align-items:center; justify-content:space-between; } }
+
+.price-filter label { font-weight:600; margin-bottom:6px; display:block; }
+ion-range { width:100%; }
+
+.tags-filter .chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+ion-chip { cursor:pointer; border-radius: 16px; }
+ion-chip.active { background: var(--ion-color-primary); color:#fff; }
+
+/* grid / cards */
+.grid-wrap { padding: 14px 12px; }
+.product-card { border-radius:12px; overflow:hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+.card-media { position:relative; height:180px; overflow:hidden; cursor:pointer; display:flex; align-items:center; justify-content:center; background:#f6f6f6; }
+.card-media img { width:100%; height:100%; object-fit:cover; display:block; transition: transform .25s ease; }
+.card-media:hover img { transform: scale(1.03); }
+.price-badge {
+  position:absolute; right:10px; top:10px;
+  background: #f5f5f5;
+  color:#000000; padding:6px 10px; border-radius:18px; font-weight:700; font-size:0.95rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+.card-title { font-size:1rem; font-weight:700; margin-top:8px; }
+
+/* content row */
+.card-row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:6px; }
+.tags ion-chip { margin-right:6px; }
+
+/* empty */
+.empty { text-align:center; padding:36px 12px; color:var(--ion-color-medium); }
+.empty ion-icon { font-size:48px; margin-bottom:8px; color:var(--ion-color-medium); }
+
+/* acordeón / tags */
+.tags-accordion { margin-left:8px; }
+.accordion-header { --padding-start:12px; --padding-end:12px; }
+.accordion-content { padding:12px; display:flex; flex-direction:column; gap:8px; }
+.chips { display:flex; gap:8px; flex-wrap:wrap; }
+ion-chip { cursor:pointer; border-radius:16px; }
+ion-chip.active { background: var(--ion-color-primary); color:#fff; }
+
+/* acciones dentro del acordeón */
+.accordion-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:6px; }
+
+/* pequeño ajuste responsive */
+@media (max-width:720px) {
+  .filters-row { flex-direction:column; gap:10px; }
+  .card-media { height:150px; }
+  .price-badge { top:8px; right:8px; padding:4px 8px; font-size:0.85rem; }
+}
+
+/* quick tags */
+.quick-tags {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding: 10px 12px;
+}
+.quick-tags ion-segment { --background: transparent; }
+.quick-tags ion-segment-button { min-width: auto; padding: 6px 10px; border-radius: 14px; }
+.quick-tags ion-button { margin-left: auto; }
