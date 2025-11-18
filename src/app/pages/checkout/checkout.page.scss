@@ -1,0 +1,36 @@
+:host { display:block; }
+.checkout-page { max-width:980px; margin:0 auto; }
+
+.steps {
+  display:flex; gap:8px; margin-bottom:12px; justify-content:space-between;
+}
+.steps div { flex:1; padding:8px; text-align:center; border-radius:8px; background:rgba(0,0,0,0.04); font-weight:600; font-size:0.9rem; }
+.steps div.active { background: var(--ion-color-primary); color:#fff; box-shadow:0 6px 18px rgba(0,0,0,0.08); }
+
+.step-panel { padding:12px 0; }
+.summary, .pay-summary { display:flex; justify-content:space-between; align-items:center; padding:12px 0; font-weight:700; font-size:1.05rem; }
+.actions, .payment-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+.location-box { margin-top:10px; padding:10px; background:#f6f6f6; border-radius:8px; }
+.or-row { text-align:center; margin:8px 0; color:var(--ion-color-medium); }
+
+.map-container {
+  width: 100%;
+  height: 360px;
+  margin-top: 6px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+}
+
+/* posicionar geocoder encima del mapa si lo deseas */
+.geocoder-container {
+  max-width: 100%;
+  z-index: 9;
+}
+
+/* si el geocoder inyecta un input, aseguramos estilo legible */
+.mapboxgl-ctrl-geocoder { width: 100%; max-width: 600px; margin: 0; }
+/* responsive */
+@media (max-width:720px) {
+  .map-container { height: 240px; }
+}
