@@ -11,6 +11,9 @@ export const environment = {
     storageBucket: "multipizza-1.firebasestorage.app",
     messagingSenderId: "991761696851",
     appId: "1:991761696851:web:c84057344944d6d431dea6"
+  },
+  mapbox: {
+    token: 'pk.eyJ1IjoiaG9sYTIzMTM0MSIsImEiOiJjbWkzOGpmNnMxaHhrMmtvZzQ2ZzhtOWY5In0.WenQxEq7bFDGjuOSZ2xgGQ' 
   }
 };
 

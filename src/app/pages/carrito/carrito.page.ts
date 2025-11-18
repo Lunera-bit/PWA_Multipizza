@@ -6,6 +6,7 @@ import { CartService } from '../../services/cart.service';
 import { CartItem } from '../../models/cart-item.model';
 import { HeaderComponent } from '../../components/header/header/header.component';
 import { FooterComponent } from '../../components/footer/footer/footer.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-carrito',
@@ -19,7 +20,10 @@ export class CarritoPage implements OnInit, OnDestroy {
   total = 0;
   private sub?: Subscription;
 
-  constructor(private cart: CartService) {}
+  constructor(
+    private cart: CartService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.sub = this.cart.cart$.subscribe(items => {
@@ -46,7 +50,7 @@ export class CarritoPage implements OnInit, OnDestroy {
   }
 
   buy() {
-    console.log('comprado');
-    // opcional: this.cart.clear();
+    // navega a la pantalla de checkout
+    void this.router.navigate(['/checkout']);
   }
 }
