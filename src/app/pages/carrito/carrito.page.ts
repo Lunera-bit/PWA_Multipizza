@@ -51,6 +51,6 @@ export class CarritoPage implements OnInit, OnDestroy {
 
   buy() {
     // navega a la pantalla de checkout
-    void this.router.navigate(['/checkout']);
+    void this.router.navigate(['/clientroute']);
   }
 }
