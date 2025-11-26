@@ -39,16 +39,22 @@ export const routes: Routes = [
   },
   {
     path: 'producto',
-    loadComponent: () => import('./pages/producto/producto.page').then(m => m.ProductoPage)
+    loadComponent: () => import('./pages/producto/producto.page').then(m => m.ProductoPage),
+        canActivate: [AuthGuard]
+
   },
   {
     path: 'productos',
-    loadComponent: () => import('./pages/productos/productos.page').then(m => m.ProductosPage)
+    loadComponent: () => import('./pages/productos/productos.page').then(m => m.ProductosPage),
+            canActivate: [AuthGuard]
+
   },
   {
-    path: 'checkout',
-    loadComponent: () => import('./pages/checkout/checkout.page').then(m => m.CheckoutPage)
+    path: 'clientroute',
+    loadComponent: () => import('./pages/clientroute/clientroute.page').then( m => m.ClientroutePage)
   }
+
+
 ];
 
 
