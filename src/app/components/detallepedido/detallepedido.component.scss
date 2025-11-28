@@ -1,0 +1,309 @@
+.detalle-page {
+  --background: #f8f9fa;
+  background: var(--background);
+  padding: 0;
+
+  // Header Section
+  .header-section {
+    background: linear-gradient(135deg, #850505, #ea6666);
+    color: white;
+    padding: 24px;
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+
+    .pedido-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+
+      .left {
+        .label {
+          font-size: 0.85rem;
+          opacity: 0.9;
+          margin: 0;
+          font-weight: 500;
+        }
+
+        .pedido-id {
+          font-size: 2rem;
+          font-weight: 800;
+          margin: 0;
+          letter-spacing: 1px;
+        }
+      }
+
+      .right {
+        .estado-badge {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: rgba(255, 255, 255, 0.2);
+          padding: 8px 16px;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 0.9rem;
+          backdrop-filter: blur(4px);
+
+          .punto {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+          }
+
+          &.status-pendiente .punto { background: #fbbf24; }
+          &.status-en-camino .punto { background: #3b82f6; }
+          &.status-entregado .punto { background: #10b981; }
+          &.status-cancelado .punto { background: #ef4444; }
+        }
+      }
+    }
+
+    .monto-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+
+      .monto-card,
+      .fecha-card {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 12px 16px;
+        border-radius: 12px;
+        backdrop-filter: blur(4px);
+
+        .label {
+          font-size: 0.8rem;
+          opacity: 0.85;
+          margin: 0 0 4px 0;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .total {
+          font-size: 1.5rem;
+          font-weight: 800;
+          margin: 0;
+        }
+
+        .fecha {
+          font-size: 0.9rem;
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  // Sections
+  .section {
+    padding: 20px 16px;
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 0 0 12px 0;
+      color: #1f2937;
+    }
+  }
+
+  // Productos
+  .productos-card {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+    ion-list {
+      --background: white;
+      --ion-item-background: white;
+    }
+
+    .producto-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      gap: 12px;
+
+      .producto-info {
+        flex: 1;
+
+        h3 {
+          margin: 0 0 4px 0;
+          font-size: 0.95rem;
+          font-weight: 600;
+          color: #1f2937;
+        }
+
+        .tipo {
+          margin: 0;
+          font-size: 0.8rem;
+          color: #9ca3af;
+        }
+      }
+
+      .producto-precio {
+        text-align: right;
+
+        .cantidad {
+          font-size: 0.8rem;
+          color: #6b7280;
+          margin: 0 0 4px 0;
+          font-weight: 500;
+        }
+
+        .precio {
+          margin: 0;
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: #181818;
+        }
+      }
+    }
+
+    .precio-summary {
+      background: #f9fafb;
+      padding: 16px;
+      border-top: 1px solid #e5e7eb;
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        &.total-row {
+          font-weight: 700;
+          color: #000000;
+          border-top: 1px solid #e5e7eb;
+          padding-top: 8px;
+          margin-top: 8px;
+
+          .total-final {
+            font-size: 1.1rem;
+          }
+        }
+      }
+    }
+  }
+
+  // Datos de Entrega
+  .delivery-card {
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+    .delivery-row {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+      align-items: start;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .delivery-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .delivery-value {
+        font-size: 0.95rem;
+        color: #1f2937;
+        font-weight: 500;
+
+        a {
+          color: #181818;
+          text-decoration: none;
+
+          &:active {
+            opacity: 0.7;
+          }
+        }
+      }
+    }
+  }
+
+  // Instrucciones
+  .instrucciones {
+    background: #f3f4f6;
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 4px solid rgb(196, 19, 19);
+    margin: 0;
+    font-style: italic;
+    color: #4b5563;
+    font-size: 0.9rem;
+  }
+
+  // Mapa
+  .mapa-card {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+    .map-container {
+      width: 100%;
+      height: 240px;
+      background: #e5e7eb;
+    }
+  }
+
+  // Acciones
+  .actions-section {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    ion-button {
+      --border-radius: 12px;
+      font-weight: 600;
+      height: 48px;
+      font-size: 0.95rem;
+
+      &[color="danger"] {
+        --background: #ef4444;
+        --background-activated: #dc2626;
+      }
+
+      &[color="primary"][fill="outline"] {
+        --border-color: #ea6666;
+        --color: #ea6666;
+      }
+    }
+  }
+
+  // Responsive
+  @media (max-width: 480px) {
+    .header-section {
+      padding: 16px;
+
+      .pedido-header .left .pedido-id {
+        font-size: 1.5rem;
+      }
+
+      .monto-section {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .section {
+      padding: 16px 12px;
+    }
+
+    .delivery-row {
+      grid-template-columns: 80px 1fr;
+    }
+  }
+}

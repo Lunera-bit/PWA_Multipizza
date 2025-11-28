@@ -1,49 +1,140 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Detalle del Pedido</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="cerrar()">Cerrar</ion-button>
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="" (click)="cerrar()" color="light"></ion-back-button>
     </ion-buttons>
+    <ion-title>Detalle del Pedido</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-card>
-    <ion-card-content>
-      <h2>Pedido #{{ pedido.id }}</h2>
-      <p><strong>Total:</strong> S/. {{ pedido.total }}</p>
-      <p><strong>Estado:</strong> {{ pedido.status }}</p>
-    </ion-card-content>
-  </ion-card>
+<ion-content class="detalle-page">
+  <!-- Header con ID y estado -->
+  <div class="header-section">
+    <div class="pedido-header">
+      <div class="left">
+        <p class="label">Pedido</p>
+        <h2 class="pedido-id">#{{ pedido.id }}</h2>
+      </div>
+      <div class="right">
+        <div class="estado-badge" [ngClass]="getStatusClass(pedido.status)">
+          <span class="punto"></span>
+          <span class="status-text">{{ getStatusLabel(pedido.status) }}</span>
+        </div>
+      </div>
+    </div>
 
-  <ion-card>
-    <ion-card-content>
-      <h3>Productos</h3>
+    <!-- Total y fecha -->
+    <div class="monto-section">
+      <div class="monto-card">
+        <p class="label">Monto Total</p>
+        <h1 class="total">S/. {{ pedido.total | number:'1.2-2' }}</h1>
+      </div>
+      <div class="fecha-card" *ngIf="pedido.createdAt">
+        <p class="label">Fecha</p>
+        <p class="fecha">{{ formatDate(pedido.createdAt) }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Productos -->
+  <div class="section">
+    <h3 class="section-title">
+      Productos ({{ pedido.items?.length || 0 }})
+    </h3>
+    <ion-card class="productos-card">
       <ion-list>
-        <ion-item *ngFor="let item of pedido.items">
+        <ion-item *ngFor="let item of pedido.items; let last = last" [lines]="last ? 'none' : 'inset'">
           <ion-label>
-            <h3>{{ item.name }}</h3>
-            <p>Cantidad: {{ item.qty }}</p>
-            <p>S/. {{ item.price }}</p>
+            <div class="producto-row">
+              <div class="producto-info">
+                <h3>{{ item.title || item.name }}</h3>
+                <p class="tipo" *ngIf="item.type">{{ item.type }}</p>
+              </div>
+              <div class="producto-precio">
+                <p class="cantidad">x {{ item.qty }}</p>
+                <p class="precio">S/. {{ (item.price * item.qty) | number:'1.2-2' }}</p>
+              </div>
+            </div>
           </ion-label>
         </ion-item>
       </ion-list>
-    </ion-card-content>
-  </ion-card>
 
-  <ion-card>
-    <ion-card-content>
-      <h3>Datos de Entrega</h3>
-      <p><strong>Dirección:</strong> {{ pedido.address.street }}</p>
-      <p><strong>Detalles:</strong> {{ pedido.address.details }}</p>
-      <p><strong>Teléfono:</strong> {{ pedido.user.phone }}</p>
-    </ion-card-content>
-  </ion-card>
+      <!-- Resumen de precios -->
+      <div class="precio-summary">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>S/. {{ calcularSubtotal() | number:'1.2-2' }}</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>Total</span>
+          <span class="total-final">S/. {{ pedido.total | number:'1.2-2' }}</span>
+        </div>
+      </div>
+    </ion-card>
+  </div>
 
-  <ion-button *ngIf="pedido.status !== 'cancelado' && pedido.status !== 'entregado'" 
-    expand="block" 
-    color="danger" 
-    (click)="cancelarPedido()">
-    Cancelar Pedido
-  </ion-button>
+  <!-- Datos de Entrega -->
+  <div class="section">
+    <h3 class="section-title">
+      Datos de Entrega
+    </h3>
+    <ion-card class="delivery-card">
+      <ion-card-content>
+        <div class="delivery-row">
+          <div class="delivery-label">Dirección</div>
+          <div class="delivery-value">{{ pedido.address?.street || '—' }}</div>
+        </div>
+        <div class="delivery-row">
+          <div class="delivery-label">Detalles</div>
+          <div class="delivery-value">{{ pedido.address?.details || '—' }}</div>
+        </div>
+        <div class="delivery-row">
+          <div class="delivery-label">Teléfono</div>
+          <div class="delivery-value">
+            <a [href]="'tel:' + pedido.user?.phone">{{ pedido.user?.phone || '—' }}</a>
+          </div>
+        </div>
+        <div class="delivery-row" *ngIf="pedido.user?.name">
+          <div class="delivery-label">Nombre</div>
+          <div class="delivery-value">{{ pedido.user.name }}</div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Instrucciones especiales -->
+  <div class="section" *ngIf="pedido.instructions">
+    <h3 class="section-title">
+      Instrucciones Especiales
+    </h3>
+    <ion-card>
+      <ion-card-content>
+        <p class="instrucciones">{{ pedido.instructions }}</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+
+  <!-- Acciones -->
+  <div class="actions-section">
+    <ion-button 
+      *ngIf="pedido.status !== 'cancelado' && pedido.status !== 'entregado'" 
+      color="danger" 
+      fill="solid"
+      expand="block"
+      (click)="cancelarPedido()">
+      Cancelar Pedido
+    </ion-button>
+
+    <ion-button 
+      color="primary" 
+      fill="outline"
+      expand="block"
+      (click)="cerrar()">
+      Volver a Pedidos
+    </ion-button>
+  </div>
+
+  <!-- Espacio al final -->
+  <div style="height: 20px;"></div>
 </ion-content>
