@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Detalle del Pedido</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-content>
+      <h2>Pedido #{{ pedido.id }}</h2>
+      <p><strong>Total:</strong> S/. {{ pedido.total }}</p>
+      <p><strong>Estado:</strong> {{ pedido.status }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-content>
+      <h3>Productos</h3>
+      <ion-list>
+        <ion-item *ngFor="let item of pedido.items">
+          <ion-label>
+            <h3>{{ item.name }}</h3>
+            <p>Cantidad: {{ item.qty }}</p>
+            <p>S/. {{ item.price }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-content>
+      <h3>Datos de Entrega</h3>
+      <p><strong>Dirección:</strong> {{ pedido.address.street }}</p>
+      <p><strong>Detalles:</strong> {{ pedido.address.details }}</p>
+      <p><strong>Teléfono:</strong> {{ pedido.user.phone }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button *ngIf="pedido.status !== 'cancelado' && pedido.status !== 'entregado'" 
+    expand="block" 
+    color="danger" 
+    (click)="cancelarPedido()">
+    Cancelar Pedido
+  </ion-button>
+</ion-content>

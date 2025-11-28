@@ -1,0 +1,40 @@
+.estado-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .punto {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+
+    &.punto-pendiente {
+      background-color: #fbbf24; // amarillo
+    }
+
+    &.punto-en {
+      background-color: #3b82f6; // azul
+    }
+
+    &.punto-entregado {
+      background-color: #10b981; // verde
+    }
+
+    &.punto-cancelado {
+      background-color: #ef4444; // rojo
+    }
+  }
+
+  .status-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #888;
+}

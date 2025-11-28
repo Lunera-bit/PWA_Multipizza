@@ -14,6 +14,7 @@ export const environment = {
   },
   mapboxToken:'pk.eyJ1IjoiaG9sYTIzMTM0MSIsImEiOiJjbWlmNWx0azkwMjl5M3BwdTYxdDhtNHBmIn0.UX1wDxJ8Bah1BP-OUJAP8Q' 
   
+  
 };
 
 /*

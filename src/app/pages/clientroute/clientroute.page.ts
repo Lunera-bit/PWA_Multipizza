@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonList, IonItem, IonLabel, IonText, IonInput, IonTextarea, IonIcon } from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonList, IonItem, IonLabel, IonInput, IonTextarea, IonIcon, IonButtons, IonBackButton } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 import { CartService } from '../../services/cart.service';
 import { CartItem } from '../../models/cart-item.model';
@@ -13,16 +14,16 @@ import { arrowBack, arrowForward, pin, home, search } from 'ionicons/icons';
 import mapboxgl, { LngLatLike } from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { environment } from '../../../environments/environment';
+import { Capacitor } from '@capacitor/core';
+import { Geolocation } from '@capacitor/geolocation';
 
-// Reemplaza con tu token de Mapbox
-// const MAPBOX_TOKEN = 'pk.eyJ1IjoiZXhhbXBsZSIsImEiOiJjbHp1eHhhIn0.xxxxx'; // CAMBIA ESTO
 
 @Component({
   selector: 'app-clientroute',
   templateUrl: './clientroute.page.html',
   styleUrls: ['./clientroute.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonList, IonItem, IonLabel, IonText, IonInput, IonTextarea, IonIcon, CommonModule, FormsModule]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonList, IonItem, IonLabel, IonInput, IonTextarea, IonIcon, IonButtons, IonBackButton, CommonModule, FormsModule]
 })
 export class ClientroutePage implements OnInit, OnDestroy {
   @ViewChild('mapContainer') mapContainer!: ElementRef;
@@ -44,14 +45,14 @@ export class ClientroutePage implements OnInit, OnDestroy {
 
   latitude?: number;
   longitude?: number;
-
   private map?: mapboxgl.Map;
   private marker?: mapboxgl.Marker;
   private geocoder?: InstanceType<typeof MapboxGeocoder>;
 
   constructor(
     private cart: CartService,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private router: Router
   ) {
     addIcons({ arrowBack, arrowForward, pin, home, search });
     mapboxgl.accessToken = environment.mapboxToken;
@@ -236,12 +237,14 @@ export class ClientroutePage implements OnInit, OnDestroy {
 
       await addDoc(collection(db, 'pedidos'), order);
 
-      this.items.forEach(it => {
-        this.cart.setItemQty(it.id, it.type, 0);
-      });
+      // Limpiar el carrito
+      this.cart.clearCart();
 
       await this.showToast('Pedido generado correctamente.');
       this.resetForm();
+      
+      // Navega a la página de pedidos
+      this.router.navigate(['/pedidos']);
     } catch (err) {
       console.error('Error creando pedido:', err);
       await this.showToast('Error al generar pedido.');
@@ -262,28 +265,83 @@ export class ClientroutePage implements OnInit, OnDestroy {
     await t.present();
   }
 
-  setLocation() {
-    // usar geolocalización del navegador
-    if (navigator.geolocation) {
+  async setLocation() {
+    try {
+      // detectar si es app nativa o web
+      if (Capacitor.isNativePlatform()) {
+        // en Android/iOS usar Geolocation de Capacitor (más preciso)
+        await this.setLocationNative();
+      } else {
+        // en web usar navigator.geolocation (API estándar)
+        await this.setLocationWeb();
+      }
+    } catch (err) {
+      console.error('Error obteniendo ubicación:', err);
+      this.showToast('No se pudo obtener la ubicación.');
+    }
+  }
+
+  private async setLocationNative() {
+    const permission = await Geolocation.requestPermissions();
+    
+    if (permission.location !== 'granted') {
+      this.showToast('Permiso de ubicación denegado.');
+      return;
+    }
+
+    const pos = await Geolocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      maximumAge: 0,
+      timeout: 60000
+    });
+
+    this.latitude = pos.coords.latitude;
+    this.longitude = pos.coords.longitude;
+
+    console.log('GPS (nativo):', this.latitude, this.longitude, 'accuracy(m):', pos.coords.accuracy);
+
+    if (this.map) {
+      this.setMarker(this.longitude, this.latitude);
+    }
+
+    this.showToast(`Ubicación fijada (precisión ≈ ${pos.coords.accuracy ?? 'n/a'} m)`);
+  }
+
+  private setLocationWeb() {
+    return new Promise<void>((resolve, reject) => {
+      if (!navigator.geolocation) {
+        this.showToast('Geolocalización no disponible en tu navegador.');
+        reject('Geolocation not available');
+        return;
+      }
+
+      this.showToast('Buscando ubicación...');
+
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           this.latitude = pos.coords.latitude;
           this.longitude = pos.coords.longitude;
-          
-          // si el mapa está inicializado, actualizar marcador y centro
+
+          console.log('GPS (web):', this.latitude, this.longitude, 'accuracy(m):', pos.coords.accuracy);
+
           if (this.map) {
             this.setMarker(this.longitude, this.latitude);
           }
-          
-          this.showToast('Ubicación actual establecida.');
+
+          this.showToast(`Ubicación fijada (precisión ≈ ${pos.coords.accuracy ?? 'n/a'} m)`);
+          resolve();
         },
         (err) => {
-          console.error('Error obteniendo ubicación:', err);
-          this.showToast('No se pudo obtener la ubicación. Verifica los permisos.');
+          console.error('Error GPS web:', err);
+          this.showToast('No se pudo obtener la ubicación.');
+          reject(err);
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 0,
+          timeout: 20000
         }
       );
-    } else {
-      this.showToast('Geolocalización no disponible en tu navegador.');
-    }
+    });
   }
 }
