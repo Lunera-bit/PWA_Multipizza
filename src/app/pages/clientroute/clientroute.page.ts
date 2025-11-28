@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 import { CartService } from '../../services/cart.service';
 import { CartItem } from '../../models/cart-item.model';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, collection, setDoc, doc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { arrowBack, arrowForward, pin, home, search } from 'ionicons/icons';
@@ -206,6 +206,18 @@ export class ClientroutePage implements OnInit, OnDestroy {
     });
   }
 
+  private async generateUniqueOrderId(db: ReturnType<typeof getFirestore>, attempts = 6): Promise<string> {
+    // genera un id numérico de 6 dígitos y verifica colisiones en Firestore
+    for (let i = 0; i < attempts; i++) {
+      const id = Math.floor(100000 + Math.random() * 900000).toString(); // 6 dígitos, no inicia en 0
+      const ref = doc(db, 'pedidos', id);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return id;
+    }
+    // fallback: usar timestamp + random si hay colisión extrema
+    return `R${Date.now().toString().slice(-6)}${Math.floor(Math.random() * 90 + 10)}`;
+  }
+
   async placeOrder() {
     if (!this.validateStep(5)) {
       return;
@@ -216,14 +228,14 @@ export class ClientroutePage implements OnInit, OnDestroy {
       const user = auth.currentUser;
       const db = getFirestore();
 
-      const order = {
+      const orderPayload = {
         user: {
           uid: user?.uid || null,
           name: this.userName,
           email: this.userEmail,
           phone: this.userPhone
         },
-        items: this.items.map(i => ({ id: i.id, name: i.title, price: i.price, qty: i.qty, type: i.type })),
+        items: this.items.map(i => ({ id: i.id, title: i.title, price: i.price, qty: i.qty, type: i.type })),
         instructions: this.instructions,
         address: {
           street: this.address,
@@ -235,14 +247,16 @@ export class ClientroutePage implements OnInit, OnDestroy {
         createdAt: serverTimestamp()
       };
 
-      await addDoc(collection(db, 'pedidos'), order);
+      // Generar ID único de 6 dígitos y usar setDoc para que no dependa de Firestore auto-id
+      const orderId = await this.generateUniqueOrderId(db);
+      await setDoc(doc(db, 'pedidos', orderId), { id: orderId, ...orderPayload });
 
       // Limpiar el carrito
       this.cart.clearCart();
 
       await this.showToast('Pedido generado correctamente.');
       this.resetForm();
-      
+
       // Navega a la página de pedidos
       this.router.navigate(['/pedidos']);
     } catch (err) {

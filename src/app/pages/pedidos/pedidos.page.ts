@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonButtons, IonBackButton, AlertController, ModalController } from '@ionic/angular/standalone';
 import { FooterComponent } from '../../components/footer/footer/footer.component';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import { Router } from '@angular/router';
 import { DetallepedidoComponent } from '../../components/detallepedido/detallepedido.component';
 
@@ -26,7 +26,7 @@ interface Pedido {
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonButtons, IonBackButton, CommonModule, FormsModule, FooterComponent]
 })
 export class PedidosPage implements OnInit {
-  pedidos: Pedido[] = [];
+  pedidos: any[] = [];
 
   constructor(
     private alertCtrl: AlertController,
@@ -52,26 +52,48 @@ export class PedidosPage implements OnInit {
       const q = query(collection(db, 'pedidos'), where('user.uid', '==', user.uid));
       const querySnapshot = await getDocs(q);
 
-      this.pedidos = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Pedido[];
+      this.pedidos = querySnapshot.docs.map(d => {
+        const data = d.data();
+        return {
+          id: data['id'] || d.id,
+          ...data
+        };
+      });
 
-      // ordenar por fecha descendente (más recientes primero)
-      this.pedidos.sort((a, b) => b.createdAt?.toMillis?.() - a.createdAt?.toMillis?.());
+      // ordenar por fecha descendente
+      this.pedidos.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
     } catch (err) {
       console.error('Error cargando pedidos:', err);
     }
   }
 
   getStatusLabel(status: string): string {
-    const labels: Record<string, string> = {
+    const labels: Record<string,string> = {
       pendiente: 'Pendiente',
       cancelado: 'Cancelado',
       entregado: 'Entregado',
       'en camino': 'En camino'
     };
     return labels[status] || status;
+  }
+
+  getStatusClass(status: string) {
+    switch (status) {
+      case 'pendiente': return 'status-pendiente';
+      case 'en camino': return 'status-en-camino';
+      case 'entregado': return 'status-entregado';
+      case 'cancelado': return 'status-cancelado';
+      default: return 'status-pendiente';
+    }
+  }
+
+  formatDate(ts: any) {
+    try {
+      const d = ts?.toDate ? ts.toDate() : (new Date(ts));
+      return d.toLocaleString();
+    } catch {
+      return '';
+    }
   }
 
   async verDetalle(pedido: Pedido) {

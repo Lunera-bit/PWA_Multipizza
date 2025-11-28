@@ -1,44 +1,92 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonCard, IonCardContent, IonList, IonItem, IonLabel, IonText, AlertController, ModalController } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonCard, IonCardContent, IonCardHeader, IonList, IonItem, IonLabel, IonIcon, IonBackButton, AlertController, ModalController, ToastController } from '@ionic/angular/standalone';
 import { getFirestore, doc, updateDoc } from 'firebase/firestore';
+import mapboxgl from 'mapbox-gl';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-detallepedido',
   templateUrl: './detallepedido.component.html',
   styleUrls: ['./detallepedido.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonCard, IonCardContent, IonList, IonItem, IonLabel, IonText]
+  imports: [CommonModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonCard, IonCardContent, IonList, IonItem, IonLabel, IonBackButton]
 })
-export class DetallepedidoComponent {
+export class DetallepedidoComponent implements OnInit {
   @Input() pedido: any;
+  @ViewChild('mapContainer') mapContainer?: ElementRef;
+
+  private map?: mapboxgl.Map;
 
   constructor(
     private alertCtrl: AlertController,
-    private modalCtrl: ModalController
-  ) {}
+    private modalCtrl: ModalController,
+    private toastCtrl: ToastController
+  ) {
+    mapboxgl.accessToken = environment.mapboxToken;
+  }
+
+  ngOnInit() {
+  }
+
+
+  calcularSubtotal(): number {
+    return this.pedido.items?.reduce((sum: number, item: any) => sum + (item.price * item.qty), 0) || 0;
+  }
+
+  getStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      pendiente: 'Pendiente',
+      cancelado: 'Cancelado',
+      entregado: 'Entregado',
+      'en camino': 'En camino'
+    };
+    return labels[status] || status;
+  }
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'pendiente': return 'status-pendiente';
+      case 'en camino': return 'status-en-camino';
+      case 'entregado': return 'status-entregado';
+      case 'cancelado': return 'status-cancelado';
+      default: return 'status-pendiente';
+    }
+  }
+
+  formatDate(ts: any): string {
+    try {
+      const d = ts?.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' });
+    } catch {
+      return '—';
+    }
+  }
 
   async cancelarPedido() {
     const alert = await this.alertCtrl.create({
-      header: '¿Confirmar cancelación?',
-      message: '¿Estás seguro de que quieres cancelar este pedido?',
+      header: '¿Cancelar pedido?',
+      message: '¿Estás seguro de que deseas cancelar este pedido? Esta acción no se puede deshacer.',
       buttons: [
         {
-          text: 'Cancelar',
-          role: 'cancel'
+          text: 'No, mantener',
+          role: 'cancel',
+          cssClass: 'alert-cancel'
         },
         {
-          text: 'Aceptar',
+          text: 'Sí, cancelar',
+          cssClass: 'alert-danger',
           handler: async () => {
             try {
               const db = getFirestore();
               const pedidoRef = doc(db, 'pedidos', this.pedido.id);
               await updateDoc(pedidoRef, { status: 'cancelado' });
 
-              await this.mostrarToast('Pedido cancelado');
-              await this.modalCtrl.dismiss();
+              await this.showToast('Pedido cancelado exitosamente');
+              await this.modalCtrl.dismiss({ cancelled: true });
             } catch (err) {
               console.error('Error cancelando pedido:', err);
+              await this.showToast('Error al cancelar el pedido');
             }
           }
         }
@@ -48,12 +96,20 @@ export class DetallepedidoComponent {
     await alert.present();
   }
 
-  private async mostrarToast(message: string) {
-    // Usar ToastController si lo necesitas
-    alert(message);
+  private async showToast(message: string) {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2500,
+      position: 'bottom'
+    });
+    await toast.present();
   }
 
   cerrar() {
     this.modalCtrl.dismiss();
+  }
+
+  ngOnDestroy() {
+    this.map?.remove();
   }
 }
