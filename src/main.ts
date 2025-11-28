@@ -17,6 +17,7 @@ import { AppComponent } from './app/app.component';
 // Firebase (modular + compat)
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import { getAnalytics } from "firebase/analytics";
 import { provideFirebaseApp } from '@angular/fire/app';
 import { provideFirestore } from '@angular/fire/firestore';
 import { AngularFireModule } from '@angular/fire/compat';
@@ -46,10 +47,12 @@ addIcons({
   'star-half': starHalf,
   'logo-octocat': logoOctocat
 });
+const app = initializeApp(environment.firebase);
+
+const analytics = getAnalytics(app);
 
 bootstrapApplication(AppComponent, {
   providers: [
-    // compat (provee angularfire2.app.options para AngularFireAuth compat)
     importProvidersFrom(
       AngularFireModule.initializeApp(environment.firebase),
       AngularFireAuthModule
@@ -57,9 +60,11 @@ bootstrapApplication(AppComponent, {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    // modular providers
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideFirestore(() => getFirestore()),
+
+    // Usa la instancia `app` creada arriba
+    provideFirebaseApp(() => app),
+    provideFirestore(() => getFirestore(app)),
   ]
 }).catch(err => console.error(err));
+
 

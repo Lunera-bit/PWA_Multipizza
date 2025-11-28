@@ -1,0 +1,44 @@
+.step-number {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #3880ff;
+  color: white;
+  text-align: center;
+  line-height: 28px;
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.summary-item {
+  margin-bottom: 12px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+}
+
+h2 {
+  margin-bottom: 16px;
+  font-size: 1.3rem;
+}
+
+ion-textarea {
+  min-height: 100px;
+}
+
+@import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+
+#map {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+:deep(.mapboxgl-ctrl-geocoder) {
+  width: 100%;
+  max-width: 100%;
+}

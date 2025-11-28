@@ -104,6 +104,14 @@ export class ProductoPage implements OnInit, OnDestroy {
     void this.router.navigate(['/inicio']);
   }
 
+  // Maneja fallo de carga de imagen desde la plantilla
+  onImgError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    if (img) {
+      img.src = 'assets/icon/placeholder.png'; // ajusta la ruta si es necesario
+    }
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
