@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonContent, IonCard, IonCardContent, IonCardHeader, IonList, IonItem, IonLabel, IonIcon, IonBackButton, AlertController, ModalController, ToastController } from '@ionic/angular/standalone';
 import { getFirestore, doc, updateDoc } from 'firebase/firestore';
@@ -14,9 +14,18 @@ import { environment } from '../../../environments/environment';
 })
 export class DetallepedidoComponent implements OnInit {
   @Input() pedido: any;
+  @Output() closed = new EventEmitter<void>();
   @ViewChild('mapContainer') mapContainer?: ElementRef;
 
   private map?: mapboxgl.Map;
+
+  // Mapeo de tamaños
+  private sizes = [
+    { id: 'personal', label: 'Personal - S' },
+    { id: 'mediana', label: 'Mediana - M' },
+    { id: 'grande', label: 'Grande - L' },
+    { id: 'familiar', label: 'Familiar - XL' }
+  ];
 
   constructor(
     private alertCtrl: AlertController,
@@ -29,6 +38,10 @@ export class DetallepedidoComponent implements OnInit {
   ngOnInit() {
   }
 
+  getSizeLabel(sizeId: string): string {
+    const size = this.sizes.find(s => s.id === sizeId);
+    return size?.label || sizeId || '';
+  }
 
   calcularSubtotal(): number {
     return this.pedido.items?.reduce((sum: number, item: any) => sum + (item.price * item.qty), 0) || 0;

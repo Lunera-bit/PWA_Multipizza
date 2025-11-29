@@ -1,11 +1,6 @@
 <ion-header>
   <ion-toolbar class="app-header-toolbar">
     <!-- botón programático que abre el ion-menu -->
-    <ion-buttons slot="start">
-      <ion-button class="menu-btn" aria-label="Abrir menú" (click)="openMenu()">
-        <ion-icon slot="icon-only" name="menu"></ion-icon>
-      </ion-button>
-    </ion-buttons>
 
     <ion-title class="app-title">{{ title }}</ion-title>
 
@@ -36,9 +31,6 @@
     <ion-toolbar>
       <ion-title>Perfil</ion-title>
       <ion-buttons slot="end">
-        <ion-button (click)="closeMenu()" aria-label="Cerrar menú">
-          <ion-icon name="close"></ion-icon>
-        </ion-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>

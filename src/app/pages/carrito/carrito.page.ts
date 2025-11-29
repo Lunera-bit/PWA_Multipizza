@@ -69,7 +69,7 @@ export class CarritoPage implements OnInit, OnDestroy {
   }
 
   buy() {
-    // navega a la pantalla de checkout
+    // Navegar a clientroute con los items del carrito
     void this.router.navigate(['/clientroute']);
   }
 }

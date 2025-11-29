@@ -47,7 +47,10 @@
           <ion-label>
             <div class="producto-row">
               <div class="producto-info">
-                <h3>{{ item.title || item.name }}</h3>
+                <h3>
+                  {{ item.title || item.name }}
+                  <span class="size-badge" *ngIf="item.size">({{ getSizeLabel(item.size) }})</span>
+                </h3>
                 <p class="tipo" *ngIf="item.type">{{ item.type }}</p>
               </div>
               <div class="producto-precio">
