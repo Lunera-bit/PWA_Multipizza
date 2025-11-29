@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Bandeja de notificaciones</ion-title>
+    <ion-buttons slot="end">
+      <!-- botón inicio -->
+      <ion-button fill="clear" (click)="openInicio()" title="Ir a inicio">
+        <ion-icon slot="icon-only" name="home-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="page-root">
+  <ion-list *ngIf="notificaciones?.length > 0; else empty">
+    <app-notification *ngFor="let n of notificaciones" [notification]="n"></app-notification>
+  </ion-list>
+
+  <ng-template #empty>
+    <div class="empty-wrap">
+      <p>No hay notificaciones</p>
+      <ion-button fill="outline" (click)="openInicio()">Volver a inicio</ion-button>
+    </div>
+  </ng-template>
+</ion-content>

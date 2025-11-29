@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonButtons, IonBackButton, AlertController, ModalController } from '@ionic/angular/standalone';
@@ -7,6 +7,7 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import { Router } from '@angular/router';
 import { DetallepedidoComponent } from '../../components/detallepedido/detallepedido.component';
+import { NotificationsService } from '../../services/notifications.service';
 
 interface Pedido {
   id: string;
@@ -25,17 +26,22 @@ interface Pedido {
   standalone: true,
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonButtons, IonBackButton, CommonModule, FormsModule, FooterComponent]
 })
-export class PedidosPage implements OnInit {
+export class PedidosPage implements OnInit, OnDestroy {
   pedidos: any[] = [];
 
   constructor(
     private alertCtrl: AlertController,
     private modalCtrl: ModalController,
-    private router: Router
+    private router: Router,
+    private notificationsService: NotificationsService
   ) {}
 
   ngOnInit() {
     this.cargarPedidos();
+  }
+
+  ngOnDestroy() {
+    this.notificationsService.stopListeningPedidos();
   }
 
   async cargarPedidos() {
@@ -47,6 +53,12 @@ export class PedidosPage implements OnInit {
         this.router.navigate(['/login']);
         return;
       }
+
+      // iniciar escucha de pedidos para crear notificaciones de cambio de estado
+      this.notificationsService.startListeningPedidos(user.uid);
+
+      // asegurar bienvenida la primera vez que inicie sesión
+      this.notificationsService.ensureWelcomeIfNeeded(user.uid, user.displayName ?? undefined);
 
       const db = getFirestore();
       const q = query(collection(db, 'pedidos'), where('user.uid', '==', user.uid));

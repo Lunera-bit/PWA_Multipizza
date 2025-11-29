@@ -11,12 +11,12 @@
 
     <ion-buttons slot="end" class="header-actions">
       <div class="actions-group">
-        <!-- Notificaciones (sin tocar) -->
         <div class="action-item">
-          <ion-button fill="clear" class="icon-button" routerLink="/notificaciones" aria-label="Notificaciones">
+          <!-- reemplazado routerLink por click que usa método del TS -->
+          <ion-button fill="clear" class="icon-button" (click)="openBandeja()" aria-label="Notificaciones">
             <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
           </ion-button>
-          <ion-badge class="action-badge notif-badge" *ngIf="notificacionesCount > 0" color="light">{{ notificacionesCount }}</ion-badge>
+          <ion-badge class="action-badge notif-badge" *ngIf="notificacionesCount > 0" color="light" aria-live="polite">{{ notificacionesCount }}</ion-badge>
         </div>
 
         <!-- Carrito (sin tocar) -->

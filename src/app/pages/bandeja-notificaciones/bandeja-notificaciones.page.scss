@@ -1,0 +1,40 @@
+.page-root {
+  --padding-top: 6px;
+  padding: 0 12px;
+}
+
+.subtitle-toolbar {
+  --background: transparent;
+  padding: 6px 12px;
+}
+.subtitle {
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+}
+
+.page-badge {
+  margin: 6px 8px 0 4px;
+  font-weight: 700;
+}
+
+.empty-wrap {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  color: var(--ion-color-medium);
+  font-size: 1rem;
+  padding: 24px;
+  text-align: center;
+}
+
+ion-list {
+  padding-top: 6px;
+}
+
+/* suaviza transición al marcar como leído (NotificationComponent ya aplica .unread) */
+ion-list app-notification ion-item {
+  transition: background-color 160ms ease, transform 80ms ease;
+}

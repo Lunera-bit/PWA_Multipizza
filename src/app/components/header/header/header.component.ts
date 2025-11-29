@@ -2,9 +2,10 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, MenuController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
 import { CartService } from '../../../services/cart.service';
+import { NotificationsService } from '../../../services/notifications.service'; // ajustar ruta si hace falta
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -31,12 +32,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
 
   private sub?: Subscription;
+  private notifsUnsub?: () => void;
 
   constructor(
     private router: Router,
     private menu: MenuController,
-    private auth: AuthService
-    , private cart: CartService
+    private auth: AuthService,
+    private cart: CartService,
+    private notifications: NotificationsService // inyectado
   ) {}
 
   ngOnInit(): void {
@@ -45,6 +48,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.displayName = u?.displayName || 'Usuario';
       this.displayEmail = u?.email || '';
       this.photo = (u as any)?.photoURL || this.defaultAvatar;
+
+      // (re)suscribir al conteo de notificaciones sólo si hay usuario
+      if (this.notifsUnsub) { this.notifsUnsub(); this.notifsUnsub = undefined; }
+      if (u?.uid) {
+        this.notifsUnsub = this.notifications.observeUnreadCount(u.uid, cnt => {
+          this.notificacionesCount = cnt;
+        });
+      } else {
+        this.notificacionesCount = 0;
+      }
     });
 
     // suscribir al carrito para mostrar la badge con total de items (qty)
@@ -63,6 +76,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
     this.cartSub?.unsubscribe();
+    if (this.notifsUnsub) this.notifsUnsub();
   }
 
   onImgError() {
@@ -113,5 +127,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   openCart() {
     void this.router.navigate(['/carrito']);
+  }
+
+  // nuevo: navegar a la bandeja de notificaciones
+  openBandeja() {
+    void this.router.navigate(['/bandeja-notificaciones']);
   }
 }

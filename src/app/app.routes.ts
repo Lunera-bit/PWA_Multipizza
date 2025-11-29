@@ -52,9 +52,12 @@ export const routes: Routes = [
   {
     path: 'clientroute',
     loadComponent: () => import('./pages/clientroute/clientroute.page').then( m => m.ClientroutePage)
+  },
+    {
+    path: 'bandeja-notificaciones',
+    loadComponent: () => import('./pages/bandeja-notificaciones/bandeja-notificaciones.page').then(m => m.BandejaNotificacionesPage),
+    canActivate: [AuthGuard]
   }
-
-
 ];
 
 
