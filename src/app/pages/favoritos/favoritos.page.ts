@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle,IonButtons,IonBackButton, IonToolbar } from '@ionic/angular/standalone';
 import { FooterComponent } from '../../components/footer/footer/footer.component';
 import { FavoriteService } from '../../services/favorite.service';
 import { ProductService, Product } from '../../services/product.service';
@@ -13,7 +13,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
   templateUrl: './favoritos.page.html',
   styleUrls: ['./favoritos.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FooterComponent]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar,IonButtons,IonBackButton, CommonModule, FormsModule, FooterComponent] 
 })
 export class FavoritosPage implements OnInit {
 
@@ -37,7 +37,7 @@ export class FavoritosPage implements OnInit {
     this.uid = user.uid;
 
     // Obtener IDs de favoritos
-    this.favSvc.getFavoriteIds(this.uid).subscribe({
+    this.favSvc.getFavorites(this.uid).subscribe({
       next: (favIds) => {
         const ids = favIds.map(f => f.id);
 
@@ -53,8 +53,10 @@ export class FavoritosPage implements OnInit {
     });
   }
 
-  async toggleFavorite(productId: string) {
-    await this.favSvc.toggleFavorite(productId);
-    this.loadFavorites(); // refrescar lista
-  }
+async toggleFavorite(productId: string) {
+  await this.favSvc.toggleFavorite(this.uid, productId);
+  this.loadFavorites(); // refrescar lista
+}
+
+
 }
