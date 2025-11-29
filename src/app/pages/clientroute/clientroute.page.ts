@@ -49,6 +49,14 @@ export class ClientroutePage implements OnInit, OnDestroy {
   private marker?: mapboxgl.Marker;
   private geocoder?: InstanceType<typeof MapboxGeocoder>;
 
+  // Mapeo de tamaños
+  private sizes = [
+    { id: 'personal', label: 'Personal - S' },
+    { id: 'mediana', label: 'Mediana - M' },
+    { id: 'grande', label: 'Grande - L' },
+    { id: 'familiar', label: 'Familiar - XL' }
+  ];
+
   constructor(
     private cart: CartService,
     private toastCtrl: ToastController,
@@ -235,7 +243,7 @@ export class ClientroutePage implements OnInit, OnDestroy {
           email: this.userEmail,
           phone: this.userPhone
         },
-        items: this.items.map(i => ({ id: i.id, title: i.title, price: i.price, qty: i.qty, type: i.type })),
+        items: this.items.map(i => ({ id: i.id, title: i.title, price: i.price, qty: i.qty, type: i.type, size: i.size })),
         instructions: this.instructions,
         address: {
           street: this.address,
@@ -358,4 +366,10 @@ export class ClientroutePage implements OnInit, OnDestroy {
       );
     });
   }
+
+  getSizeLabel(sizeId: string): string {
+    const size = this.sizes.find(s => s.id === sizeId);
+    return size?.label || sizeId || '';
+  }
+
 }
