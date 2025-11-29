@@ -10,6 +10,12 @@ import { FooterComponent } from '../../components/footer/footer/footer.component
 import { AddToCartComponent } from '../../components/add-to-cart/add-to-cart.component';
 import { FavoriteButtonComponent } from '../../components/favorite-button/favorite-button.component';
 
+interface Size {
+  id: string;
+  label: string;
+  multiplier: number;
+}
+
 @Component({
   selector: 'app-producto',
   standalone: true,
@@ -27,6 +33,14 @@ export class ProductoPage implements OnInit, OnDestroy {
   product: any = null;
   loading = true;
   isFavorited = false;
+  selectedSize: string = 'personal';
+
+  sizes: Size[] = [
+    { id: 'personal', label: 'Personal - S', multiplier: 1 },
+    { id: 'mediana', label: 'Mediana - M', multiplier: 1.4 },
+    { id: 'grande', label: 'Grande - L', multiplier: 1.6 },
+    { id: 'familiar', label: 'Familiar - XL', multiplier: 1.8 }
+  ];
 
   private destroy$ = new Subject<void>();
 
@@ -69,6 +83,7 @@ export class ProductoPage implements OnInit, OnDestroy {
         );
         this.product = this.normalize(found ?? null);
         this.isFavorited = !!(this.product && this.product.favorited);
+        this.selectedSize = 'personal';
         this.loading = false;
       },
       error: () => {
@@ -78,14 +93,27 @@ export class ProductoPage implements OnInit, OnDestroy {
     });
   }
 
+  selectSize(sizeId: string) {
+    this.selectedSize = sizeId;
+  }
+
+  getPriceMultiplier(sizeId: string): number {
+    const size = this.sizes.find(s => s.id === sizeId);
+    return size?.multiplier ?? 1;
+  }
+
+  getCalculatedPrice(): number {
+    if (!this.product || !this.product.precio) return 0;
+    const multiplier = this.getPriceMultiplier(this.selectedSize);
+    return this.product.precio * multiplier;
+  }
+
   toggleFavorite() {
     this.isFavorited = !this.isFavorited;
     console.log('favorite toggle', this.product?.id, this.isFavorited);
-    // persistir con servicio si existe
   }
 
   shareProduct(p: any) {
-    // uso simple de Web Share API o fallback
     try {
       if ((navigator as any).share) {
         (navigator as any).share({
@@ -94,7 +122,6 @@ export class ProductoPage implements OnInit, OnDestroy {
           url: location.href
         });
       } else {
-        // fallback: copiar URL
         navigator.clipboard?.writeText(location.href);
       }
     } catch { /* ignore */ }
@@ -104,11 +131,10 @@ export class ProductoPage implements OnInit, OnDestroy {
     void this.router.navigate(['/inicio']);
   }
 
-  // Maneja fallo de carga de imagen desde la plantilla
   onImgError(event: Event) {
     const img = event.target as HTMLImageElement;
     if (img) {
-      img.src = 'assets/icon/placeholder.png'; // ajusta la ruta si es necesario
+      img.src = 'assets/icon/placeholder.png';
     }
   }
 

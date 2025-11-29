@@ -1,0 +1,62 @@
+:host { display:inline-block; }
+
+.fav-btn {
+  --padding-start: 0;
+  --padding-end: 0;
+  width:44px;
+  height:44px;
+  border-radius: 50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: transparent;
+  transition: transform 120ms ease, box-shadow 160ms ease, background-color 160ms ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  cursor: pointer;
+  outline: none;
+}
+
+/* icon base */
+.fav-btn ion-icon {
+  font-size: 20px;
+  transition: transform 160ms ease, color 140ms ease;
+  color: #000000;
+  width: 20px;
+  height: 20px;
+  line-height: 1;
+}
+
+/* hover / active */
+.fav-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.08); }
+.fav-btn:active { transform: translateY(0); }
+
+/* focus visible (keyboard) */
+.fav-btn:focus-visible {
+  box-shadow: 0 0 0 3px rgb(0, 0, 0);
+  border-radius: 50%;
+}
+
+/* estado marcado - fondo, color del icono y pequeño "pop" */
+.fav-btn.filled {
+  background: linear-gradient(135deg, var(--ion-color-danger) 0%, #e04a3a 60%);
+  box-shadow: 0 6px 18px rgba(192,61,47,0.18);
+}
+.fav-btn.filled ion-icon {
+  color: #fff;
+  transform: scale(1.05);
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.12));
+}
+
+/* animación "latido" al marcar */
+.fav-btn.filled.animate ion-icon {
+  animation: fav-pop 360ms cubic-bezier(.2,.9,.3,1);
+}
+
+@keyframes fav-pop {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.18); }
+  100% { transform: scale(1.05); }
+}
+
+/* accesibilidad: solo el icono cambia nombre, no usar color únicamente */
+.fav-btn[aria-pressed="true"] ion-icon { color: #fff; }

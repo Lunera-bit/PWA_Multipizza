@@ -9,8 +9,11 @@
   <ion-list *ngIf="items.length > 0">
     <ion-item *ngFor="let it of items">
       <ion-label class="ion-text-wrap">
-        <div class="name">{{ it.title }}</div>
-        <div class="meta">S/{{ it.price | number:'1.2-2' }} c/u</div>
+        <div class="name">
+          {{ it.title }}
+          <span class="size-tag" *ngIf="it.size">({{ getSizeLabel(it.size) }})</span>
+        </div>
+        <div class="meta">S/{{ it.price | number:'1.2-2' }} c/u </div>
       </ion-label>
 
       <ion-buttons slot="end" style="align-items:center">

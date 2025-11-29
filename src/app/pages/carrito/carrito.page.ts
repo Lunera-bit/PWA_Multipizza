@@ -1,12 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+
 import { CartService } from '../../services/cart.service';
 import { CartItem } from '../../models/cart-item.model';
 import { HeaderComponent } from '../../components/header/header/header.component';
 import { FooterComponent } from '../../components/footer/footer/footer.component';
-import { Router } from '@angular/router';
+
+interface SizeOption {
+  id: string;
+  label: string;
+}
 
 @Component({
   selector: 'app-carrito',
@@ -19,6 +25,14 @@ export class CarritoPage implements OnInit, OnDestroy {
   items: CartItem[] = [];
   total = 0;
   private sub?: Subscription;
+
+  // Mapeo de tamaños
+  private sizes: SizeOption[] = [
+    { id: 'personal', label: 'Personal' },
+    { id: 'mediana', label: 'Mediana' },
+    { id: 'grande', label: 'Grande' },
+    { id: 'familiar', label: 'Familiar' }
+  ];
 
   constructor(
     private cart: CartService,
@@ -38,6 +52,11 @@ export class CarritoPage implements OnInit, OnDestroy {
 
   private recalc() {
     this.total = this.items.reduce((s, it) => s + ((it.price || 0) * (it.qty || 0)), 0);
+  }
+
+  getSizeLabel(sizeId: string): string {
+    const size = this.sizes.find(s => s.id === sizeId);
+    return size?.label || sizeId || 'Sin tamaño';
   }
 
   increase(item: CartItem) {
