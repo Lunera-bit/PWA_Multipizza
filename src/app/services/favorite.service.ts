@@ -1,78 +1,54 @@
 import { Injectable } from '@angular/core';
+import { Firestore, doc, setDoc, deleteDoc, collection, collectionData } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class FavoriteService {
-  constructor(private afAuth: AngularFireAuth) {}
 
-  private storageKey(uid: string) {
-    return `favorites_${uid}`;
-  }
+  constructor(
+    private firestore: Firestore,
+    private afAuth: AngularFireAuth
+  ) {}
 
-  // obtiene uid actual (o null)
-  async getUid(): Promise<string | null> {
+  async getUid(): Promise<string> {
     const user = await this.afAuth.currentUser;
-    return user ? user.uid : null;
+    if (!user) throw new Error('USER_NOT_LOGGED');
+    return user.uid;
   }
 
-  // lee array de ids de localStorage para uid
-  getFavoritesSync(uid: string): string[] {
-    const raw = localStorage.getItem(this.storageKey(uid));
-    try {
-      return raw ? JSON.parse(raw) as string[] : [];
-    } catch {
-      return [];
-    }
-  }
-
-  // guarda array
-  private saveFavoritesSync(uid: string, ids: string[]) {
-    localStorage.setItem(this.storageKey(uid), JSON.stringify(Array.from(new Set(ids))));
-  }
-
-  // togglea y devuelve nuevo estado (true = ahora es favorito)
+  // 🔥 Agregar / quitar favorito
   async toggleFavorite(productId: string): Promise<boolean> {
     const uid = await this.getUid();
-    if (!uid) throw new Error('USER_NOT_LOGGED');
-    const list = this.getFavoritesSync(uid);
-    const idx = list.indexOf(productId);
-    if (idx >= 0) {
-      list.splice(idx, 1);
-      this.saveFavoritesSync(uid, list);
-      return false;
+    const favRef = doc(this.firestore, `users/${uid}/favoritos/${productId}`);
+
+    const data = await collectionData(
+      collection(this.firestore, `users/${uid}/favoritos`),
+      { idField: 'id' }
+    ).toPromise();
+
+    const exists = data?.some((x: any) => x.id === productId);
+
+    if (exists) {
+      await deleteDoc(favRef);
+      return false; // ya no es favorito
     } else {
-      list.push(productId);
-      this.saveFavoritesSync(uid, list);
+      await setDoc(favRef, {}); // documento vacío
       return true;
     }
   }
 
-  // comprobación rápida
+  // 🔥 Obtener solo IDs favoritos
+  getFavoriteIds(uid: string): Observable<any[]> {
+    const ref = collection(this.firestore, `users/${uid}/favoritos`);
+    return collectionData(ref, { idField: 'id' });
+  }
+
+  // 🔥 Validar rápido si es favorito
   async isFavorited(productId: string): Promise<boolean> {
     const uid = await this.getUid();
-    if (!uid) return false;
-    return this.getFavoritesSync(uid).includes(productId);
-  }
-
-  // nuevo: establece explícitamente el estado favorito y devuelve el estado resultante
-  async setFavorited(productId: string, favorited: boolean): Promise<boolean> {
-    const uid = await this.getUid();
-    if (!uid) throw new Error('USER_NOT_LOGGED');
-    const list = this.getFavoritesSync(uid);
-    const has = list.includes(productId);
-    if (favorited) {
-      if (!has) {
-        list.push(productId);
-        this.saveFavoritesSync(uid, list);
-      }
-      return true;
-    } else {
-      if (has) {
-        const idx = list.indexOf(productId);
-        list.splice(idx, 1);
-        this.saveFavoritesSync(uid, list);
-      }
-      return false;
-    }
+    const ref = collection(this.firestore, `users/${uid}/favoritos`);
+    const snap = await collectionData(ref, { idField: 'id' }).toPromise();
+    return snap?.some((x: any) => x.id === productId) ?? false;
   }
 }
