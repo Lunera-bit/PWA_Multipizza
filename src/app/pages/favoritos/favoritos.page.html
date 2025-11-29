@@ -1,10 +1,38 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Favoritos</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Favoritos</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="page-root">
+  <ion-list *ngIf="products?.length > 0; else empty">
+    <ion-item button *ngFor="let p of products" (click)="openProduct(p.id)">
+      <ion-avatar slot="start" *ngIf="p.imagen; else noImage">
+        <ion-img [src]="p.imagen" alt="{{ p.nombre }}"></ion-img>
+      </ion-avatar>
+
+      <ng-template #noImage>
+        <ion-avatar slot="start" class="placeholder-avatar">
+          <div class="initials">{{ (p.nombre || '').slice(0,1) }}</div>
+        </ion-avatar>
+      </ng-template>
+
+      <ion-label>
+        <h3 class="prod-title">{{ p.nombre || 'Producto' }}</h3>
+        <p class="prod-sub">{{ p.descripcion || '' }}</p>
+      </ion-label>
+
+      <div slot="end" class="price">{{ formatPrice(p.precio) }}</div>
+    </ion-item>
+  </ion-list>
+
+  <ng-template #empty>
+    <div class="empty-wrap">
+      <p>No tienes productos favoritos aún.</p>
+      <ion-button fill="outline" (click)="openProduct('')">Explorar productos</ion-button>
+    </div>
+  </ng-template>
 </ion-content>
+
 <app-footer></app-footer>
 
