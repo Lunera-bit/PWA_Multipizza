@@ -1,7 +1,7 @@
 <ion-button
   class="fav-btn"
   fill="clear"
-  (click)="toggleFavorite()"
+  (click)="toggleFavorite(); $event.stopPropagation()"
   [attr.aria-pressed]="isFavorited"
   [class.filled]="isFavorited"
   title="Favorito">

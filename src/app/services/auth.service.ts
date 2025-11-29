@@ -12,7 +12,9 @@ import {
   signInWithRedirect,
   onAuthStateChanged,
   sendPasswordResetEmail,
-  User
+  User,
+  updateProfile,
+  updateEmail
 } from 'firebase/auth';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -37,7 +39,6 @@ export class AuthService {
       if (user) {
         // arrancar escucha de pedidos para este usuario
         try { this.notifications.startListeningPedidos(user.uid); } catch (e) { console.error(e); }
-        // opcional: garantizar welcome (no duplica si ya existe)
         try { this.notifications.ensureWelcomeIfNeeded(user.uid, user.displayName ?? undefined); } catch (e) {}
       } else {
         // parar escucha cuando cierre sesión
@@ -100,5 +101,25 @@ export class AuthService {
 
   currentUser(): User | null {
     return this.auth.currentUser;
+  }
+
+  async updateDisplayName(displayName: string): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user) {
+      throw new Error('No hay usuario autenticado');
+    }
+    await updateProfile(user, { displayName });
+    // Actualizar el estado del usuario
+    this.user$.next(user);
+  }
+
+  async updateEmail(email: string): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user) {
+      throw new Error('No hay usuario autenticado');
+    }
+    await updateEmail(user, email);
+    // Actualizar el estado del usuario
+    this.user$.next(user);
   }
 }

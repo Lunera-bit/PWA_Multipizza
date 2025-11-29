@@ -193,6 +193,19 @@
     }
   }
 
+  // Dentro del archivo detallepedido.component.scss
+.size-badge {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--ion-color-medium);
+  margin-left: 6px;
+  opacity: 0.9;
+}
+
+.producto-info h3 {
+  margin: 0;
+  font-weight: 600;
+}
   // Datos de Entrega
   .delivery-card {
     border-radius: 16px;
