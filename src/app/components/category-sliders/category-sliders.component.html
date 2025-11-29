@@ -28,7 +28,7 @@
                 <div class="cat-card-image">
                   <img [src]="p.imagen ?? p.image ?? 'assets/img/placeholder.png'" (error)="onImgError($event)" [alt]="p.nombre ?? p.name ?? ''" />
                   <div class="fav-btn">
-                    <app-favorite [favorited]="!!p.favorited" (toggle)="onToggleFav(p, $event)"></app-favorite>
+                          <app-favorite-button *ngIf="p?.id" [productId]="p.id"></app-favorite-button>
                   </div>
                 </div>
 
