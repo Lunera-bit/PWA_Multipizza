@@ -1,0 +1,11 @@
+<ion-button
+  class="fav-btn"
+  fill="clear"
+  (click)="toggleFavorite(); $event.stopPropagation()"
+  [attr.aria-pressed]="isFavorited"
+  [class.filled]="isFavorited"
+  title="Favorito">
+  <ion-icon
+    slot="icon-only"
+    [name]="isFavorited ? 'heart' : 'heart-outline'"></ion-icon>
+</ion-button>

@@ -33,21 +33,34 @@
       <span *ngIf="product.categoria" class="sep">›</span>
       <span class="current">{{ product.nombre }}</span>
     </div>
-
+    
     <ion-card class="product-card improved">
+      
       <div class="image-wrap">
         <img [src]="product.imagen || 'assets/img/placeholder.png'" [alt]="product.nombre" (error)="onImgError($event)" />
         <div class="fav-overlay" *ngIf="isFavorited !== undefined">
                <app-favorite-button *ngIf="product?.id" [productId]="product.id"></app-favorite-button>
         </div>
+        <div class ="addcart-overlay">
+                    <app-add-to-cart [product]="product" [selectedSize]="selectedSize"></app-add-to-cart>
+                    
+        </div>
 
         <!-- price badge overlay -->
-        <div class="price-badge">S/. {{ product.precio | number:'1.2-2' }}</div>
+        <span class="price-badge">S/. {{ getCalculatedPrice() | number:'1.2-2' }}</span>        
+        
+        
       </div>
 
       <div class="product-body">
         <!-- título visible y destacado -->
         <h1 class="product-title">{{ product.nombre }}</h1>
+        
+        <div class="share-overlay">
+          <ion-button fill="clear" (click)="shareProduct(product)" aria-label="Compartir">
+            <ion-icon name="share-social-outline"></ion-icon>
+          </ion-button>
+        </div>
 
         <!-- tags (si existen) -->
         <div class="tags" *ngIf="product.tags?.length">
@@ -55,18 +68,26 @@
             <ion-label>{{ t }}</ion-label>
           </ion-chip>
         </div>
+        
 
         <div class="descripcion" *ngIf="product.descripcion">
           <h3>Descripción</h3>
           <p>{{ product.descripcion }}</p>
         </div>
 
-        <div class="actions">
-          <!-- usa tu componente add-to-cart -->
-          <app-add-to-cart [product]="product"></app-add-to-cart>
-          <ion-button fill="clear" (click)="shareProduct(product)" aria-label="Compartir">
-            <ion-icon name="share-social-outline"></ion-icon>
-          </ion-button>
+        <!-- SELECTOR DE TAMAÑO - Solo para pizzas -->
+        <div class="size-selector" *ngIf="product.categoria?.toLowerCase() === 'pizzas'">
+          <h3>Tamaño</h3>
+          <div class="size-options">
+            <ion-button 
+              *ngFor="let size of sizes" 
+              [fill]="selectedSize === size.id ? 'solid' : 'outline'"
+              [color]="selectedSize === size.id ? 'primary' : ''"
+              (click)="selectSize(size.id)"
+              class="size-btn">
+              {{ size.label }}
+            </ion-button>
+          </div>
         </div>
       </div>
     </ion-card>
@@ -82,7 +103,6 @@
   </ng-container>
 </ion-content>
 <br>  
-<br>
 <ion-footer>
   <app-footer></app-footer>
 </ion-footer>
