@@ -1,7 +1,7 @@
 # PWA_Multipizza
 
-Versión: v2.1.5
-Fecha: 28 de noviembre de 2025
+Versión: v2.4.6
+Fecha: 29 de noviembre de 2025
 
 Descripción
 - Aplicación híbrida PWA + nativa para pedidos de pizza.
