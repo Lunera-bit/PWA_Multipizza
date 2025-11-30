@@ -23,6 +23,8 @@ import { provideFirestore } from '@angular/fire/firestore';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { environment } from './environments/environment';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideHttpClient } from '@angular/common/http';
 
 // icons
 addIcons({
@@ -64,6 +66,9 @@ bootstrapApplication(AppComponent, {
     // Usa la instancia `app` creada arriba
     provideFirebaseApp(() => app),
     provideFirestore(() => getFirestore(app)),
+    provideHttpClient(),
+    provideAnimations()
+
   ]
 }).catch(err => console.error(err));
 
