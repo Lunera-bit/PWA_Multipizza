@@ -11,6 +11,7 @@ import { Product } from '../../models/product.model';
 
 import { PromoService } from '../../services/promo.service';
 import { ProductService } from '../../services/product.service';
+import { StorageService } from '../../services/storage.service';
 
 import { HeaderComponent } from '../../components/header/header/header.component';
 import { FooterComponent } from '../../components/footer/footer/footer.component';
@@ -51,7 +52,8 @@ export class InicioPage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private promoSvc: PromoService,
-    private productSvc: ProductService
+    private productSvc: ProductService,
+    private storageSvc: StorageService
   ) {}
 
   ngOnInit(): void {
@@ -69,12 +71,12 @@ export class InicioPage implements OnInit, OnDestroy {
       });
   }
 
-  private loadProducts(): void {
+  private async loadProducts(): Promise<void> {
     this.loadingProducts = true;
     this.productSvc.getProducts()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (list) => {
+        next: async (list) => {
           this.products = (list || []).map(p => ({
             ...p,
             id: (p as any).id ?? '',
@@ -84,6 +86,22 @@ export class InicioPage implements OnInit, OnDestroy {
             precio: (p as any).precio ?? (p as any).price ?? null,
             categoria: (p as any).categoria ?? (p as any).category ?? ''
           })) as Product[];
+
+          // Cargar URLs de imágenes
+          const imagePaths = this.products
+            .map(p => (p as any).imagen)
+            .filter((img): img is string => !!img);
+
+          if (imagePaths.length > 0) {
+            const urlMap = await this.storageSvc.getImageUrls(imagePaths);
+            this.products.forEach(product => {
+              const imagePath = (product as any).imagen;
+              if (imagePath) {
+                (product as any).imagenUrl = urlMap.get(imagePath);
+              }
+            });
+          }
+
           this.filteredProducts = [...this.products];
           this.loadingProducts = false;
         },
