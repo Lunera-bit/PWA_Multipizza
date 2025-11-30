@@ -7,8 +7,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-16+-339933?logo=node.js)](https://nodejs.org/)
 
-> Aplicación web progresiva (PWA) de gestión y pedidos de pizzas y alimentos con arquitectura moderna, escalable y de alto rendimiento.
-
+> Aplicación web progresiva (PWA) de gestión y pedidos de pizzas y alimentos.
 ---
 
 ## 📋 Contenidos
