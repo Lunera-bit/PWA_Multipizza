@@ -118,7 +118,10 @@ export class ProductoPage implements OnInit, OnDestroy {
   getCalculatedPrice(): number {
     if (!this.product || !this.product.precio) return 0;
     const multiplier = this.getPriceMultiplier(this.selectedSize);
-    return this.product.precio * multiplier;
+    const price = this.product.precio * multiplier;
+    
+    // Redondear al 0.10 más cercano
+    return Math.round(price * 10) / 10;
   }
 
   toggleFavorite() {

@@ -37,12 +37,15 @@ export class AddToCartComponent {
     const basePrice = (this.item.precio ?? this.item.precioEspecial ?? 0) as number;
     const multiplier = this.sizeMultipliers[this.selectedSize] ?? 1;
     const finalPrice = basePrice * multiplier;
+    
+    // Redondear al 0.10 más cercano
+    const roundedPrice = Math.round(finalPrice * 10) / 10;
 
     const payload = {
       id: this.item.id,
       type: (this.item.type as string) ?? (this.item.productoIds ? 'promo' : 'product'),
       title: this.item.nombre ?? this.item.title ?? 'Ítem',
-      price: finalPrice,
+      price: roundedPrice,
       qty: this.qty,
       size: this.selectedSize,
       meta: this.item.meta ?? {}
