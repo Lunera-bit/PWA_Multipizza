@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { ProductService } from '../../services/product.service';
+import { StorageService } from '../../services/storage.service';
 import { FooterComponent } from '../../components/footer/footer/footer.component';
 import { AddToCartComponent } from '../../components/add-to-cart/add-to-cart.component';
 import { FavoriteButtonComponent } from '../../components/favorite-button/favorite-button.component';
@@ -47,7 +48,8 @@ export class ProductoPage implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private productSvc: ProductService
+    private productSvc: ProductService,
+    private storageSvc: StorageService
   ) {}
 
   ngOnInit(): void {
@@ -74,14 +76,25 @@ export class ProductoPage implements OnInit, OnDestroy {
     };
   }
 
-  private loadProductById(id: string) {
+  private async loadProductById(id: string) {
     this.loading = true;
     this.productSvc.getProducts().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (list: any[]) => {
+      next: async (list: any[]) => {
         const found = (list || []).find(p =>
           (p.id ?? p._id ?? p.idProducto ?? p['id'] ?? '').toString() === id.toString()
         );
         this.product = this.normalize(found ?? null);
+
+        // Cargar la URL de la imagen desde Firebase Storage
+        if (this.product && this.product.imagen) {
+          try {
+            this.product.imagenUrl = await this.storageSvc.getImageUrl(this.product.imagen);
+          } catch (error) {
+            console.error('Error cargando imagen:', error);
+            this.product.imagenUrl = '';
+          }
+        }
+
         this.isFavorited = !!(this.product && this.product.favorited);
         this.selectedSize = 'personal';
         this.loading = false;

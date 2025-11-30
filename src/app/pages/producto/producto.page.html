@@ -37,7 +37,7 @@
     <ion-card class="product-card improved">
       
       <div class="image-wrap">
-        <img [src]="product.imagen || 'assets/img/placeholder.png'" [alt]="product.nombre" (error)="onImgError($event)" />
+        <img [src]="product.imagenUrl || product.imagen || 'assets/img/placeholder.png'" [alt]="product.nombre" (error)="onImgError($event)" />
         <div class="fav-overlay" *ngIf="isFavorited !== undefined">
                <app-favorite-button *ngIf="product?.id" [productId]="product.id"></app-favorite-button>
         </div>

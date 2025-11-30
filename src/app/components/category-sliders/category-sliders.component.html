@@ -26,7 +26,7 @@
             <div class="swiper-slide" *ngFor="let p of productsBy(cat); trackBy: trackByIdx">
               <div class="cat-card" role="button" tabindex="0" (click)="openProduct(p)">
                 <div class="cat-card-image">
-                  <img [src]="p.imagen ?? p.image ?? 'assets/img/placeholder.png'" (error)="onImgError($event)" [alt]="p.nombre ?? p.name ?? ''" />
+                  <img [src]="p.imagenUrl || p.imagen || p.image || 'assets/img/placeholder.png'" (error)="onImgError($event)" [alt]="p.nombre ?? p.name ?? ''" />
                   <div class="fav-btn">
                           <app-favorite-button *ngIf="p?.id" [productId]="p.id"></app-favorite-button>
                   </div>

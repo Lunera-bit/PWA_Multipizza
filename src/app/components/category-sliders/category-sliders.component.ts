@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ProductService } from '../../services/product.service';
+import { StorageService } from '../../services/storage.service';
 import { FavoriteButtonComponent } from '../favorite-button/favorite-button.component';
 
 // Swiper global desde CDN en index.html
@@ -17,7 +18,7 @@ declare const Swiper: any;
   styleUrls: ['./category-sliders.component.scss']
 })
 export class CategorySlidersComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() categories: string[] = ['pizzas', 'bebidas', 'otros'];
+  @Input() categories: string[] = ['pizzas', 'bebidas', 'complementos'];
   @Input() products: any[] | null = null; // si se pasa, se usa; si no, se carga desde ProductService
   @Input() loading = false;
 
@@ -29,13 +30,17 @@ export class CategorySlidersComponent implements OnInit, AfterViewInit, OnDestro
   private swipers: any[] = [];
   private sub: Subscription | null = null;
 
-  constructor(private router: Router, private productSvc: ProductService) {}
+  constructor(
+    private router: Router,
+    private productSvc: ProductService,
+    private storageSvc: StorageService
+  ) {}
 
   ngOnInit(): void {
     if (!this.products) {
       this.loading = true;
       this.sub = this.productSvc.getProducts()?.subscribe({
-        next: (list: any[]) => {
+        next: async (list: any[]) => {
           this.products = (list || []).map(p => ({
             ...p,
             id: p.id ?? p._id ?? p.idProducto ?? p['id'] ?? '',
@@ -45,6 +50,21 @@ export class CategorySlidersComponent implements OnInit, AfterViewInit, OnDestro
             precio: p.precio ?? p.price ?? 0,
             categoria: p.categoria ?? p.category ?? 'otros'
           }));
+
+          // Cargar URLs de imágenes
+          const imagePaths = this.products
+            .map((p: any) => p.imagen)
+            .filter((img): img is string => !!img);
+
+          if (imagePaths.length > 0) {
+            const urlMap = await this.storageSvc.getImageUrls(imagePaths);
+            this.products.forEach((product: any) => {
+              if (product.imagen) {
+                product.imagenUrl = urlMap.get(product.imagen);
+              }
+            });
+          }
+
           this.loading = false;
           // reinit swipers después de datos
           setTimeout(() => this.initSwipers(), 50);

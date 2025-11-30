@@ -32,7 +32,7 @@
 
       <ion-item *ngFor="let p of filteredProducts; trackBy: trackById" button (click)="onSearchSelect(p)">
         <ion-thumbnail slot="start" *ngIf="p['imagen']">
-          <img [src]="p['imagen']" [alt]="p['nombre'] || 'producto'">
+          <img [src]="p['imagenUrl'] || p['imagen'] || 'assets/img/placeholder.png'" [alt]="p['nombre'] || 'producto'">
         </ion-thumbnail>
 
         <ion-label>

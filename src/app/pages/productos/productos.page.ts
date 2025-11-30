@@ -6,6 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ProductService } from '../../services/product.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-productos',
@@ -17,13 +18,10 @@ import { ProductService } from '../../services/product.service';
 export class ProductosPage implements OnInit, OnDestroy {
   productos: any[] = [];
   filtered: any[] = [];
-  // orden actual
   sortBy: 'price_desc' | 'price_asc' | 'name_asc' | 'name_desc' = 'price_desc';
   loading = true;
 
-  // filtros UI
   selectedTags = new Set<string>();
-  // selección rápida (single-select) mostrada fuera del acordeón
   selectedTagSingle: string | null = null;
 
   maxPrice = 0;
@@ -37,6 +35,7 @@ export class ProductosPage implements OnInit, OnDestroy {
 
   constructor(
     private productSvc: ProductService,
+    private storageSvc: StorageService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -45,67 +44,76 @@ export class ProductosPage implements OnInit, OnDestroy {
     this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe(q => {
       this.category = q.get('category');
       this.isPizzaCategory = !!this.category && ['pizza', 'pizzas'].includes(this.category.toLowerCase());
-      this.applyFilters(); // por si ya tenemos productos
+      this.applyFilters();
     });
 
     this.loading = true;
-    this.productSvc.getProducts()?.pipe(takeUntil(this.destroy$)).subscribe(list => {
-      this.productos = (list || []).map(p => ({
-        ...p,
-        precio: p.precio ?? (p as any).price ?? 0,
-        tags: p.tags ?? []
-      }));
+    this.productSvc.getProducts()?.pipe(takeUntil(this.destroy$)).subscribe({
+      next: async (list) => {
+        this.productos = (list || []).map(p => ({
+          ...p,
+          precio: p.precio ?? (p as any).price ?? 0,
+          tags: p.tags ?? []
+        }));
 
-      // tags disponibles sólo para pizzas
-      const tagsSet = new Set<string>();
-      this.productos.forEach(p => {
-        if ((p.categoria ?? p.category ?? '').toString().toLowerCase() === 'pizza' || (p.categoria ?? p.category ?? '').toString().toLowerCase() === 'pizzas') {
-          (p.tags || []).forEach((t: string) => tagsSet.add(String(t)));
+        // Cargar URLs de imágenes
+        const imagePaths = this.productos
+          .map(p => p.imagen || (p as any).image)
+          .filter((img): img is string => !!img);
+
+        if (imagePaths.length > 0) {
+          const urlMap = await this.storageSvc.getImageUrls(imagePaths);
+          this.productos.forEach(p => {
+            const imagePath = p.imagen || (p as any).image;
+            if (imagePath) {
+              p.imagenUrl = urlMap.get(imagePath);
+            }
+          });
         }
-      });
-      this.availableTags = Array.from(tagsSet).sort();
 
-      // seteo rango de precio (cap en 100)
-      const prices = this.productos.map(p => Number(p.precio) || 0);
-      const computedMax = Math.max(0, ...(prices.length ? prices : [0]));
-      const SLIDER_CAP = 100; // valor máximo del slider
-      this.priceFilter = { min: 0, max: SLIDER_CAP };
-      // valor inicial del filtro = menor entre el máximo real y el tope (100)
-      this.maxPrice = Math.min(computedMax, SLIDER_CAP);
-      this.applyFilters();
-      this.loading = false;
+        // tags disponibles
+        const tagsSet = new Set<string>();
+        this.productos.forEach(p => {
+          if ((p.categoria ?? p.category ?? '').toString().toLowerCase() === 'pizza' || 
+              (p.categoria ?? p.category ?? '').toString().toLowerCase() === 'pizzas') {
+            (p.tags || []).forEach((t: string) => tagsSet.add(String(t)));
+          }
+        });
+        this.availableTags = Array.from(tagsSet).sort();
+
+        const prices = this.productos.map(p => Number(p.precio) || 0);
+        const computedMax = Math.max(0, ...(prices.length ? prices : [0]));
+        const SLIDER_CAP = 100;
+        this.priceFilter = { min: 0, max: SLIDER_CAP };
+        this.maxPrice = Math.min(computedMax, SLIDER_CAP);
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: () => { this.loading = false; }
     });
   }
 
   toggleTag(tag: string) {
     if (this.selectedTags.has(tag)) this.selectedTags.delete(tag);
     else this.selectedTags.add(tag);
-    // si hay selección rápida, limpiar para evitar conflicto
     this.selectedTagSingle = null;
     this.applyFilters();
   }
 
-  // seleccionar sólo UN tag (quick segment fuera del acordeón)
   onSelectSingleTag(tag: string | null) {
     this.selectedTagSingle = tag;
     this.selectedTags.clear();
     if (tag) this.selectedTags.add(tag);
     this.applyFilters();
   }
-  
-  // aceptar number, CustomEvent (ionChange) o Event (input)
+
   onPriceChange(v: any) {
     let val = 0;
-    if (typeof v === 'number') {
-      val = v;
-    } else if (v && typeof v === 'object') {
-      if ('detail' in v && v.detail && ('value' in v.detail)) {
-        val = Number(v.detail.value);
-      } else if ('value' in v) {
-        val = Number(v.value);
-      } else if (v.target && 'value' in v.target) {
-        val = Number(v.target.value);
-      }
+    if (typeof v === 'number') val = v;
+    else if (v && typeof v === 'object') {
+      if ('detail' in v && v.detail && 'value' in v.detail) val = Number(v.detail.value);
+      else if ('value' in v) val = Number(v.value);
+      else if (v.target && 'value' in v.target) val = Number(v.target.value);
     }
     this.maxPrice = isNaN(val) ? 0 : val;
     this.applyFilters();
@@ -122,7 +130,6 @@ export class ProductosPage implements OnInit, OnDestroy {
       if (this.category && (p.categoria ?? p.category ?? '').toString().toLowerCase() !== this.category?.toLowerCase()) {
         return false;
       }
-      // aplicar filtro de precio sólo si se estableció un límite mayor a 0
       if (typeof this.maxPrice === 'number' && this.maxPrice > 0 && (p.precio ?? 0) > this.maxPrice) return false;
       if (this.isPizzaCategory && tags.length) {
         const pTags: string[] = (p.tags || []).map((t:any)=>t.toString().toLowerCase());
@@ -130,7 +137,7 @@ export class ProductosPage implements OnInit, OnDestroy {
       }
       return true;
     });
-    // aplicar orden
+
     switch (this.sortBy) {
       case 'price_asc':
         this.filtered.sort((a,b) => (Number(a.precio) || 0) - (Number(b.precio) || 0));
@@ -155,7 +162,6 @@ export class ProductosPage implements OnInit, OnDestroy {
 
   trackById(_: number, it: any) { return it?.id ?? it?._id ?? _; }
 
-  // handler seguro para errores de carga de imagen
   onImgError(ev: Event) {
     const img = ev?.target as HTMLImageElement | null;
     if (img) img.src = 'assets/img/placeholder.png';
