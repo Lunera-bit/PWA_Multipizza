@@ -57,6 +57,10 @@ export const routes: Routes = [
     path: 'bandeja-notificaciones',
     loadComponent: () => import('./pages/bandeja-notificaciones/bandeja-notificaciones.page').then(m => m.BandejaNotificacionesPage),
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'chat',
+    loadComponent: () => import('./pages/chat/chat.page').then( m => m.ChatPage)
   }
 ];
 
