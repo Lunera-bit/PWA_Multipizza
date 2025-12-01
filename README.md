@@ -1,4 +1,4 @@
-# PWA Multipizza - Sistema de Pedidos de Alimentos
+# PWA Multipizza - Sistema de Pedidos para Pizzas
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Angular](https://img.shields.io/badge/Angular-16+-DD0031?logo=angular)](https://angular.io/)
