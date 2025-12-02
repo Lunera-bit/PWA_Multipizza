@@ -40,13 +40,13 @@ export const routes: Routes = [
   {
     path: 'producto',
     loadComponent: () => import('./pages/producto/producto.page').then(m => m.ProductoPage),
-        canActivate: [AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
     path: 'productos',
     loadComponent: () => import('./pages/productos/productos.page').then(m => m.ProductosPage),
-            canActivate: [AuthGuard]
+    canActivate: [AuthGuard]
 
   },
   {
@@ -60,7 +60,8 @@ export const routes: Routes = [
   },
   {
     path: 'chat',
-    loadComponent: () => import('./pages/chat/chat.page').then( m => m.ChatPage)
+    loadComponent: () => import('./pages/chat/chat.page').then( m => m.ChatPage),
+    canActivate: [AuthGuard]    
   }
 ];
 
