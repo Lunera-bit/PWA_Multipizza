@@ -6,11 +6,17 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ChatbotService {
-  private apiUrl = 'http://127.0.0.1:5001/multipizza-1/us-central1/chatbot';
+  private apiUrl = this.getApiUrl();
 
   constructor(private http: HttpClient) {}
 
   sendMessage(message: string): Observable<{reply: string}> {
     return this.http.post<{reply: string}>(this.apiUrl, {message});
+  }
+
+  private getApiUrl(): string {
+    const host = window.location.hostname;
+    // En desarrollo con emulador
+    return `http://${host}:5001/multipizza-1/us-central1/chatbot`;
   }
 }
