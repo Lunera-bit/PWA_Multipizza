@@ -1,0 +1,38 @@
+<ion-content class="chat-content">
+  <div class="messages-container">
+    <div *ngFor="let msg of messages" [class.message]="true" [class.user]="msg.role === 'user'" [class.bot]="msg.role === 'bot'">
+      <div class="message-bubble">
+        {{ msg.text }}
+      </div>
+    </div>
+    
+    <div *ngIf="loading" class="message bot">
+      <div class="message-bubble typing">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+</ion-content>
+<ion-footer class="chat-footer">
+  <ion-toolbar class="input-footer">
+    <div class="input-area">
+      <ion-input 
+        [(ngModel)]="inputText" 
+        placeholder="Escribe tu pregunta..."
+        (keyup.enter)="sendMessage()"
+        [disabled]="loading"
+        class="chat-input">
+      </ion-input>
+      <ion-button 
+        (click)="sendMessage()" 
+        [disabled]="loading || !inputText.trim()"
+        fill="solid"
+        color="primary"
+        class="send-btn">
+        <ion-icon [icon]="sendIcon"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>
+
+<app-footer></app-footer>

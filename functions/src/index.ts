@@ -21,6 +21,8 @@ export const chatbot = onRequest(
 
     try {
       const message = req.body?.message;
+      const userName = req.body?.userName || 'Usuario';
+      
       if (!message) {
         res.status(400).json({error: "Missing message"});
         return;
@@ -67,12 +69,16 @@ export const chatbot = onRequest(
       const response = await axios.post(OLLAMA_URL, {
         model: "llama3",
         prompt: `${context}\n\nINSTRUCCIONES IMPORTANTES:
-        - Siempre muestra los precios en soles (S/. o soles peruanos)
-        - Formato de precio: S/. [número] (ejemplo: S/. 7.00)
-        - No menciones IDs en tu respuesta
-        - Sé amable y útil con el usuario
-        - Responde en español
-        - Responde de forma concisa,breve y clara
+          - Eres un asistente de atención al cliente de Multipizza
+          - El usuario actual se llama: ${userName}
+          - Puedes usar su nombre en las respuestas para ser más personal
+          - Cuando se pregunte sobre precios de productos, muestra SIEMPRE el formato: S/. [número] (ejemplo: S/. 7.00)
+          - Solo menciona precios cuando el usuario pregunte específicamente sobre ellos
+          - No menciones IDs, códigos internos o detalles técnicos
+          - Sé amable, profesional y útil con el usuario
+          - Responde en español
+          - Responde de forma concisa, breve y clara
+          - Identifícate como asistente de Multipizza cuando sea necesario
 
         Usuario pregunta: ${message}`,
         stream: false,
