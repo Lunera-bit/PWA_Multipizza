@@ -1,0 +1,26 @@
+ion-item {
+  --min-height: 64px;
+  padding-right: 14px;
+}
+
+.unread {
+  background: rgba(0, 123, 255, 0.04);
+  border-left: 4px solid var(--ion-color-primary);
+}
+
+.msg {
+  margin: 0;
+  font-weight: 600;
+}
+
+.meta {
+  margin: 4px 0 0;
+  color: var(--ion-color-medium);
+  font-size: 0.85rem;
+}
+
+.new-badge {
+  font-weight: 700;
+  padding: 4px 6px;
+  border-radius: 6px;
+}

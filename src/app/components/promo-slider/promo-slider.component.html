@@ -20,7 +20,7 @@
         <div class="swiper-slide" *ngFor="let p of promos">
           <div class="card" role="button" tabindex="0" (click)="onSelectPromo(p)">
             <div class="img-wrap">
-              <img [src]="p.imagen ?? p.image ?? 'assets/img/placeholder.png'"
+              <img [src]="p.imagenUrl || p.imagen || 'assets/img/placeholder.png'"
                    (error)="onImgError($event)"
                    [alt]="p.nombre ?? p.name ?? ''" />
             </div>

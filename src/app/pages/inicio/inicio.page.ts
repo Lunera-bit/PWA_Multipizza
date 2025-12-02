@@ -6,7 +6,6 @@ import { IonicModule } from '@ionic/angular';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { Promocion } from '../../models/promocion.model';
 import { Product } from '../../models/product.model';
 
 import { PromoService } from '../../services/promo.service';
@@ -34,7 +33,7 @@ import { CategorySlidersComponent } from '../../components/category-sliders/cate
   styleUrls: ['./inicio.page.scss'],
 })
 export class InicioPage implements OnInit, OnDestroy {
-  promos: Promocion[] = [];
+  promos: any[] = [];
   products: Product[] = [];
 
   // búsqueda
@@ -66,8 +65,18 @@ export class InicioPage implements OnInit, OnDestroy {
     this.promoSvc.getPromos()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (list) => { this.promos = list || []; this.loadingPromos = false; },
-        error: () => { this.promos = []; this.loadingPromos = false; }
+        next: (list) => { 
+          // Las promos ya vienen con imagenUrl del servicio
+          this.promos = (list || []).map(p => ({
+            ...p,
+            nombre: (p as any).nombre ?? ''
+          })) as any[];
+          this.loadingPromos = false; 
+        },
+        error: () => { 
+          this.promos = []; 
+          this.loadingPromos = false; 
+        }
       });
   }
 
@@ -142,7 +151,7 @@ export class InicioPage implements OnInit, OnDestroy {
     }
   }
 
-  onPromoSelect(p: Promocion) {
+  onPromoSelect(p: any) {
     void this.router.navigate(['/productos'], { queryParams: { promoId: p.id } });
   }
   onPromoVerMas() { void this.router.navigate(['/promociones']); }

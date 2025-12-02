@@ -37,6 +37,9 @@ export class CategorySlidersComponent implements OnInit, AfterViewInit, OnDestro
   ) {}
 
   ngOnInit(): void {
+    // Cargar caché expirado al inicio (opcional, pero recomendado)
+    this.storageSvc.clearExpiredCache();
+
     if (!this.products) {
       this.loading = true;
       this.sub = this.productSvc.getProducts()?.subscribe({
@@ -51,12 +54,13 @@ export class CategorySlidersComponent implements OnInit, AfterViewInit, OnDestro
             categoria: p.categoria ?? p.category ?? 'otros'
           }));
 
-          // Cargar URLs de imágenes
+          // Cargar URLs de imágenes (ahora cachea automáticamente)
           const imagePaths = this.products
             .map((p: any) => p.imagen)
             .filter((img): img is string => !!img);
 
           if (imagePaths.length > 0) {
+            // getImageUrls ya cachea en LocalStorage automáticamente
             const urlMap = await this.storageSvc.getImageUrls(imagePaths);
             this.products.forEach((product: any) => {
               if (product.imagen) {
@@ -66,13 +70,11 @@ export class CategorySlidersComponent implements OnInit, AfterViewInit, OnDestro
           }
 
           this.loading = false;
-          // reinit swipers después de datos
           setTimeout(() => this.initSwipers(), 50);
         },
         error: () => { this.products = []; this.loading = false; }
       });
     } else {
-      // si products fue pasado, inicializar swipers tras render
       setTimeout(() => this.initSwipers(), 50);
     }
   }

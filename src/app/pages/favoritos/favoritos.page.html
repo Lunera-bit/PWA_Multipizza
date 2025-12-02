@@ -7,8 +7,8 @@
 <ion-content class="page-root">
   <ion-list *ngIf="products?.length > 0; else empty">
     <ion-item button *ngFor="let p of products" (click)="openProduct(p.id)">
-      <ion-avatar slot="start" *ngIf="p.imagen; else noImage">
-        <ion-img [src]="p.imagen" alt="{{ p.nombre }}"></ion-img>
+      <ion-avatar slot="start" *ngIf="p.imagenUrl; else noImage">
+        <ion-img [src]="p.imagenUrl" alt="{{ p.nombre }}"></ion-img>
       </ion-avatar>
 
       <ng-template #noImage>
