@@ -16,7 +16,10 @@
   <div class="promos-grid" *ngIf="promociones.length > 0; else empty">
     <ion-card class="promo-card" *ngFor="let promo of promociones; trackBy: trackById">
       <div class="card-media" (click)="openPromo(promo)">
-        <img [src]="promo.imagen" [alt]="promo.nombre" (error)="onImgError($event)" />
+        <!-- CAMBIO: usa promo.imagenUrl en lugar de promo.imagen -->
+        <img [src]="promo.imagenUrl || 'assets/img/placeholder.png'" 
+             [alt]="promo.nombre" 
+             (error)="onImgError($event)" />
         <div class="media-actions" role="toolbar" aria-label="Acciones de la promo">
           <app-add-to-cart [item]="promo" size="small" (added)="onAddedPromo(promo)"></app-add-to-cart>
           <div class="qty-badge" *ngIf="promo.id && cartMap[promo.id]">

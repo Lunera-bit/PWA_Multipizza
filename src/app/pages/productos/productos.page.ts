@@ -41,6 +41,9 @@ export class ProductosPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    // Limpiar caché expirado al cargar la página
+    this.storageSvc.clearExpiredCache();
+
     this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe(q => {
       this.category = q.get('category');
       this.isPizzaCategory = !!this.category && ['pizza', 'pizzas'].includes(this.category.toLowerCase());
@@ -56,12 +59,13 @@ export class ProductosPage implements OnInit, OnDestroy {
           tags: p.tags ?? []
         }));
 
-        // Cargar URLs de imágenes
+        // Cargar URLs de imágenes (ahora cachea automáticamente)
         const imagePaths = this.productos
           .map(p => p.imagen || (p as any).image)
           .filter((img): img is string => !!img);
 
         if (imagePaths.length > 0) {
+          // getImageUrls ya cachea en LocalStorage automáticamente
           const urlMap = await this.storageSvc.getImageUrls(imagePaths);
           this.productos.forEach(p => {
             const imagePath = p.imagen || (p as any).image;

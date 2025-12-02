@@ -53,6 +53,9 @@ export class ProductoPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    // Limpiar caché expirado al cargar la página
+    this.storageSvc.clearExpiredCache();
+
     this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const id = params.get('id') ?? '';
       if (!id) {
@@ -85,9 +88,10 @@ export class ProductoPage implements OnInit, OnDestroy {
         );
         this.product = this.normalize(found ?? null);
 
-        // Cargar la URL de la imagen desde Firebase Storage
+        // Cargar la URL de la imagen (ahora cachea automáticamente)
         if (this.product && this.product.imagen) {
           try {
+            // getImageUrl ya cachea en LocalStorage automáticamente
             this.product.imagenUrl = await this.storageSvc.getImageUrl(this.product.imagen);
           } catch (error) {
             console.error('Error cargando imagen:', error);

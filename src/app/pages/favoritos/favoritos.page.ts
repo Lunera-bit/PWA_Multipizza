@@ -6,9 +6,21 @@ import {
 import { Router } from '@angular/router';
 import { FavoriteService } from '../../services/favorite.service';
 import { ProductService } from '../../services/product.service';
+import { StorageService } from '../../services/storage.service';
 import { FooterComponent } from '../../components/footer/footer/footer.component';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+
+// Interfaz para el producto con imagenUrl
+interface Product {
+  id?: string;
+  nombre?: string;
+  descripcion?: string;
+  imagen?: string;
+  imagenUrl?: string;
+  precio?: number;
+  [key: string]: any;
+}
 
 @Component({
   selector: 'app-favoritos',
@@ -22,18 +34,22 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./favoritos.page.scss']
 })
 export class FavoritosPage implements OnInit, OnDestroy {
-  products: any[] = [];
+  products: Product[] = [];
   private favUnsub?: () => void;
   private destroy$ = new Subject<void>();
 
   constructor(
     private favService: FavoriteService,
     private productService: ProductService,
+    private storageSvc: StorageService,
     private router: Router,
     private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    // Limpiar caché expirado al cargar la página
+    this.storageSvc.clearExpiredCache();
+
     // Suscribirse a favoritos del usuario
     this.favUnsub = this.favService.observeFavorites(async (ids) => {
       try {
@@ -54,7 +70,7 @@ export class FavoritosPage implements OnInit, OnDestroy {
   }
 
   private async loadProductsByIds(ids: string[]) {
-    const loaded: any[] = [];
+    const loaded: Product[] = [];
 
     if (!ids || ids.length === 0) {
       this.products = [];
@@ -68,11 +84,24 @@ export class FavoritosPage implements OnInit, OnDestroy {
         this.productService.getProductById(id)
           .pipe(takeUntil(this.destroy$))
           .subscribe({
-            next: (product) => {
+            next: async (product: any) => {
               if (product) {
                 // agregar a lista si no existe
                 if (!loaded.find(p => p.id === id)) {
-                  loaded.push({ ...product, id });
+                  const prodWithUrl: Product = { ...product, id };
+
+                  // Cargar URL de la imagen desde Storage (ahora cachea automáticamente)
+                  const imagePath = product.imagen || product.image;
+                  if (imagePath) {
+                    try {
+                      prodWithUrl.imagenUrl = await this.storageSvc.getImageUrl(imagePath);
+                    } catch (error) {
+                      console.error('[FavoritosPage] error cargando imagen:', error);
+                      prodWithUrl.imagenUrl = '';
+                    }
+                  }
+
+                  loaded.push(prodWithUrl);
                   this.products = [...loaded]; // actualizar array reactivamente
                   this.cd.detectChanges();
                 }
@@ -90,7 +119,7 @@ export class FavoritosPage implements OnInit, OnDestroy {
     }
   }
 
-  openProduct(id: string) {
+  openProduct(id: string | undefined) {
     if (!id) {
       void this.router.navigate(['/inicio']);
       return;

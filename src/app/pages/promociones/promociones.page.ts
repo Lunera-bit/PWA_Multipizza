@@ -4,9 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { FooterComponent } from '../../components/footer/footer/footer.component';
 import { AddToCartComponent } from '../../components/add-to-cart/add-to-cart.component';
 import { CartService } from '../../services/cart.service';
-import { PromoService } from '../../services/promo.service';
-import { Promocion } from 'src/app/models/promocion.model';
-
+import { PromoService, Promo } from '../../services/promo.service';
 import { Router } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { takeUntil, finalize, catchError } from 'rxjs/operators';
@@ -15,12 +13,12 @@ import { LoaderService } from '../../services/loader.service';
 @Component({
   selector: 'app-promociones',
   standalone: true,
-  imports: [IonicModule, CommonModule, AddToCartComponent],
+  imports: [IonicModule, CommonModule, AddToCartComponent, FooterComponent],
   templateUrl: './promociones.page.html',
   styleUrls: ['./promociones.page.scss'],
 })
 export class PromocionesPage implements OnInit, OnDestroy {
-  promociones: Promocion[] = [];
+  promociones: Promo[] = [];
   cartMap: Record<string, number> = {};
   private destroy$ = new Subject<void>();
   loading = true;
@@ -44,14 +42,14 @@ export class PromocionesPage implements OnInit, OnDestroy {
         catchError((err) => {
           console.error('[PromocionesPage] Error cargando promociones', err);
           this.errorMsg = 'No se pudieron cargar las promociones. Intenta más tarde.';
-          return of([] as Promocion[]);
+          return of([] as Promo[]);
         }),
         finalize(() => {
           this.loading = false;
           console.debug('[PromocionesPage] loading=false, promociones.length=', this.promociones.length);
         })
       )
-      .subscribe((list: Promocion[]) => {
+      .subscribe((list: Promo[]) => {
         console.debug('[PromocionesPage] subscribe -> list:', list);
         this.promociones = list || [];
       });
@@ -71,12 +69,12 @@ export class PromocionesPage implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  trackById(_: number, it: Promocion) {
+  trackById(_: number, it: Promo) {
     return it.id;
   }
 
   // abrir detalle de promo (muestra loader mientras navega)
-  async openPromo(promo: Promocion) {
+  async openPromo(promo: Promo) {
     if (!promo?.id) return;
     try {
       await this.loader.show('Cargando promoción...');
@@ -88,7 +86,7 @@ export class PromocionesPage implements OnInit, OnDestroy {
     }
   }
 
-  onAddedPromo(promo: Promocion) {
+  onAddedPromo(promo: Promo) {
     // el CartService ya gestiona la validación de login y persistencia
     console.log('Añadido al carrito:', promo?.id);
   }

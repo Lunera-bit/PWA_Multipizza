@@ -27,12 +27,14 @@ export class PromoSliderComponent implements AfterViewInit, OnDestroy {
 
   constructor(private router: Router) {}
 
-  onVerMas() { this.verMas.emit(); }
+  onVerMas() { 
+    void this.router.navigate(['/promociones']);
+  }
 
   onSelectPromo(p: any) {
     this.select.emit(p);
-    const id = p?.id ?? p?._id ?? p?.idProducto ?? p?.['id'];
-    if (id) void this.router.navigate(['/producto'], { queryParams: { id } });
+    // Solo navega a /promociones sin el id
+    void this.router.navigate(['/promociones']);
   }
 
   onToggleFav(p: any, ev?: any) {

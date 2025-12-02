@@ -1,0 +1,10 @@
+<ion-item button [class.unread]="!notification.read" (click)="open()">
+  <ion-label>
+    <h3 class="msg">{{ notification.message }}</h3>
+    <p class="meta">{{ formatDate(notification.createdAt) }}</p>
+  </ion-label>
+
+  <ion-note slot="end" *ngIf="!notification.read" color="primary" class="new-badge">
+    Nuevo
+  </ion-note>
+</ion-item>
