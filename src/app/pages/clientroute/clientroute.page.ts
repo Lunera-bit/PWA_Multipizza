@@ -92,7 +92,6 @@ export class ClientroutePage implements OnInit, OnDestroy {
   nextStep() {
     if (this.validateStep(this.currentStep)) {
       this.currentStep++;
-      // Inicializa el mapa cuando llega al paso 4
       if (this.currentStep === 4) {
         setTimeout(() => this.initMap(), 500);
       }
@@ -139,11 +138,9 @@ export class ClientroutePage implements OnInit, OnDestroy {
 
     const container = this.mapContainer?.nativeElement;
     if (!container) {
-      console.error('Map container no encontrado');
       return;
     }
 
-    // Coordenadas de Lima, Perú
     const limaCoords: LngLatLike = [-77.0428, -12.0464];
     const defaultCoords: LngLatLike = this.latitude && this.longitude 
       ? [this.longitude, this.latitude] 
@@ -156,7 +153,6 @@ export class ClientroutePage implements OnInit, OnDestroy {
       zoom: 13
     });
 
-    // agregar control de geolocalización
     this.map.addControl(new mapboxgl.GeolocateControl({
       positionOptions: {
         enableHighAccuracy: true
@@ -165,31 +161,27 @@ export class ClientroutePage implements OnInit, OnDestroy {
       showUserHeading: true
     }), 'top-left');
 
-    // agregar geocoder (búsqueda SOLO PERÚ)
     this.geocoder = new MapboxGeocoder({
       accessToken: environment.mapboxToken,
       mapboxgl: mapboxgl,
       language: 'es',
-      country: 'pe', // SOLO PERÚ
-      proximity: limaCoords, // Prioriza resultados cerca de Lima
-      bbox: [-81.327, -18.361, -68.665, -0.443] // Bounding box de Perú
+      country: 'pe',
+      proximity: limaCoords,
+      bbox: [-81.327, -18.361, -68.665, -0.443]
     });
 
     this.map.addControl(this.geocoder, 'top-right');
 
-    // listener para clicks en el mapa
     this.map.on('click', (e) => {
       this.setMarker(e.lngLat.lng, e.lngLat.lat);
     });
 
-    // listener para búsqueda del geocoder
     this.geocoder.on('result', (e: any) => {
       const coords = e.result.geometry.coordinates;
       this.setMarker(coords[0], coords[1]);
       this.address = e.result.place_name || '';
     });
 
-    // agregar marcador inicial si existe ubicación
     if (this.latitude && this.longitude) {
       this.setMarker(this.longitude, this.latitude);
     }
@@ -207,7 +199,6 @@ export class ClientroutePage implements OnInit, OnDestroy {
       .setLngLat([lng, lat])
       .addTo(this.map!);
 
-    // centra el mapa en el marcador
     this.map?.flyTo({
       center: [lng, lat],
       zoom: 15
@@ -215,14 +206,12 @@ export class ClientroutePage implements OnInit, OnDestroy {
   }
 
   private async generateUniqueOrderId(db: ReturnType<typeof getFirestore>, attempts = 6): Promise<string> {
-    // genera un id numérico de 6 dígitos y verifica colisiones en Firestore
     for (let i = 0; i < attempts; i++) {
-      const id = Math.floor(100000 + Math.random() * 900000).toString(); // 6 dígitos, no inicia en 0
+      const id = Math.floor(100000 + Math.random() * 900000).toString();
       const ref = doc(db, 'pedidos', id);
       const snap = await getDoc(ref);
       if (!snap.exists()) return id;
     }
-    // fallback: usar timestamp + random si hay colisión extrema
     return `R${Date.now().toString().slice(-6)}${Math.floor(Math.random() * 90 + 10)}`;
   }
 
@@ -234,7 +223,6 @@ export class ClientroutePage implements OnInit, OnDestroy {
     try {
       const auth = getAuth();
       const user = auth.currentUser;
-      const db = getFirestore();
 
       const orderPayload = {
         user: {
@@ -243,7 +231,14 @@ export class ClientroutePage implements OnInit, OnDestroy {
           email: this.userEmail,
           phone: this.userPhone
         },
-        items: this.items.map(i => ({ id: i.id, title: i.title, price: i.price, qty: i.qty, type: i.type, size: i.size })),
+        items: this.items.map(i => ({ 
+          id: i.id, 
+          title: i.title, 
+          price: i.price, 
+          qty: i.qty, 
+          type: i.type, 
+          size: i.size 
+        })),
         instructions: this.instructions,
         address: {
           street: this.address,
@@ -252,24 +247,13 @@ export class ClientroutePage implements OnInit, OnDestroy {
         },
         total: this.total,
         status: 'pendiente',
-        createdAt: serverTimestamp()
+        createdAt: new Date()
       };
 
-      // Generar ID único de 6 dígitos y usar setDoc para que no dependa de Firestore auto-id
-      const orderId = await this.generateUniqueOrderId(db);
-      await setDoc(doc(db, 'pedidos', orderId), { id: orderId, ...orderPayload });
+      this.router.navigate(['/payment'], { state: orderPayload });
 
-      // Limpiar el carrito
-      this.cart.clearCart();
-
-      await this.showToast('Pedido generado correctamente.');
-      this.resetForm();
-
-      // Navega a la página de pedidos
-      this.router.navigate(['/pedidos']);
     } catch (err) {
-      console.error('Error creando pedido:', err);
-      await this.showToast('Error al generar pedido.');
+      this.showToast('Error al preparar el pedido.');
     }
   }
 
@@ -289,16 +273,12 @@ export class ClientroutePage implements OnInit, OnDestroy {
 
   async setLocation() {
     try {
-      // detectar si es app nativa o web
       if (Capacitor.isNativePlatform()) {
-        // en Android/iOS usar Geolocation de Capacitor (más preciso)
         await this.setLocationNative();
       } else {
-        // en web usar navigator.geolocation (API estándar)
         await this.setLocationWeb();
       }
     } catch (err) {
-      console.error('Error obteniendo ubicación:', err);
       this.showToast('No se pudo obtener la ubicación.');
     }
   }
@@ -320,13 +300,11 @@ export class ClientroutePage implements OnInit, OnDestroy {
     this.latitude = pos.coords.latitude;
     this.longitude = pos.coords.longitude;
 
-    console.log('GPS (nativo):', this.latitude, this.longitude, 'accuracy(m):', pos.coords.accuracy);
-
     if (this.map) {
       this.setMarker(this.longitude, this.latitude);
     }
 
-    this.showToast(`Ubicación fijada (precisión ≈ ${pos.coords.accuracy ?? 'n/a'} m)`);
+    this.showToast('Ubicación fijada');
   }
 
   private setLocationWeb() {
@@ -344,17 +322,14 @@ export class ClientroutePage implements OnInit, OnDestroy {
           this.latitude = pos.coords.latitude;
           this.longitude = pos.coords.longitude;
 
-          console.log('GPS (web):', this.latitude, this.longitude, 'accuracy(m):', pos.coords.accuracy);
-
           if (this.map) {
             this.setMarker(this.longitude, this.latitude);
           }
 
-          this.showToast(`Ubicación fijada (precisión ≈ ${pos.coords.accuracy ?? 'n/a'} m)`);
+          this.showToast('Ubicación fijada');
           resolve();
         },
         (err) => {
-          console.error('Error GPS web:', err);
           this.showToast('No se pudo obtener la ubicación.');
           reject(err);
         },

@@ -30,6 +30,7 @@
     "@capacitor/status-bar": "7.0.3",
     "@ionic/angular": "^8.0.0",
     "@mapbox/mapbox-gl-geocoder": "^5.1.2",
+    "@paypal/checkout-server-sdk": "^1.0.3",
     "firebase": "^11.10.0",
     "ionicons": "^7.4.0",
     "mapbox-gl": "^3.16.0",

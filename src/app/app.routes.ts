@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
+import { PaymentPage } from './pages/payment/payment.page';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -78,5 +79,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/chat/chat.page').then((m) => m.ChatPage),
     canActivate: [AuthGuard],
+  },
+  {
+    path: 'payment',
+    loadComponent: () =>
+    import('./pages/payment/payment.page').then((m) => m.PaymentPage),
+    canActivate: [AuthGuard],
+
   },
 ];

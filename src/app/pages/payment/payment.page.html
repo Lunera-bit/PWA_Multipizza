@@ -1,0 +1,83 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button (click)="goBack()"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Pagar Pedido</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Loading Script -->
+  <div *ngIf="loadingScript" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 50vh;">
+    <ion-spinner></ion-spinner>
+    <p style="margin-top: 16px;">Cargando...</p>
+  </div>
+
+  <!-- Contenido Principal -->
+  <div *ngIf="!loadingScript && !paymentSuccess">
+    <!-- Resumen del pedido -->
+    <ion-card>
+      <ion-card-content>
+        <h2 style="margin-bottom: 20px; font-size: 1.4rem;">Resumen de Pedido</h2>
+        
+        <!-- Items del pedido -->
+        <div style="margin-bottom: 20px;">
+          <div *ngFor="let item of orderData?.items" style="padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-weight: 500; font-size: 1rem;">{{ item.title }}</span>
+              <strong style="color: #3880ff; font-size: 1.1rem;">S/. {{ (item.price * item.qty) | number:'1.2-2' }}</strong>
+            </div>
+            <div style="display: flex; gap: 16px; font-size: 0.9rem; color: #666;">
+              <span *ngIf="item.size">Tamaño: <strong>{{ item.size }}</strong></span>
+              <span>Cantidad: <strong>{{ item.qty }}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Línea separadora -->
+        <div style="border-top: 2px solid #3880ff; margin: 20px 0; padding-top: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <span style="font-size: 1.2rem; font-weight: 600;">Total en Soles:</span>
+            <strong style="color: #3880ff; font-size: 1.4rem;">S/. {{ orderData?.total | number:'1.2-2' }}</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; background-color: #f5f5f5; padding: 12px; border-radius: 8px;">
+            <span style="font-size: 0.95rem; color: #666;">Equivalente en USD:</span>
+            <strong style="color: #27ae60; font-size: 1.2rem;">USD {{ (orderData?.total / 3.4) | number:'1.2-2' }}</strong>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Botón de PayPal -->
+    <div style="margin-top: 32px; margin-bottom: 32px;">
+      <p style="text-align: center; color: #666; margin-bottom: 20px; font-size: 1rem;">
+        Selecciona tu método de pago
+      </p>
+      <div style="border: 2px solid #ddd; padding: 20px; border-radius: 8px; min-height: 120px; background-color: #fafafa;">
+        <div #paypalContainer id="paypal-button-container" style="width: 100%;"></div>
+        
+        <div *ngIf="loadingButtons" style="display: flex; justify-content: center; align-items: center; height: 80px;">
+          <ion-spinner></ion-spinner>
+          <p style="margin-left: 16px;">Cargando opciones de pago...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Éxito -->
+  <div *ngIf="paymentSuccess" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; gap: 16px; padding: 20px;">
+    <ion-icon name="checkmark-circle" color="success" style="font-size: 100px;"></ion-icon>
+    <h2 style="text-align: center; font-size: 1.5rem;">Pago Realizado</h2>
+    <p style="text-align: center; color: #666; font-size: 1rem;">Tu pedido ha sido confirmado.</p>
+    
+    <ion-card style="width: 100%; margin-top: 16px;">
+      <ion-card-content>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+          <span style="color: #666;">ID Transacción:</span>
+          <strong style="color: #3880ff;">{{ paypalOrderId }}</strong>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
