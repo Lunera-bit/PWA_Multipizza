@@ -9,7 +9,7 @@ import { ChatbotComponent } from '../../components/chatbot/chatbot.component';
   template: `
     <ion-header>
       <ion-toolbar>
-        <ion-title>Chat con Ollama</ion-title>
+        <ion-title>Multipizza - BOT</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content>

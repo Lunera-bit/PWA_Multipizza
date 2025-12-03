@@ -1,5 +1,21 @@
 :host { display:block; }
 
+/* breadcrumbs */
+.breadcrumbs {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding: 6px 0 12px;
+  font-size: 0.95rem;
+  color: var(--ion-text-color);
+}
+.breadcrumbs .crumb { color: var(--ion-color-primary); text-decoration: none; }
+.breadcrumbs .sep { color: var(--ion-color-medium); }
+.breadcrumbs .current { font-weight:600; color:var(--ion-text-color); }
+
+/* toolbar spacing */
+.page-toolbar { margin-bottom: 6px; }
+
 .product-card.improved {
   border-radius:14px;
   overflow:hidden;
@@ -78,10 +94,6 @@
 /* descripcion */
 .descripcion h3 { margin:8px 0 6px; font-size:1rem; font-weight:700; }
 .descripcion p { margin:0 0 12px; color:var(--ion-text-color); line-height:1.4; }
-
-/* acciones */
-
-.actions ion-button { --padding-start:6px; --padding-end:6px; }
 
 /* not found */
 .not-found { text-align:center; padding:36px 12px; color:var(--ion-color-medium); }

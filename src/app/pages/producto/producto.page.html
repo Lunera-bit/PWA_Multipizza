@@ -1,10 +1,14 @@
 <ion-content class="ion-padding producto-content">
-  <!-- toolbar con back (sin breadcrumb aquí) -->
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/inicio"></ion-back-button>
-    </ion-buttons>
-  </ion-toolbar>
+  <!-- breadcrumbs (mismo estilo que promociones) -->
+  <div class="breadcrumbs">
+    <a routerLink="/inicio" class="crumb">Inicio</a>
+    <span class="sep">›</span>
+    <a *ngIf="product?.categoria" [routerLink]="['/productos']" [queryParams]="{ category: product.categoria }" class="crumb">
+      {{ product.categoria }}
+    </a>
+    <span *ngIf="product?.categoria" class="sep">›</span>
+    <span class="current">{{ product?.nombre }}</span>
+  </div>
 
   <!-- SKELETON mientras carga -->
   <ng-container *ngIf="loading">
@@ -25,31 +29,18 @@
 
   <!-- PRODUCTO -->
   <ng-container *ngIf="!loading && product">
-    <!-- breadcrumbs colocados arriba de la imagen -->
-    <div class="breadcrumbs">
-      <a routerLink="/inicio" class="crumb">Inicio</a>
-      <span class="sep">›</span>
-      <a *ngIf="product.categoria" [routerLink]="['/productos']" [queryParams]="{ category: product.categoria }" class="crumb">{{ product.categoria }}</a>
-      <span *ngIf="product.categoria" class="sep">›</span>
-      <span class="current">{{ product.nombre }}</span>
-    </div>
-    
     <ion-card class="product-card improved">
-      
       <div class="image-wrap">
         <img [src]="product.imagenUrl || product.imagen || 'assets/img/placeholder.png'" [alt]="product.nombre" (error)="onImgError($event)" />
         <div class="fav-overlay" *ngIf="isFavorited !== undefined">
-               <app-favorite-button *ngIf="product?.id" [productId]="product.id"></app-favorite-button>
+          <app-favorite-button *ngIf="product?.id" [productId]="product.id"></app-favorite-button>
         </div>
-        <div class ="addcart-overlay">
-                    <app-add-to-cart [product]="product" [selectedSize]="selectedSize"></app-add-to-cart>
-                    
+        <div class="addcart-overlay">
+          <app-add-to-cart [product]="product" [selectedSize]="selectedSize"></app-add-to-cart>
         </div>
 
         <!-- price badge overlay -->
-        <span class="price-badge">S/. {{ getCalculatedPrice() | number:'1.2-2' }}</span>        
-        
-        
+        <span class="price-badge">S/. {{ getCalculatedPrice() | number:'1.2-2' }}</span>
       </div>
 
       <div class="product-body">
@@ -68,7 +59,6 @@
             <ion-label>{{ t }}</ion-label>
           </ion-chip>
         </div>
-        
 
         <div class="descripcion" *ngIf="product.descripcion">
           <h3>Descripción</h3>

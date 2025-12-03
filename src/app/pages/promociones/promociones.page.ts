@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { RouterLink } from '@angular/router';
 import { FooterComponent } from '../../components/footer/footer/footer.component';
 import { AddToCartComponent } from '../../components/add-to-cart/add-to-cart.component';
 import { CartService } from '../../services/cart.service';
@@ -13,7 +14,13 @@ import { LoaderService } from '../../services/loader.service';
 @Component({
   selector: 'app-promociones',
   standalone: true,
-  imports: [IonicModule, CommonModule, AddToCartComponent, FooterComponent],
+  imports: [
+    IonicModule, 
+    CommonModule, 
+    RouterLink,
+    AddToCartComponent, 
+    FooterComponent
+  ],
   templateUrl: './promociones.page.html',
   styleUrls: ['./promociones.page.scss'],
 })
