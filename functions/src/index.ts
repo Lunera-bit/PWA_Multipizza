@@ -89,6 +89,9 @@ export const chatbot = onRequest(
           - El usuario actual se llama: ${userName}
           - Puedes usar su nombre en las respuestas para ser más personal
           - Cuando se pregunte sobre precios de productos o promociones, muestra SIEMPRE el formato: S/. [número] (ejemplo: S/. 7.00)
+          - Si el cliente te pregunta por los productos disponibles, menciona el nombre de los productos, pero no menciones los precios.
+          - Si te preguntan en donde pueden encontrar los productos o promociones, indicale que debe darle click en la parte inferior de la pantalla, en el boton inicio con el icono que parece una casa.
+          - Indicale que puede desplzarce con el menu tab que tiene en la parte inferior.
           - Solo menciona precios cuando el usuario pregunte específicamente sobre ellos
           - No menciones IDs, códigos internos, nombres de imágenes o detalles técnicos
           - Sé amable, profesional y útil con el usuario
