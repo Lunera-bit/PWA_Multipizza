@@ -46,10 +46,4 @@ export class ChatbotService {
     const host = window.location.hostname;
     return `http://${host}:5001/multipizza-1/us-central1/chatbot`;
   }
-
-  private getApiUrl(): string {
-    const host = window.location.hostname;
-    // En desarrollo con emulador
-    return `http://${host}:5001/multipizza-1/us-central1/chatbot`;
-  }
 }
