@@ -39,7 +39,7 @@ export class ChatbotComponent {
       },
       error: (err) => {
         console.error(err);
-        this.messages.push({ role: 'bot', text: '❌ Error conectando al servidor' });
+        this.messages.push({ role: 'bot', text: 'Error conectando al servidor X-X' });
         this.loading = false;
       }
     });
