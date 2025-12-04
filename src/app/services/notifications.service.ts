@@ -36,7 +36,7 @@ export class NotificationsService {
               console.log(`[NotificationsService] status changed for ${id}: ${prev} -> ${status}`);
               this.lastStatuses.set(id, status ?? '');
               const label = this.getStatusLabel(status ?? '');
-              const message = `Pedido #${id}: ${label}`;
+              const message = `Su pedido con el numero #${id}, está ${label}`;
               // crear notificación (no bloquear)
               this.createNotification(userId, message, { pedidoId: id, status });
             } else {
@@ -92,7 +92,7 @@ export class NotificationsService {
         const name = displayName || 'usuario';
         await addDoc(collection(db, 'notificaciones'), {
           userId,
-          message: `Bienvenido ${name}! Gracias por crear tu cuenta.`,
+          message: `Bienvenido a Multipizzas ${name}! Estamos felices por verte, gracias por crear tu cuenta.`,
           read: false,
           type: 'welcome',
           createdAt: serverTimestamp()

@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
-import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
 import { getApps, initializeApp } from 'firebase/app';
 import type { User as FirebaseUser } from 'firebase/auth';
 import { AppUser } from '../models/user.model';
@@ -20,31 +26,51 @@ export class UserService {
     return this._db;
   }
 
-  async upsertUser(fbUser: FirebaseUser, provider = 'email'): Promise<void> {
-    if (!fbUser?.uid) return;
-    const ref = doc(this.db, 'usuarios', fbUser.uid);
-    const snap = await getDoc(ref);
+async upsertUser(
+  fbUser: FirebaseUser,
+  provider = 'email',
+  rol: 'cliente' | 'admin' = 'cliente'
+): Promise<void> {
+  if (!fbUser?.uid) return;
 
-    const base: AppUser = {
-      uid: fbUser.uid,
-      email: fbUser.email ?? null,
-      displayName: fbUser.displayName ?? null,
-      photoURL: fbUser.photoURL ?? null,
-      provider
-    };
+  const ref = doc(this.db, 'usuarios', fbUser.uid);
+  const snap = await getDoc(ref);
 
-    if (!snap.exists()) {
-      await setDoc(ref, {
-        ...base,
-        createdAt: serverTimestamp(),
-        lastLogin: serverTimestamp()
-      }, { merge: true });
-    } else {
-      await setDoc(ref, {
-        ...base,
-        lastLogin: serverTimestamp()
-        
-      }, { merge: true });
+  let finalRol = rol;
+
+  // Si el usuario ya existe, NO sobrescribir su rol
+  if (snap.exists()) {
+    const data = snap.data();
+    if (data?.["rol"]) {
+      finalRol = data["rol"]; // conservar el rol actual (ej. admin)
     }
   }
+
+  const base: AppUser = {
+    uid: fbUser.uid,
+    email: fbUser.email ?? null,
+    displayName: fbUser.displayName ?? null,
+    photoURL: fbUser.photoURL ?? null,
+    provider,
+    rol: finalRol,
+  };
+
+  await setDoc(
+    ref,
+    {
+      ...base,
+      lastLogin: serverTimestamp(),
+      ...(snap.exists() ? {} : { createdAt: serverTimestamp() }),
+    },
+    { merge: true }
+  );
 }
+
+async getUserData(uid: string): Promise<AppUser | null> {
+  const ref = doc(this.db, 'usuarios', uid);
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data() as AppUser) : null;
+}
+
+}
+
