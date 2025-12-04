@@ -49,16 +49,21 @@ export class AuthService {
 
   async signInEmail(email: string, password: string) {
     const cred = await signInWithEmailAndPassword(this.auth, email, password);
-    // actualizar/crear registro usuario
-    try { await this.userService.upsertUser(cred.user, 'email'); } catch {}
+    try { 
+      await this.userService.upsertUser(cred.user, 'email'); 
+    } catch {}
     return cred;
   }
 
   async signUpEmail(email: string, password: string) {
     const cred = await createUserWithEmailAndPassword(this.auth, email, password);
-    try { await this.userService.upsertUser(cred.user, 'email'); } catch {}
-    // crear notificación de bienvenida si corresponde
-    try { await this.notifications.ensureWelcomeIfNeeded(cred.user.uid, cred.user.displayName ?? undefined); } catch {}
+    try { 
+      // Asignar rol 'cliente' por defecto al registrarse
+      await this.userService.upsertUser(cred.user, 'email'); 
+    } catch {}
+    try { 
+      await this.notifications.ensureWelcomeIfNeeded(cred.user.uid, cred.user.displayName ?? undefined); 
+    } catch {}
     return cred;
   }
 
@@ -72,7 +77,9 @@ export class AuthService {
     try {
       const res = await signInWithPopup(this.auth, provider);
       await this.userService.upsertUser(res.user, 'google');
-      try { await this.notifications.ensureWelcomeIfNeeded(res.user.uid, res.user.displayName ?? undefined); } catch {}
+      try { 
+        await this.notifications.ensureWelcomeIfNeeded(res.user.uid, res.user.displayName ?? undefined); 
+      } catch {}
       return res;
     } catch {
       const res = await signInWithRedirect(this.auth, provider);
@@ -87,7 +94,9 @@ export class AuthService {
     try {
       const res = await signInWithPopup(this.auth, provider);
       await this.userService.upsertUser(res.user, 'apple');
-      try { await this.notifications.ensureWelcomeIfNeeded(res.user.uid, res.user.displayName ?? undefined); } catch {}
+      try { 
+        await this.notifications.ensureWelcomeIfNeeded(res.user.uid, res.user.displayName ?? undefined); 
+      } catch {}
       return res;
     } catch {
       const res = await signInWithRedirect(this.auth, provider);

@@ -84,7 +84,16 @@
                 <ion-toggle slot="end"></ion-toggle>
               </ion-item>
             </ion-list>
+            <ion-list>
+                <div *ngIf="rol === 'admin'">
+            <ion-item button [routerLink]="['/dashboard']" menuClose>
+              <ion-icon name="shield-check" slot="start"></ion-icon>
+              <ion-label>Panel Admin</ion-label>
+            </ion-item>
           </div>
+            </ion-list>
+          </div>
+          
         </ion-accordion>
       </ion-accordion-group>
     </ng-container>

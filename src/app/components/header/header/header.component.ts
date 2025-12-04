@@ -4,15 +4,17 @@ import { IonicModule, MenuController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { CartService } from '../../../services/cart.service';
+import { UserService } from '../../../services/user.service';
 import { NotificationsService } from '../../../services/notifications.service'; // ajustar ruta si hace falta
 import { Subscription } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [IonicModule, CommonModule],
+  imports: [IonicModule, CommonModule,RouterLink],
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   @Input() title = 'MultiPizza';
@@ -31,6 +33,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   isLoggedIn = false;
 
+  rol: 'cliente' | 'admin' | undefined;
+
   private sub?: Subscription;
   private notifsUnsub?: () => void;
 
@@ -39,29 +43,45 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private menu: MenuController,
     private auth: AuthService,
     private cart: CartService,
-    private notifications: NotificationsService // inyectado
+    private notifications: NotificationsService,
+    private userService: UserService // <-- AGREGAR AQUÍ
   ) {}
 
   ngOnInit(): void {
-    this.sub = this.auth.authState$.subscribe(u => {
+    this.sub = this.auth.authState$.subscribe(async (u) => {
       this.isLoggedIn = !!u;
       this.displayName = u?.displayName || 'Usuario';
       this.displayEmail = u?.email || '';
       this.photo = (u as any)?.photoURL || this.defaultAvatar;
 
-      // (re)suscribir al conteo de notificaciones sólo si hay usuario
-      if (this.notifsUnsub) { this.notifsUnsub(); this.notifsUnsub = undefined; }
+      // Leer rol desde Firestore
       if (u?.uid) {
-        this.notifsUnsub = this.notifications.observeUnreadCount(u.uid, cnt => {
-          this.notificacionesCount = cnt;
-        });
+        const userData = await this.userService.getUserData(u.uid);
+        this.rol = userData?.rol;
+      } else {
+        this.rol = undefined;
+      }
+
+      // (re)suscribir notificaciones
+      if (this.notifsUnsub) {
+        this.notifsUnsub();
+        this.notifsUnsub = undefined;
+      }
+
+      if (u?.uid) {
+        this.notifsUnsub = this.notifications.observeUnreadCount(
+          u.uid,
+          (cnt) => {
+            this.notificacionesCount = cnt;
+          }
+        );
       } else {
         this.notificacionesCount = 0;
       }
     });
 
     // suscribir al carrito para mostrar la badge con total de items (qty)
-    this.cartSub = this.cart.cart$?.subscribe(items => {
+    this.cartSub = this.cart.cart$?.subscribe((items) => {
       const total = (items || []).reduce((s, it) => s + (it.qty || 0), 0);
       // pulse si se incrementó
       if (total > this._prevCartCount) {
@@ -85,13 +105,25 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   // abrir/cerrar menú programáticamente
   async openMenu() {
-    try { await this.menu.open('profileMenu'); } catch { /* ignore */ }
+    try {
+      await this.menu.open('profileMenu');
+    } catch {
+      /* ignore */
+    }
   }
   async closeMenu() {
-    try { await this.menu.close('profileMenu'); } catch { /* ignore */ }
+    try {
+      await this.menu.close('profileMenu');
+    } catch {
+      /* ignore */
+    }
   }
   async toggleMenu() {
-    try { await this.menu.toggle('profileMenu'); } catch { /* ignore */ }
+    try {
+      await this.menu.toggle('profileMenu');
+    } catch {
+      /* ignore */
+    }
   }
 
   // prompt local para cambiar sólo el nombre mostrado (sin backend)
@@ -107,7 +139,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   goToLogin() {
-    void this.menu.close('profileMenu').then(() => void this.router.navigate(['/login']));
+    void this.menu
+      .close('profileMenu')
+      .then(() => void this.router.navigate(['/login']));
   }
 
   async logout() {
