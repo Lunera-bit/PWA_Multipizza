@@ -44,7 +44,6 @@ export class RoleGuard implements CanActivate {
           }
         } catch (error) {
           console.error('Error verificando rol:', error);
-          resolve(this.router.createUrlTree(['/inicio']));
         }
       });
     });

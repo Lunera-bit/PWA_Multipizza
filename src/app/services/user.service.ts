@@ -5,6 +5,11 @@ import {
   setDoc,
   getDoc,
   serverTimestamp,
+  collection,
+  getDocs,
+  deleteDoc,
+  query,
+  where,
 } from 'firebase/firestore';
 import { getApps, initializeApp } from 'firebase/app';
 import type { User as FirebaseUser } from 'firebase/auth';
@@ -71,6 +76,39 @@ async getUserData(uid: string): Promise<AppUser | null> {
   const snap = await getDoc(ref);
   return snap.exists() ? (snap.data() as AppUser) : null;
 }
+
+  // Obtener todos los usuarios
+  async getAllUsers(): Promise<AppUser[]> {
+    const usersCollection = collection(this.db, 'usuarios');
+    const snap = await getDocs(usersCollection);
+    return snap.docs.map(doc => ({
+      ...(doc.data() as AppUser),
+      uid: doc.id
+    }));
+  }
+
+  // Crear usuario
+  async createUser(user: Omit<AppUser, 'uid'>): Promise<string> {
+    const ref = doc(collection(this.db, 'usuarios'));
+    await setDoc(ref, {
+      ...user,
+      createdAt: serverTimestamp(),
+      lastLogin: serverTimestamp(),
+    });
+    return ref.id;
+  }
+
+  // Actualizar usuario
+  async updateUser(uid: string, userData: Partial<AppUser>): Promise<void> {
+    const ref = doc(this.db, 'usuarios', uid);
+    await setDoc(ref, userData, { merge: true });
+  }
+
+  // Eliminar usuario
+  async deleteUser(uid: string): Promise<void> {
+    const ref = doc(this.db, 'usuarios', uid);
+    await deleteDoc(ref);
+  }
 
 }
 
