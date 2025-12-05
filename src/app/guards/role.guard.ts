@@ -29,7 +29,7 @@ export class RoleGuard implements CanActivate {
 
         try {
           const db = getFirestore();
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          const userDoc = await getDoc(doc(db, 'usuarios', user.uid));
           const userData = userDoc.data();
           const userRole = userData?.['rol'] || 'cliente';
 
@@ -44,7 +44,6 @@ export class RoleGuard implements CanActivate {
           }
         } catch (error) {
           console.error('Error verificando rol:', error);
-          resolve(this.router.createUrlTree(['/inicio']));
         }
       });
     });

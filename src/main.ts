@@ -3,7 +3,7 @@ import {
   homeOutline, pricetagOutline, flameOutline, cartOutline, notificationsOutline,
   person, alertCircleOutline, heartOutline, addOutline, removeOutline, heart,
   exit, starOutline, sadOutline, addCircleOutline, cart, settings, star, starHalf,
-  logoOctocat,shareSocialOutline
+  logoOctocat,shareSocialOutline,shieldCheckmark
 } from 'ionicons/icons';
 
 import { bootstrapApplication } from '@angular/platform-browser';
@@ -48,7 +48,8 @@ addIcons({
   'settings': settings,
   'star-half': starHalf,
   'logo-octocat': logoOctocat,
-  'share-social-outline': shareSocialOutline
+  'share-social-outline': shareSocialOutline,
+  'shield-check': shieldCheckmark
 });
 const app = initializeApp(environment.firebase);
 

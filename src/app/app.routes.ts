@@ -9,7 +9,7 @@ export const routes: Routes = [
     path: 'inicio',
     loadComponent: () =>
       import('./pages/inicio/inicio.page').then((m) => m.InicioPage),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'promociones',
@@ -17,25 +17,25 @@ export const routes: Routes = [
       import('./pages/promociones/promociones.page').then(
         (m) => m.PromocionesPage
       ),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'pedidos',
     loadComponent: () =>
       import('./pages/pedidos/pedidos.page').then((m) => m.PedidosPage),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'favoritos',
     loadComponent: () =>
       import('./pages/favoritos/favoritos.page').then((m) => m.FavoritosPage),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'carrito',
     loadComponent: () =>
       import('./pages/carrito/carrito.page').then((m) => m.CarritoPage),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'login',
@@ -51,13 +51,13 @@ export const routes: Routes = [
     path: 'producto',
     loadComponent: () =>
       import('./pages/producto/producto.page').then((m) => m.ProductoPage),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'productos',
     loadComponent: () =>
       import('./pages/productos/productos.page').then((m) => m.ProductosPage),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'clientroute',
@@ -72,25 +72,50 @@ export const routes: Routes = [
       import('./pages/bandeja-notificaciones/bandeja-notificaciones.page').then(
         (m) => m.BandejaNotificacionesPage
       ),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'chat',
     loadComponent: () =>
       import('./pages/chat/chat.page').then((m) => m.ChatPage),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'payment',
     loadComponent: () =>
       import('./pages/payment/payment.page').then((m) => m.PaymentPage),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
-    path: 'dashboard',
+    path: 'admin-productos',
     loadComponent: () =>
-      import('./pages/dashboard/dashboard.page').then((m) => m.DashboardPage),
+      import('./pages/admin-productos/admin-productos.page').then(
+        (m) => m.AdminProductosPage
+      ),
     canActivate: [AuthGuard, RoleGuard],
     data: { role: 'admin' },
+  },
+  {
+    path: 'admin-promos',
+    loadComponent: () =>
+      import('./pages/admin-promos/admin-promos.page').then(
+        (m) => m.AdminPromosPage
+      ),
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'admin' },
+  },
+  {
+    path: 'admin-usuarios',
+    loadComponent: () =>
+      import('./pages/admin-usuarios/admin-usuarios.page').then(
+        (m) => m.DashboardPage
+      )
+  },
+  {
+    path: 'admin-pedidos',
+    loadComponent: () =>
+      import('./pages/admin-pedidos/admin-pedidos.page').then(
+        (m) => m.AdminPedidosPage
+      ),
   },
 ];

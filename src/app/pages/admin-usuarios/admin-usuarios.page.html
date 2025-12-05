@@ -1,0 +1,116 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Dashboard - Gestión de Usuarios</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Usuarios</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="container">
+    <ion-button expand="block" color="primary" (click)="abrirModalNuevo()" class="btn-nuevo">
+      <ion-icon slot="start" name="add"></ion-icon>
+      Nuevo Usuario
+    </ion-button>
+
+    <div *ngIf="loading" style="text-align: center; padding: 40px;">
+      <ion-spinner></ion-spinner>
+    </div>
+
+    <ion-accordion-group *ngIf="!loading && usuarios.length > 0" class="usuarios-accordion">
+      <ion-accordion *ngFor="let usuario of usuarios; let i = index" [value]="'accordion-' + i">
+        <ion-item slot="header" color="light">
+          <ion-label>
+            <h2 class="usuario-titulo">{{ usuario.displayName || usuario.email }}</h2>
+            <p class="usuario-email">{{ usuario.email }}</p>
+          </ion-label>
+          <span [class]="'badge badge-' + usuario.rol" slot="end">{{ usuario.rol }}</span>
+        </ion-item>
+
+        <div slot="content" class="accordion-content">
+          <ion-item>
+            <ion-label>
+              <strong>Email:</strong><br>
+              {{ usuario.email }}
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>
+              <strong>Nombre:</strong><br>
+              {{ usuario.displayName || 'No especificado' }}
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>
+              <strong>Rol:</strong><br>
+              <span [class]="'badge badge-' + usuario.rol">{{ usuario.rol }}</span>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>
+              <strong>Proveedor:</strong><br>
+              {{ usuario.provider }}
+            </ion-label>
+          </ion-item>
+
+
+          <div class="acciones-container">
+            <ion-button expand="block" color="warning" (click)="abrirModalEditar(usuario)" class="btn-accion">
+              <ion-icon slot="start" name="pencil"></ion-icon>
+              Editar
+            </ion-button>
+            <ion-button expand="block" color="danger" (click)="eliminar(usuario.uid)" class="btn-accion">
+              <ion-icon slot="start" name="trash"></ion-icon>
+              Eliminar
+            </ion-button>
+          </div>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+
+    <div *ngIf="!loading && usuarios.length === 0" class="sin-datos">
+      <p>No hay usuarios. ¡Crea uno para comenzar!</p>
+    </div>
+  </div>
+
+  <!-- Modal para crear/editar -->
+  <ion-modal [isOpen]="isModalOpen" (didDismiss)="cerrarModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ isEditMode ? 'Editar' : 'Nuevo' }} Usuario</ion-title>
+          <ion-button slot="end" color="medium" (click)="cerrarModal()">Cerrar</ion-button>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-item>
+          <ion-label position="stacked">Email</ion-label>
+          <ion-input [(ngModel)]="formData.email" type="email"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Nombre</ion-label>
+          <ion-input [(ngModel)]="formData.displayName"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Rol</ion-label>
+          <ion-select [(ngModel)]="formData.rol">
+            <ion-select-option value="cliente">Cliente</ion-select-option>
+            <ion-select-option value="admin">Admin</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <div style="padding: 20px;">
+          <ion-button expand="block" color="primary" (click)="guardar()">
+            {{ isEditMode ? 'Actualizar' : 'Crear' }}
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

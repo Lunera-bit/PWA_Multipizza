@@ -8,18 +8,40 @@
       <div class="actions-group">
         <div class="action-item">
           <!-- reemplazado routerLink por click que usa método del TS -->
-          <ion-button fill="clear" class="icon-button" (click)="openBandeja()" aria-label="Notificaciones">
+          <ion-button
+            fill="clear"
+            class="icon-button"
+            (click)="openBandeja()"
+            aria-label="Notificaciones"
+          >
             <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
           </ion-button>
-          <ion-badge class="action-badge notif-badge" *ngIf="notificacionesCount > 0" color="light" aria-live="polite">{{ notificacionesCount }}</ion-badge>
+          <ion-badge
+            class="action-badge notif-badge"
+            *ngIf="notificacionesCount > 0"
+            color="light"
+            aria-live="polite"
+            >{{ notificacionesCount }}</ion-badge
+          >
         </div>
 
         <!-- Carrito (sin tocar) -->
         <div class="action-item">
-          <ion-button fill="clear" class="icon-button cart-button" [class.pulse]="cartPulse" (click)="openCart()" aria-label="Carrito">
+          <ion-button
+            fill="clear"
+            class="icon-button cart-button"
+            [class.pulse]="cartPulse"
+            (click)="openCart()"
+            aria-label="Carrito"
+          >
             <ion-icon slot="icon-only" [name]="cartIcon"></ion-icon>
           </ion-button>
-          <ion-badge class="action-badge cart-badge" *ngIf="carritoCount > 0" aria-live="polite">{{ carritoCount }}</ion-badge>
+          <ion-badge
+            class="action-badge cart-badge"
+            *ngIf="carritoCount > 0"
+            aria-live="polite"
+            >{{ carritoCount }}</ion-badge
+          >
         </div>
       </div>
     </ion-buttons>
@@ -30,8 +52,7 @@
   <ion-header translucent>
     <ion-toolbar>
       <ion-title>Perfil</ion-title>
-      <ion-buttons slot="end">
-      </ion-buttons>
+      <ion-buttons slot="end"> </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
@@ -64,7 +85,9 @@
               <ion-note slot="end">{{ displayName }}</ion-note>
             </ion-item>
             <ion-item lines="none">
-              <ion-button expand="block" (click)="editName()">Cambiar nombre</ion-button>
+              <ion-button expand="block" (click)="editName()"
+                >Cambiar nombre</ion-button
+              >
             </ion-item>
           </div>
         </ion-accordion>
@@ -85,19 +108,17 @@
               </ion-item>
             </ion-list>
             <ion-list>
-                <div *ngIf="rol === 'admin'">
-            <ion-item button [routerLink]="['/dashboard']" menuClose>
-              <ion-icon name="shield-check" slot="start"></ion-icon>
-              <ion-label>Panel Admin</ion-label>
-            </ion-item>
-          </div>
+              <div *ngIf="rol === 'admin'">
+                <ion-item button [routerLink]="['/admin-usuarios']" menuClose detail="false">
+                  <ion-icon name="shield-check" slot="start"></ion-icon>
+                  <ion-label>Panel Admin</ion-label>
+                </ion-item>
+              </div>
             </ion-list>
           </div>
-          
         </ion-accordion>
       </ion-accordion-group>
     </ng-container>
-
   </ion-content>
 
   <ion-footer>
@@ -105,14 +126,24 @@
       <div class="footer-actions">
         <ng-container *ngIf="isLoggedIn; else loginTpl">
           <!-- cerrar sesión cierra también el menú y usa auth.logout en TS -->
-          <ion-button expand="block" color="danger" (click)="logout()" menuClose>
+          <ion-button
+            expand="block"
+            color="danger"
+            (click)="logout()"
+            menuClose
+          >
             <ion-icon slot="start" name="exit"></ion-icon>
             cerrar sesión
           </ion-button>
         </ng-container>
 
         <ng-template #loginTpl>
-          <ion-button expand="block" color="primary" (click)="goToLogin()" menuClose>
+          <ion-button
+            expand="block"
+            color="primary"
+            (click)="goToLogin()"
+            menuClose
+          >
             Iniciar sesión
           </ion-button>
         </ng-template>

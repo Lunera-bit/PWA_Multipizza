@@ -31,8 +31,8 @@ export class AuthGuard implements CanActivate {
             const userRole = userData?.['rol'] || 'cliente';
 
             // Redirigir según el rol en el login
-            if (state.url === '/login' && userRole === 'delivery') {
-              resolve(this.router.createUrlTree(['/delivery-dashboard']));
+            if (state.url === '/login' && userRole === 'admin') {
+              resolve(this.router.createUrlTree(['/dashboard']));
             } else if (state.url === '/login' && userRole === 'cliente') {
               resolve(this.router.createUrlTree(['/inicio']));
             } else {
