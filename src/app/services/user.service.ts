@@ -77,7 +77,10 @@ async getUserData(uid: string): Promise<AppUser | null> {
   return snap.exists() ? (snap.data() as AppUser) : null;
 }
 
-  // Obtener todos los usuarios
+
+// CRUD
+
+// Obtener todos los usuarios
   async getAllUsers(): Promise<AppUser[]> {
     const usersCollection = collection(this.db, 'usuarios');
     const snap = await getDocs(usersCollection);

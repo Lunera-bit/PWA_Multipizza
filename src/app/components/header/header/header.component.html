@@ -69,9 +69,9 @@
     </div>
 
     <!-- Acordiones: sólo si hay sesión -->
-    <ng-container *ngIf="isLoggedIn">
+    <ng-container *ngIf="isLoggedIn " >
       <ion-accordion-group class="accordion-wrap">
-        <ion-accordion value="gestion">
+        <ion-accordion value="gestion" *ngIf="rol === 'cliente'">
           <ion-item slot="header" button>
             <ion-label>
               <h3>Gestión</h3>
@@ -107,11 +107,48 @@
                 <ion-toggle slot="end"></ion-toggle>
               </ion-item>
             </ion-list>
+          </div>
+        </ion-accordion>
+        
+
+        <ion-accordion value="admin" *ngIf="rol === 'admin'">
+          <ion-item slot="header" button>
+            <ion-label>
+              <h3>Panel Administrativo</h3>
+              <p>Control de Usuarios ,Productos ,Pedidos y Promociones</p>
+            </ion-label>
+          </ion-item>
+
+          <div class="accordion-content" slot="content">
             <ion-list>
-              <div *ngIf="rol === 'admin'">
+              <div >
                 <ion-item button [routerLink]="['/admin-usuarios']" menuClose detail="false">
                   <ion-icon name="shield-check" slot="start"></ion-icon>
-                  <ion-label>Panel Admin</ion-label>
+                  <ion-label>Gestion de Usuarios</ion-label>
+                </ion-item>
+              </div>
+            </ion-list>
+                        <ion-list>
+              <div >
+                <ion-item button [routerLink]="['/admin-productos']" menuClose detail="false">
+                  <ion-icon name="shield-check" slot="start"></ion-icon>
+                  <ion-label>Gestion de Productos</ion-label>
+                </ion-item>
+              </div>
+            </ion-list>
+                        <ion-list>
+              <div >
+                <ion-item button [routerLink]="['/admin-pedidos']" menuClose detail="false">
+                  <ion-icon name="shield-check" slot="start"></ion-icon>
+                  <ion-label>Gestion de Pedidos</ion-label>
+                </ion-item>
+              </div>
+            </ion-list>
+                        <ion-list>
+              <div >
+                <ion-item button [routerLink]="['/admin-promos']" menuClose detail="false">
+                  <ion-icon name="shield-check" slot="start"></ion-icon>
+                  <ion-label>Gestion de Promociones</ion-label>
                 </ion-item>
               </div>
             </ion-list>
