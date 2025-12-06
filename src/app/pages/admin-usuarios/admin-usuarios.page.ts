@@ -6,12 +6,13 @@ import { UserService } from '../../services/user.service';
 import { AppUser } from '../../models/user.model';
 import { addIcons } from 'ionicons';
 import { pencil, trash, add } from 'ionicons/icons';
+import { IonMenuComponent } from '../../components/ion-menu/ion-menu.component'
 @Component({
   selector: 'app-admin-usuarios',
   templateUrl: './admin-usuarios.page.html',
   styleUrls: ['./admin-usuarios.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButton, IonModal, IonInput, IonItem, IonLabel, IonSelect, IonSelectOption, IonIcon, IonSpinner, IonAccordionGroup, IonAccordion, IonCard, IonCardHeader, IonCardContent]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButton, IonModal, IonInput, IonItem, IonLabel, IonSelect, IonSelectOption, IonIcon, IonSpinner, IonAccordionGroup, IonAccordion, IonCard, IonCardHeader, IonCardContent,IonMenuComponent]
 })
 export class DashboardPage implements OnInit {
   usuarios: AppUser[] = [];

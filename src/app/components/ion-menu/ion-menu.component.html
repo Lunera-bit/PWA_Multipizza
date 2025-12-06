@@ -1,0 +1,119 @@
+<ion-menu side="start" menuId="profileMenu" contentId="main">
+  <ion-header translucent>
+    <ion-toolbar>
+      <ion-title>Admin</ion-title>
+      <ion-buttons slot="end"> </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="profile-menu-root">
+    <!-- FOTO centrada + nombre/email debajo -->
+    <div class="menu-head centered">
+      <div class="avatar-wrap">
+        <img [src]="photo" (error)="onImgError()" alt="Avatar" />
+      </div>
+      <div class="user-info">
+        <div class="user-name">{{ displayName }}</div>
+        <div class="user-email" *ngIf="displayEmail">{{ displayEmail }}</div>
+      </div>
+    </div>
+
+    <!-- Acordiones: sólo si hay sesión -->
+    <ng-container >
+      <ion-accordion-group class="accordion-wrap">
+        <ion-accordion value="gestion" *ngIf="rol === 'cliente'">
+          <ion-item slot="header" button>
+            <ion-label>
+              <h3>Gestión</h3>
+              <p>Cambiar datos del perfil</p>
+            </ion-label>
+          </ion-item>
+
+          <div class="accordion-content" slot="content">
+            <ion-item lines="none">
+              <ion-label>Nombre</ion-label>
+              <ion-note slot="end">{{ displayName }}</ion-note>
+            </ion-item>
+            <ion-item lines="none">
+              <ion-button expand="block" (click)="editName()"
+                >Cambiar nombre</ion-button
+              >
+            </ion-item>
+          </div>
+        </ion-accordion>
+
+        <ion-accordion value="config">
+          <ion-item slot="header" button>
+            <ion-label>
+              <h3>Configuración</h3>
+              <p>Ajustes visuales y de idioma</p>
+            </ion-label>
+          </ion-item>
+
+          <div class="accordion-content" slot="content">
+            <ion-list>
+              <ion-item>
+                <ion-label>Idioma (EN)</ion-label>
+                <ion-toggle slot="end"></ion-toggle>
+              </ion-item>
+            </ion-list>
+          </div>
+        </ion-accordion>
+        
+
+        <ion-accordion value="admin">
+          <ion-item slot="header" button>
+            <ion-label>
+              <h3>Panel Administrativo</h3>
+              <p>Control de Usuarios ,Productos ,Pedidos y Promociones</p>
+            </ion-label>
+          </ion-item>
+
+          <div class="accordion-content" slot="content">
+            <ion-list>
+              <div >
+                <ion-item button [routerLink]="['/admin-usuarios']" menuClose detail="false">
+                  <ion-icon name="shield-check" slot="start"></ion-icon>
+                  <ion-label>Gestion de Usuarios</ion-label>
+                </ion-item>
+              </div>
+            </ion-list>
+                        <ion-list>
+              <div >
+                <ion-item button [routerLink]="['/admin-productos']" menuClose detail="false">
+                  <ion-icon name="shield-check" slot="start"></ion-icon>
+                  <ion-label>Gestion de Productos</ion-label>
+                </ion-item>
+              </div>
+            </ion-list>
+                        <ion-list>
+              <div >
+                <ion-item button [routerLink]="['/admin-pedidos']" menuClose detail="false">
+                  <ion-icon name="shield-check" slot="start"></ion-icon>
+                  <ion-label>Gestion de Pedidos</ion-label>
+                </ion-item>
+              </div>
+            </ion-list>
+                        <ion-list>
+              <div >
+                <ion-item button [routerLink]="['/admin-promos']" menuClose detail="false">
+                  <ion-icon name="shield-check" slot="start"></ion-icon>
+                  <ion-label>Gestion de Promociones</ion-label>
+                </ion-item>
+              </div>
+            </ion-list>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+    </ng-container>
+  </ion-content>
+  <div class="ion-page" id="main">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title>Menu</ion-title>
+    </ion-toolbar>
+  </ion-header>
+</div>
