@@ -1,10 +1,13 @@
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { getFirestore, doc, updateDoc } from 'firebase/firestore';
+import { IonicModule } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-notification',
   standalone: true,
+  imports: [IonicModule, CommonModule],
   templateUrl: './notification.component.html',
   styleUrls: ['./notification.component.scss']
 })

@@ -1,13 +1,106 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>admin-promos</ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Administrar Promociones</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">admin-promos</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+
+  <!-- Botón de nueva promo -->
+  <div class="center">
+    <ion-button color="success" (click)="abrirModalNuevo()">
+      <ion-icon name="add" slot="start"></ion-icon>
+      Nueva Promoción
+    </ion-button>
+  </div>
+
+  <!-- Spinner de carga -->
+  <div *ngIf="loading" class="center">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <!-- Lista de promos -->
+  <ion-card *ngFor="let promo of promos">
+    <ion-card-header>
+      <h2>{{ promo.nombre }}</h2>
+    </ion-card-header>
+
+    <ion-card-content>
+      <img
+        *ngIf="promo.imagenUrl"
+        [src]="promo.imagenUrl"
+        class="promo-img"
+      />
+
+      <p><strong>Descripción:</strong> {{ promo.descripcion }}</p>
+      <p><strong>Precio:</strong> S/ {{ promo.precio }}</p>
+
+      <div class="btn-row">
+        <ion-button size="small" color="warning" (click)="abrirModalEditar(promo)">
+          <ion-icon name="pencil" slot="start"></ion-icon>
+          Editar
+        </ion-button>
+
+        <ion-button size="small" color="danger" (click)="eliminar(promo.id)">
+          <ion-icon name="trash" slot="start"></ion-icon>
+          Eliminar
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Modal para crear/editar -->
+<ion-modal [isOpen]="isModalOpen" (didDismiss)="cerrarModal()" [swipeToClose]="true">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ isEditMode ? 'Editar Promoción' : 'Nueva Promoción' }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarModal()">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    
+    <ion-content class="ion-padding">
+      <ion-list>
+        <ion-item>
+          <ion-label position="floating">Nombre</ion-label>
+          <ion-input [(ngModel)]="formData.nombre" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Descripción</ion-label>
+          <ion-textarea [(ngModel)]="formData.descripcion" rows="3"></ion-textarea>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Precio (S/)</ion-label>
+          <ion-input type="number" [(ngModel)]="formData.precio" min="0" step="0.01"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">URL de la imagen</ion-label>
+          <ion-input [(ngModel)]="formData.imagen" type="url"></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <div class="ion-padding">
+        <ion-button expand="block" color="primary" (click)="guardar()" class="ion-margin-top">
+          <ion-icon name="save" slot="start"></ion-icon>
+          {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+        </ion-button>
+        
+        <ion-button expand="block" color="medium" (click)="cerrarModal()" fill="outline" class="ion-margin-top">
+          <ion-icon name="close-circle" slot="start"></ion-icon>
+          Cancelar
+        </ion-button>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+
+
 </ion-content>
