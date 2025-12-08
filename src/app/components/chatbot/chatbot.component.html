@@ -4,6 +4,44 @@
       <div class="message-bubble">
         {{ msg.text }}
       </div>
+
+      <!-- mostrar recomendaciones si existen -->
+      <div *ngIf="msg.recommendations && msg.recommendations.length > 0" class="recommendations-container">
+        <ion-card class="recommendations-card">
+          <ion-card-header>
+            <ion-card-title class="recommendations-title">📌 Recomendaciones personalizadas</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div *ngFor="let rec of msg.recommendations" class="recommendation-item">
+              <div class="rec-info">
+                <h3 class="rec-nombre">{{ rec.nombre }}</h3>
+                <p class="rec-qty">Cantidad: <strong>{{ rec.cantidad }}x</strong></p>
+                <p class="rec-reason">{{ rec.razon }}</p>
+              </div>
+              <ion-button 
+                size="small"
+                color="primary"
+                (click)="addSingleRecommendation(rec)"
+                class="rec-btn"
+              >
+                <ion-icon [icon]="cartIcon" slot="start"></ion-icon>
+                Añadir
+              </ion-button>
+            </div>
+
+            <!-- botón para añadir todos -->
+            <ion-button 
+              expand="block" 
+              color="success" 
+              (click)="addAllRecommendationsToCart(msg.recommendations)"
+              class="add-all-btn"
+            >
+              <ion-icon [icon]="cartIcon" slot="start"></ion-icon>
+              Añadir todo al carrito
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </div>
     </div>
     
     <div *ngIf="loading" class="message bot">
@@ -13,6 +51,7 @@
     </div>
   </div>
 </ion-content>
+
 <ion-footer class="chat-footer">
   <ion-toolbar class="input-footer">
     <div class="input-area">

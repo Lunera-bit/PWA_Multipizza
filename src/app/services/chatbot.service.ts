@@ -4,6 +4,18 @@ import { Observable } from 'rxjs';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
+export interface ProductRecommendation {
+  id: string;
+  nombre: string;
+  cantidad: number;
+  razon: string;
+}
+
+export interface ChatbotResponse {
+  reply: string;
+  recommendations?: ProductRecommendation[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,11 +24,15 @@ export class ChatbotService {
 
   constructor(private http: HttpClient) {}
 
-  async sendMessage(message: string): Promise<Observable<{reply: string}>> {
+  async sendMessage(message: string): Promise<Observable<ChatbotResponse>> {
+    const auth = getAuth();
+    const user = auth.currentUser;
     const userName = await this.getUserName();
-    return this.http.post<{reply: string}>(this.apiUrl, {
+    
+    return this.http.post<ChatbotResponse>(this.apiUrl, {
       message,
-      userName: userName || 'Usuario'
+      userName: userName || 'Usuario',
+      userId: user?.uid || null
     });
   }
 
@@ -27,7 +43,6 @@ export class ChatbotService {
       
       if (!user) return null;
 
-      // Obtiene el nombre de Firestore en la colección 'usuarios'
       const db = getFirestore();
       const userDoc = await getDoc(doc(db, 'usuarios', user.uid));
       

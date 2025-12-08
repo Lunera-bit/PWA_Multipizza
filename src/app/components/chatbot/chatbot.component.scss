@@ -40,13 +40,16 @@
   display: flex;
   margin-bottom: 8px;
   animation: slideIn 0.3s ease-out;
+  flex-direction: column;
 
   &.user {
     justify-content: flex-end;
+    align-items: flex-end;
   }
 
   &.bot {
     justify-content: flex-start;
+    align-items: flex-start;
   }
 }
 
@@ -114,6 +117,81 @@
     opacity: 1;
     transform: translateY(-10px);
   }
+}
+
+// ✨ Estilos para recomendaciones (sin perjudicar lo existente)
+.recommendations-container {
+  margin-top: 12px;
+  width: 100%;
+  max-width: 75%;
+  animation: slideIn 0.3s ease-out;
+
+  .bot & {
+    max-width: 90%;
+  }
+}
+
+.recommendations-card {
+  margin: 0;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+.recommendations-title {
+  color: #333;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 0;
+  padding: 8px 0;
+}
+
+.recommendation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  gap: 12px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .rec-info {
+    flex: 1;
+
+    .rec-nombre {
+      margin: 0 0 6px 0;
+      font-size: 0.9rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .rec-qty {
+      margin: 3px 0;
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    .rec-reason {
+      margin: 6px 0 0 0;
+      font-size: 0.75rem;
+      color: #888;
+      font-style: italic;
+    }
+  }
+
+  .rec-btn {
+    padding: 6px 12px;
+    height: auto;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+}
+
+.add-all-btn {
+  margin-top: 12px;
 }
 
 .chat-footer {
