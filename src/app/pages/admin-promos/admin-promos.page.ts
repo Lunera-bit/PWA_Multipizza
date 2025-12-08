@@ -8,6 +8,8 @@ import {
   IonCard, IonCardHeader, IonCardContent, IonList,
   IonIcon, IonSpinner
 } from '@ionic/angular/standalone';
+import { IonMenuComponent } from '../../components/ion-menu/ion-menu.component'
+
 
 import { PromoService, Promo } from '../../services/promo.service';
 import { addIcons } from 'ionicons';
@@ -23,7 +25,7 @@ import { pencil, trash, add } from 'ionicons/icons';
     CommonModule, FormsModule,
     IonButton, IonModal, IonItem, IonInput, IonLabel, IonTextarea,
     IonCard, IonCardHeader, IonCardContent, IonList,
-    IonIcon, IonSpinner
+    IonIcon, IonSpinner, IonMenuComponent
   ]
 })
 export class AdminPromosPage implements OnInit {

@@ -17,6 +17,7 @@ export class AdminPedidosPage implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    console.log('AdminPedidosPage initialized');
   }
 
 }
