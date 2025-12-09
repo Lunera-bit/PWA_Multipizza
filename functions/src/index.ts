@@ -5,8 +5,8 @@ import * as admin from "firebase-admin";
 admin.initializeApp();
 
 const OLLAMA_URL = "http://localhost:11434/api/generate";
-const PAYPAL_CLIENT_ID = "AVID1fQErsLxWjsfqy09zjgtbEBJDcZS6ejSlWsRqGJuiuDb-XhQsHLMh8-vT91wZoamyrnDh6t9sJWd";
-const PAYPAL_SECRET = "ENXfFUPE4W87OLnE0JU70GXlJWfaPAZucS9uZCsiwRvKxYV7cAWpOZwYPxlOux1Z9opL69giULP95EQ5";
+const PAYPAL_CLIENT_ID = process.env['PAYPAL_CLIENT_ID'];
+const PAYPAL_SECRET = process.env['PAYPAL_SECRET'];
 const PAYPAL_API = "https://api.sandbox.paypal.com";
 const EXCHANGE_RATE = 3.4;
 const db = admin.firestore();
