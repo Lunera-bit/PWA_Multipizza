@@ -26,6 +26,7 @@ export const chatbot = onRequest(
     try {
       const message = req.body?.message;
       const userName = req.body?.userName || 'Usuario';
+      const isFirstMessage = req.body?.isFirstMessage || false;
       
       if (!message) {
         res.status(400).json({error: "Missing message"});
@@ -36,6 +37,7 @@ export const chatbot = onRequest(
 
       // Productos
       const productsSnapshot = await db.collection("products").get();
+      const products: any[] = [];
       context += "**PRODUCTOS DISPONIBLES:**\n";
       productsSnapshot.forEach(doc => {
         const data = doc.data();
@@ -47,11 +49,13 @@ export const chatbot = onRequest(
           categoria: data.categoria,
           tags: data.tags || [],
         };
+        products.push(productInfo);
         context += `- ${JSON.stringify(productInfo)}\n`;
       });
 
       // Promociones
       const promosSnapshot = await db.collection("promo").get();
+      const promos: any[] = [];
       context += "\n**PROMOCIONES DISPONIBLES:**\n";
       promosSnapshot.forEach(doc => {
         const data = doc.data();
@@ -61,34 +65,11 @@ export const chatbot = onRequest(
           precio: data.precio,
           descripcion: data.descripcion,
         };
+        promos.push(promoInfo);
         context += `- ${JSON.stringify(promoInfo)}\n`;
       });
 
-      // Pedidos
-      const pedidosSnapshot = await db.collection("pedidos").get();
-      context += "\n**PEDIDOS RECIENTES:**\n";
-      pedidosSnapshot.forEach(doc => {
-        const data = doc.data();
-        const items = data.items || [];
-        const itemsInfo = items.map((item: any) => ({
-          title: item.title,
-          qty: item.qty,
-        }));
-        const userInfo = items.map((user: any) => ({
-          name: user.name,
-        }));
-        const pedidoInfo = {
-          status: data.status,
-          total: data.total,
-          items: itemsInfo,
-          user: userInfo,
-        };
-        context += `- ${JSON.stringify(pedidoInfo)}\n`;
-      });
-
-      const response = await axios.post(OLLAMA_URL, {
-        model: "llama3",
-        prompt: `${context}\n\nINSTRUCCIONES IMPORTANTES:
+      let systemPrompt = `${context}\n\nINSTRUCCIONES IMPORTANTES:
           - Eres un asistente de atención al cliente de Multipizza
           - El usuario actual se llama: ${userName}
           - Puedes usar su nombre en las respuestas para ser más personal
@@ -99,6 +80,50 @@ export const chatbot = onRequest(
           - Responde en español
           - Responde de forma concisa, breve y clara
           - Identifícate como asistente de Multipizza cuando sea necesario
+          
+          IMPORTANTE - SISTEMA DE RESPUESTAS:
+          Si el usuario pide un producto específico o quiere agregar algo al carrito, SIEMPRE responde con JSON en este formato exacto:
+          {
+            "type": "product_card",
+            "text": "Tu mensaje aquí",
+            "product": {
+              "id": "id_del_producto",
+              "nombre": "Nombre del Producto",
+              "precio": 19.99,
+              "descripcion": "Descripción corta"
+            }
+          }
+          
+          Para múltiples productos, usa type "product_list":
+          {
+            "type": "product_list",
+            "text": "Tu mensaje aquí",
+            "products": [
+              {"id": "id1", "nombre": "Producto 1", "precio": 10.99, "descripcion": "..."},
+              {"id": "id2", "nombre": "Producto 2", "precio": 15.99, "descripcion": "..."}
+            ]
+          }
+          
+          Para respuestas normales de texto:
+          {
+            "type": "text",
+            "text": "Tu respuesta aquí"
+          }`;
+
+      if (isFirstMessage) {
+        systemPrompt += `\n\nEsta es la PRIMERA interacción del usuario. Después de saludar, SIEMPRE menciona las 3 opciones:
+          1. Recomendar pizzas personalizadas
+          2. Información detallada de productos
+          3. Información de promociones disponibles
+          
+          Pregúntale cuál le interesa.
+          
+          Responde en formato JSON tipo "text".`;
+      }
+
+      const response = await axios.post(OLLAMA_URL, {
+        model: "llama3",
+        prompt: `${systemPrompt}
 
         Usuario pregunta: ${message}`,
         stream: false,
@@ -107,10 +132,25 @@ export const chatbot = onRequest(
       });
 
       const reply = response.data?.response || "No response";
-      res.json({reply});
+      
+      // Intentar parsear como JSON
+      let parsedReply;
+      try {
+        // Buscar JSON en la respuesta
+        const jsonMatch = reply.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          parsedReply = JSON.parse(jsonMatch[0]);
+        } else {
+          parsedReply = { type: "text", text: reply };
+        }
+      } catch {
+        parsedReply = { type: "text", text: reply };
+      }
+      
+      res.json(parsedReply);
     } catch (error) {
       console.error("Error:", error);
-      res.status(500).json({error: "Failed to process"});
+      res.status(500).json({type: "text", text: "Error conectando al servidor X-X"});
     }
   }
 );

@@ -1,3 +1,52 @@
+:host { display:block; }
+
+/* toolbar */
+.app-header-toolbar {
+  --background: #b40707;
+  padding: 6px 10px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+
+.app-title { font-weight:700; color:#ffffff; }
+
+/* actions */
+.header-actions .actions-group { display:flex; gap:8px; align-items:center; }
+.icon-button { --background: transparent; --color: #ffffff; width:40px; height:40px; padding:0; }
+
+/* posicionar badge sobre el botón del carrito */
+.header-actions .action-item {
+  position: relative;
+}
+
+/* badge circular roja */
+.action-badge.cart-badge {
+  position: absolute;
+  top: 2px;
+  right: 0px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--ion-color-danger, #c82333);
+  color: #fff;
+  font-size: 0.75rem;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+/* efecto pulse cuando se agrega un item */
+.cart-button.pulse {
+  animation: cart-pulse 700ms ease;
+}
+@keyframes cart-pulse {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.12); }
+  60% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
 ion-content {
   --padding-top: 0;
   --padding-bottom: 0;

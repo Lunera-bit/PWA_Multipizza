@@ -1,8 +1,75 @@
 <ion-content class="chat-content">
   <div class="messages-container">
     <div *ngFor="let msg of messages" [class.message]="true" [class.user]="msg.role === 'user'" [class.bot]="msg.role === 'bot'">
-      <div class="message-bubble">
+      
+      <!-- Texto normal -->
+      <div *ngIf="msg.type === 'text' || !msg.type" class="message-bubble">
         {{ msg.text }}
+      </div>
+
+      <!-- Card de producto único -->
+      <div *ngIf="msg.type === 'product_card'" class="message-bubble product-card">
+        <p class="card-text">{{ msg.text }}</p>
+        <div class="product-info" *ngIf="msg.product">
+          <h3>{{ msg.product.nombre }}</h3>
+          <p class="description">{{ msg.product.descripcion }}</p>
+          
+          <!-- Selector de tamaño -->
+          <div class="size-selector">
+            <label>Tamaño:</label>
+            <select [(ngModel)]="selectedSize" class="size-select">
+              <option *ngFor="let size of sizes" [value]="size.id">
+                {{ size.label }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Información de precio y cantidad -->
+          <div class="product-details">
+            <div class="detail-row">
+              <span>Cantidad:</span>
+              <strong>1</strong>
+            </div>
+            <div class="detail-row">
+              <span>Tamaño:</span>
+              <strong>{{ getSizeLabel() }}</strong>
+            </div>
+            <div class="detail-row price">
+              <span>Precio:</span>
+              <strong>S/. {{ getProductPrice(msg.product.precio) }}</strong>
+            </div>
+          </div>
+
+          <!-- Botón agregar al carrito -->
+          <div class="add-to-cart-wrapper">
+            <app-add-to-cart 
+              [item]="msg.product"
+              [qty]="1"
+              [selectedSize]="selectedSize"
+              (added)="onProductAdded()">
+            </app-add-to-cart>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de productos -->
+      <div *ngIf="msg.type === 'product_list'" class="message-bubble">
+        <p class="card-text">{{ msg.text }}</p>
+        <div class="products-list">
+          <div *ngFor="let product of msg.products" class="product-item">
+            <h4>{{ product.nombre }}</h4>
+            <p>{{ product.descripcion }}</p>
+            <div class="product-footer">
+              <span class="price">S/. {{ product.precio }}</span>
+              <app-add-to-cart 
+                [item]="product"
+                [qty]="1"
+                [selectedSize]="'personal'"
+                (added)="onProductAdded()">
+              </app-add-to-cart>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     
@@ -13,6 +80,7 @@
     </div>
   </div>
 </ion-content>
+
 <ion-footer class="chat-footer">
   <ion-toolbar class="input-footer">
     <div class="input-area">
@@ -34,5 +102,3 @@
     </div>
   </ion-toolbar>
 </ion-footer>
-
-<app-footer></app-footer>
