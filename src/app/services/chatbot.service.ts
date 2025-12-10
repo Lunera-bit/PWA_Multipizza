@@ -4,6 +4,23 @@ import { Observable } from 'rxjs';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
+interface ChatbotResponse {
+  type: 'text' | 'product_card' | 'product_list';
+  text: string;
+  product?: {
+    id: string;
+    nombre: string;
+    precio: number;
+    descripcion: string;
+  };
+  products?: Array<{
+    id: string;
+    nombre: string;
+    precio: number;
+    descripcion: string;
+  }>;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,11 +29,12 @@ export class ChatbotService {
 
   constructor(private http: HttpClient) {}
 
-  async sendMessage(message: string): Promise<Observable<{reply: string}>> {
+  async sendMessage(message: string, isFirstMessage: boolean = false): Promise<Observable<ChatbotResponse>> {
     const userName = await this.getUserName();
-    return this.http.post<{reply: string}>(this.apiUrl, {
+    return this.http.post<ChatbotResponse>(this.apiUrl, {
       message,
-      userName: userName || 'Usuario'
+      userName: userName || 'Usuario',
+      isFirstMessage
     });
   }
 
@@ -27,7 +45,6 @@ export class ChatbotService {
       
       if (!user) return null;
 
-      // Obtiene el nombre de Firestore en la colección 'usuarios'
       const db = getFirestore();
       const userDoc = await getDoc(doc(db, 'usuarios', user.uid));
       
