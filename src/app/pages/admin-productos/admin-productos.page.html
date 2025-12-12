@@ -6,10 +6,86 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">admin-productos</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+
+  <!-- PANEL BLANCO -->
+  <div class="panel-productos">
+
+    <h2>Productos existentes</h2>
+
+    <h2>Categorías</h2>
+
+    <!-- MENÚ DE CATEGORÍAS -->
+    <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
+      <ion-button size="small" [color]="selectedCategory === 'todas' ? 'primary' : 'medium'"
+                  (click)="changeCategory('todas')">
+        Todas
+      </ion-button>
+
+      <ion-button size="small" [color]="selectedCategory === 'pizzas' ? 'primary' : 'medium'"
+                  (click)="changeCategory('pizzas')">
+        Pizzas
+      </ion-button>
+
+      <ion-button size="small" [color]="selectedCategory === 'bebidas' ? 'primary' : 'medium'"
+                  (click)="changeCategory('bebidas')">
+        Bebidas
+      </ion-button>
+
+      <ion-button size="small" [color]="selectedCategory === 'complementos' ? 'primary' : 'medium'"
+                  (click)="changeCategory('complementos')">
+        Complementos
+      </ion-button>
+    </div>
+
+    <!-- LISTA DE PRODUCTOS -->
+    <div *ngFor="let p of (productos$ | async)">
+
+      <!-- SI NO ESTÁ EDITANDO -->
+      <div *ngIf="!editProduct || editProduct.id !== p.id">
+        <ion-item>
+          <img *ngIf="p.imagen" [src]="p.imagen"
+               style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 10px;">
+
+          <ion-label>
+            <b>{{ p.nombre }}</b><br>
+            {{ p.categoria }} — S/ {{ p.precio }}<br>
+            <small>{{ p.descripcion }}</small>
+          </ion-label>
+
+          <ion-button color="primary" (click)="enableEdit(p)">Editar</ion-button>
+          <ion-button color="danger" (click)="deleteProduct(p.id!)">Eliminar</ion-button>
+        </ion-item>
+      </div>
+
+      <!-- FORMULARIO DE EDICIÓN -->
+      <div *ngIf="editProduct && editProduct.id === p.id">
+
+        <h3>Editar: {{ editProduct.nombre }}</h3>
+
+        <ion-item>
+          <ion-input placeholder="Nombre" [(ngModel)]="editProduct.nombre"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input placeholder="Descripción" [(ngModel)]="editProduct.descripcion"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input type="number" placeholder="Precio" [(ngModel)]="editProduct.precio"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input placeholder="URL Imagen" [(ngModel)]="editProduct.imagen"></ion-input>
+        </ion-item>
+
+        <ion-button color="success" (click)="saveChanges()">Guardar cambios</ion-button>
+        <ion-button (click)="cancelEdit()">Cancelar</ion-button>
+
+      </div>
+
+    </div>
+
+  </div> <!-- FIN PANEL -->
+
 </ion-content>
