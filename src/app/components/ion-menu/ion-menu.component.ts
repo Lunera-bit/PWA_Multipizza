@@ -4,6 +4,8 @@ import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 
 import { Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 // 👉 IMPORTS DE IONIC NECESARIOS PARA TU HTML
 import {
@@ -46,6 +48,8 @@ import {
     IonToggle,
     IonAccordion,
     IonAccordionGroup,
+    CommonModule,
+    RouterModule,
   ],
 })
 export class IonMenuComponent implements OnInit {
