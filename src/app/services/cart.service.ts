@@ -117,4 +117,21 @@ export class CartService {
     });
     await t.present();
   }
+
+  /**
+   * Obtener el total del carrito
+   */
+  getTotal(): number {
+    return this.cart$.value.reduce((total, item) => total + (item.price * item.qty), 0);
+  }
+
+  /**
+   * Obtener los items del carrito para crear una orden
+   */
+  getCartForOrder() {
+    return {
+      items: this.cart$.value,
+      total: this.getTotal()
+    };
+  }
 }

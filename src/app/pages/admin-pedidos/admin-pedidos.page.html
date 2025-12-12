@@ -1,17 +1,214 @@
 <app-ion-menu></app-ion-menu>
 
-<app-ion-menu></app-ion-menu>
-
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>admin-pedidos</ion-title>
+    <ion-title>Gestión de Pedidos</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">admin-pedidos</ion-title>
+      <ion-title size="large">Gestión de Pedidos</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <!-- Estadísticas -->
+  <div class="stats-container">
+    <ion-card class="stat-card">
+      <ion-card-content>
+        <div class="stat-value">{{ getTotalOrders() }}</div>
+        <div class="stat-label">Total Pedidos</div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="stat-card">
+      <ion-card-content>
+        <div class="stat-value">{{ getPendingOrders() }}</div>
+        <div class="stat-label">Pendientes</div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="stat-card">
+      <ion-card-content>
+        <div class="stat-value">{{ getDeliveredOrders() }}</div>
+        <div class="stat-label">Entregados</div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-container">
+    <ion-searchbar
+      [(ngModel)]="searchTerm"
+      (ionInput)="onSearch($event)"
+      placeholder="Buscar por nombre, email, teléfono u orden..."
+      debounce="500"
+    ></ion-searchbar>
+
+    <ion-select
+      [(ngModel)]="selectedStatus"
+      (ionChange)="onStatusChange()"
+      placeholder="Filtrar por estado"
+      interface="popover"
+    >
+      <ion-select-option value="">Todos los estados</ion-select-option>
+      <ion-select-option value="pendiente">⏳ Pendiente</ion-select-option>
+      <ion-select-option value="en camino">🚚 En camino</ion-select-option>
+      <ion-select-option value="entregado">✅ Entregado</ion-select-option>
+      <ion-select-option value="cancelado">❌ Cancelado</ion-select-option>
+    </ion-select>
+  </div>
+
+  <!-- Cargando -->
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner></ion-spinner>
+    <p>Cargando órdenes...</p>
+  </div>
+
+  <!-- Lista de Órdenes -->
+  <div *ngIf="!loading && filteredOrdenes.length > 0" class="ordenes-list">
+    <ion-accordion-group>
+      <ion-accordion *ngFor="let orden of filteredOrdenes; let i = index" [value]="'orden-' + i">
+        <!-- Header del Acordeón -->
+        <ion-item slot="header" class="accordion-header">
+          <div class="header-content">
+            <div class="header-left">
+              <ion-label>
+                <h2>Orden #{{ orden.id }}</h2>
+                <p class="text-muted">{{ orden.user?.name }} - {{ orden.createdAt?.toDate() | date: 'short' }}</p>
+              </ion-label>
+            </div>
+            <ion-badge [color]="getStatusColor(orden.status)" class="header-badge">
+              {{ orden.status }}
+            </ion-badge>
+            <div class="header-total">
+              <strong>${{ orden.total?.toFixed(2) }}</strong>
+            </div>
+          </div>
+        </ion-item>
+
+        <!-- Contenido del Acordeón -->
+        <div slot="content" class="accordion-content">
+          <!-- Información del cliente -->
+          <div class="section">
+            <h3>📋 Cliente</h3>
+            <p><strong>Nombre:</strong> {{ orden.user?.name }}</p>
+            <p><strong>Email:</strong> {{ orden.user?.email }}</p>
+            <p><strong>Teléfono:</strong> {{ orden.user?.phone }}</p>
+            <p><strong>Dirección:</strong> {{ orden.address?.street }}, {{ orden.address?.details }}</p>
+            <p *ngIf="orden.address?.instructions"><strong>Instrucciones:</strong> {{ orden.address?.instructions }}</p>
+          </div>
+
+          <!-- Artículos -->
+          <div class="section">
+            <h3>📦 Artículos</h3>
+            <div class="items-list">
+              <div *ngFor="let item of orden.items" class="item-row">
+                <span>{{ item.title }} (x{{ item.qty }})</span>
+                <span class="item-price">${{ (item.price * item.qty).toFixed(2) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total -->
+          <div class="section total-section">
+            <strong>Total:</strong>
+            <strong class="total-amount">${{ orden.total?.toFixed(2) }}</strong>
+          </div>
+
+          <!-- Pago -->
+          <div class="section" *ngIf="orden.payment">
+            <h3>💳 Pago</h3>
+            <p><strong>Método:</strong> {{ orden.payment?.method }}</p>
+            <p><strong>Monto:</strong> ${{ orden.payment?.amount }}</p>
+            <p><strong>Estado:</strong> {{ orden.payment?.status }}</p>
+            <p *ngIf="orden.payment?.payer"><strong>Pagador:</strong> {{ orden.payment?.payer }}</p>
+          </div>
+
+          <!-- Acciones -->
+          <div class="actions-section">
+            <ion-button expand="block" color="primary" (click)="editOrden(orden)">
+              <ion-icon slot="start" name="create"></ion-icon>
+              Editar
+            </ion-button>
+
+            <ion-button expand="block" color="danger" (click)="deleteOrden(orden)">
+              <ion-icon slot="start" name="trash"></ion-icon>
+              Eliminar
+            </ion-button>
+
+            <!-- Selector rápido de estado -->
+            <div class="quick-status">
+              <p class="text-muted">Cambiar estado:</p>
+              <div class="status-buttons">
+                <ion-button
+                  *ngFor="let status of statusOptions"
+                  size="small"
+                  [color]="getStatusColor(status.value)"
+                  [outline]="orden.status !== status.value"
+                  (click)="changeStatus(orden, status.value)"
+                >
+                  {{ status.label }}
+                </ion-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </div>
+
+  <!-- Sin resultados -->
+  <div *ngIf="!loading && filteredOrdenes.length === 0" class="empty-state">
+    <p>No se encontraron órdenes</p>
+  </div>
 </ion-content>
+
+<!-- Modal de Edición -->
+<ion-modal [isOpen]="showEditModal" (didDismiss)="closeEditModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Editar Orden</ion-title>
+        <ion-button slot="end" (click)="closeEditModal()">Cerrar</ion-button>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content *ngIf="editingOrden">
+      <ion-item>
+        <ion-label>Estado</ion-label>
+        <ion-select [(ngModel)]="editingOrden.status">
+          <ion-select-option
+            *ngFor="let status of statusOptions"
+            [value]="status.value"
+          >
+            {{ status.label }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Notas</ion-label>
+        <ion-input
+          [(ngModel)]="editingOrden.notes"
+          placeholder="Agregar notas sobre la orden..."
+          rows="4"
+        ></ion-input>
+      </ion-item>
+
+      <div class="modal-buttons">
+        <ion-button expand="block" color="primary" (click)="saveOrdenChanges()">
+          Guardar Cambios
+        </ion-button>
+        <ion-button
+          expand="block"
+          color="medium"
+          (click)="closeEditModal()"
+        >
+          Cancelar
+        </ion-button>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
