@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { StorageService } from '../../services/storage.service';
+
 
 // Ionic mínimos
 import {
@@ -44,19 +46,42 @@ export class AdminProductosPage implements OnInit {
   editProduct: Product | null = null;
  selectedCategory: string = 'todas';
 
-  constructor(private productService: ProductService) {}
+  constructor(private productService: ProductService , private storageSvc: StorageService) {}
 
   ngOnInit() {
   this.loadProducts();
 }
 
 loadProducts() {
-  if (this.selectedCategory === 'todas') {
-    this.productos$ = this.productService.getProducts();
-  } else {
-    this.productos$ = this.productService.getProductsFiltered(this.selectedCategory);
-  }
+  const obs =
+    this.selectedCategory === 'todas'
+      ? this.productService.getProducts()
+      : this.productService.getProductsFiltered(this.selectedCategory);
+
+  this.productos$ = new Observable(observer => {
+    obs.subscribe(async products => {
+
+      // obtener rutas de imágenes
+      const imagePaths = products
+        .map(p => p.imagen)
+        .filter((img): img is string => !!img);
+
+      // convertir rutas → URLs reales
+      if (imagePaths.length > 0) {
+        const urlMap = await this.storageSvc.getImageUrls(imagePaths);
+        products.forEach(p => {
+          if (p.imagen) {
+            (p as any).imagenUrl = urlMap.get(p.imagen);
+          }
+        });
+      }
+
+      observer.next(products);
+      observer.complete();
+    });
+  });
 }
+
 
 changeCategory(cat: string) {
   this.selectedCategory = cat;
