@@ -44,8 +44,13 @@
       <!-- SI NO ESTÁ EDITANDO -->
       <div *ngIf="!editProduct || editProduct.id !== p.id">
         <ion-item>
-          <img *ngIf="p.imagen" [src]="p.imagen"
-               style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 10px;">
+        <img
+  *ngIf="p.imagenUrl || p.imagen"
+  [src]="p.imagenUrl || 'assets/img/placeholder.png'"
+  style="width:80px;height:80px;object-fit:cover;border-radius:8px;margin-right:10px;"
+>
+
+
 
           <ion-label>
             <b>{{ p.nombre }}</b><br>
