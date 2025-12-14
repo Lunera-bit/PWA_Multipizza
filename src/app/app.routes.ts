@@ -135,4 +135,12 @@ export const routes: Routes = [
       ),
     canActivate: [AuthGuard],
   },
+  {
+    path: 'delivery-order-tracking/:orderId',
+    loadComponent: () =>
+      import('./pages/delivery-order-tracking/delivery-order-tracking.page').then(
+        (m) => m.DeliveryOrderTrackingPage
+      ),
+    canActivate: [AuthGuard],
+  },
 ];

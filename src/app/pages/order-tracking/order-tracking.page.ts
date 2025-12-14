@@ -21,6 +21,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import { Order } from '../../models/orden.model';
 import { TrackingService, LocationUpdate } from '../../services/tracking.service';
+import { MapboxRoutingService } from '../../services/mapbox-routing.service';
+import { environment } from '../../../environments/environment';
 import { addIcons } from 'ionicons';
 import {
   mapOutline,
@@ -67,14 +69,17 @@ export class OrderTrackingPage implements OnInit, OnDestroy {
   private map: any = null;
   private deliveryMarker: any = null;
   private customerMarker: any = null;
+  private routeSource: any = null;
   private unsubscribeOrder?: () => void;
   private unsubscribeLocation?: () => void;
   private mapScript: boolean = false;
+  private mapboxgl: any;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private trackingService: TrackingService
+    private trackingService: TrackingService,
+    private mapboxRoutingService: MapboxRoutingService
   ) {
     addIcons({
       mapOutline,
@@ -83,6 +88,26 @@ export class OrderTrackingPage implements OnInit, OnDestroy {
       personOutline,
       callOutline,
     });
+  }
+
+  /**
+   * Obtener latitud de coordenadas (soporta ambos formatos)
+   */
+  private getCoordinateLat(coords: any): number {
+    if (typeof coords === 'object' && !Array.isArray(coords)) {
+      return coords.lat;
+    }
+    return coords[1];
+  }
+
+  /**
+   * Obtener longitud de coordenadas (soporta ambos formatos)
+   */
+  private getCoordinateLng(coords: any): number {
+    if (typeof coords === 'object' && !Array.isArray(coords)) {
+      return coords.lng;
+    }
+    return coords[0];
   }
 
   ngOnInit() {
@@ -95,6 +120,9 @@ export class OrderTrackingPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.unsubscribeOrder) this.unsubscribeOrder();
     if (this.unsubscribeLocation) this.unsubscribeLocation();
+    if (this.map) {
+      this.map.remove();
+    }
   }
 
   /**
@@ -180,68 +208,182 @@ export class OrderTrackingPage implements OnInit, OnDestroy {
   private createMap() {
     if (!this.mapContainer || !this.order?.address?.coordinates) return;
 
-    const mapboxgl = (window as any).mapboxgl;
+    this.mapboxgl = (window as any).mapboxgl;
+    this.mapboxgl.accessToken = environment.mapboxToken;
 
-    // Nota: Debes reemplazar esto con tu token real de Mapbox
-    const mapboxToken =
-      'pk.eyJ1IjoiaG9sYTIzMTM0MSIsImEiOiJjbWlmNWx0azkwMjl5M3BwdTYxdDhtNHBmIn0.UX1wDxJ8Bah1BP-OUJAP8Q'; // Reemplaza con tu token
-
-    mapboxgl.accessToken = mapboxToken;
-
-    const customerLat = this.order.address.coordinates.lat;
-    const customerLng = this.order.address.coordinates.lng;
+    const customerLat = this.getCoordinateLat(this.order.address.coordinates);
+    const customerLng = this.getCoordinateLng(this.order.address.coordinates);
     const centerLat =
       (customerLat + (this.deliveryLocation?.lat || customerLat)) / 2;
     const centerLng =
       (customerLng + (this.deliveryLocation?.lng || customerLng)) / 2;
 
-    this.map = new mapboxgl.Map({
+    this.map = new this.mapboxgl.Map({
       container: this.mapContainer.nativeElement,
       style: 'mapbox://styles/mapbox/streets-v12',
       center: [centerLng, centerLat],
       zoom: 14,
     });
 
-    // Agregar marcadores después de que el mapa cargue
+    // Agregar marcadores y ruta después de que el mapa cargue
     this.map.on('load', () => {
-      this.addMarkers();
+      this.addMarkersAndRoute();
     });
   }
 
   /**
-   * Agregar marcadores al mapa
+   * Agregar marcadores y ruta al mapa
    */
-  private addMarkers() {
-    if (!this.map || !this.order) return;
+  private addMarkersAndRoute() {
+    if (!this.map || !this.order?.address?.coordinates) return;
 
-    const mapboxgl = (window as any).mapboxgl;
+    // Agregar source y layer para la ruta
+    this.map.addSource('route', {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: []
+        }
+      }
+    });
+
+    this.map.addLayer({
+      id: 'route',
+      type: 'line',
+      source: 'route',
+      layout: {
+        'line-join': 'round',
+        'line-cap': 'round'
+      },
+      paint: {
+        'line-color': '#3b82f6',
+        'line-width': 4
+      }
+    });
 
     // Marcador de cliente
-    if (this.order.address?.coordinates) {
-      const customerMarkerEl = document.createElement('div');
-      customerMarkerEl.className = 'marker customer-marker';
-      customerMarkerEl.innerHTML =
-        '📍 <span style="color: #FF6B6B; font-weight: bold;">Cliente</span>';
+    const customerMarkerEl = document.createElement('div');
+    customerMarkerEl.className = 'marker customer-marker';
+    customerMarkerEl.innerHTML = '📍';
+    customerMarkerEl.style.width = '32px';
+    customerMarkerEl.style.height = '32px';
+    customerMarkerEl.style.backgroundSize = 'contain';
 
-      this.customerMarker = new mapboxgl.Marker(customerMarkerEl)
-        .setLngLat([
-          this.order.address.coordinates.lng,
-          this.order.address.coordinates.lat,
-        ])
-        .addTo(this.map);
-    }
+    const customerLat = this.getCoordinateLat(this.order.address.coordinates);
+    const customerLng = this.getCoordinateLng(this.order.address.coordinates);
 
-    // Marcador de delivery
+    this.customerMarker = new this.mapboxgl.Marker(customerMarkerEl, { color: '#FF6B6B' })
+      .setLngLat([customerLng, customerLat])
+      .setPopup(new this.mapboxgl.Popup({ offset: 25 })
+        .setHTML(`<div><strong>Entrega</strong><br>${this.order.address?.street || 'Dirección'}</div>`))
+      .addTo(this.map);
+
+    // Marcador de delivery si existe ubicación
     if (this.deliveryLocation) {
-      const deliveryMarkerEl = document.createElement('div');
-      deliveryMarkerEl.className = 'marker delivery-marker';
-      deliveryMarkerEl.innerHTML =
-        '🚗 <span style="color: #4CAF50; font-weight: bold;">Delivery</span>';
-
-      this.deliveryMarker = new mapboxgl.Marker(deliveryMarkerEl)
-        .setLngLat([this.deliveryLocation.lng, this.deliveryLocation.lat])
-        .addTo(this.map);
+      this.addDeliveryMarker();
+      this.drawRoute();
     }
+  }
+
+  /**
+   * Agregar marcador de delivery
+   */
+  private addDeliveryMarker() {
+    if (!this.map || !this.deliveryLocation) return;
+
+    const deliveryMarkerEl = document.createElement('div');
+    deliveryMarkerEl.className = 'marker delivery-marker';
+    deliveryMarkerEl.innerHTML = '🚗';
+    deliveryMarkerEl.style.width = '32px';
+    deliveryMarkerEl.style.height = '32px';
+    deliveryMarkerEl.style.backgroundSize = 'contain';
+
+    if (this.deliveryMarker) {
+      this.deliveryMarker.remove();
+    }
+
+    this.deliveryMarker = new this.mapboxgl.Marker(deliveryMarkerEl, { color: '#4CAF50' })
+      .setLngLat([this.deliveryLocation.lng, this.deliveryLocation.lat])
+      .setPopup(new this.mapboxgl.Popup({ offset: 25 })
+        .setHTML(`<div><strong>Repartidor</strong><br>${this.order?.deliveryPerson?.displayName || 'En ruta'}</div>`))
+      .addTo(this.map);
+  }
+
+  /**
+   * Dibujar ruta usando Mapbox Directions API
+   */
+  private drawRoute() {
+    if (!this.order?.address?.coordinates || !this.deliveryLocation) return;
+
+    const customerLat = this.getCoordinateLat(this.order.address.coordinates);
+    const customerLng = this.getCoordinateLng(this.order.address.coordinates);
+
+    this.mapboxRoutingService
+      .getRoute([this.deliveryLocation.lng, this.deliveryLocation.lat], [customerLng, customerLat])
+      .subscribe(
+        (response) => {
+          if (response.routes && response.routes.length > 0) {
+            const route = response.routes[0];
+            if (this.map && this.map.getSource('route')) {
+              this.map.getSource('route').setData({
+                type: 'Feature',
+                properties: {},
+                geometry: route.geometry
+              });
+            }
+            this.fitMapToMarkers();
+          }
+        },
+        (error) => {
+          console.error('Error getting route:', error);
+          // Si hay error, usar aproximación con línea recta
+          this.drawDirectLine();
+        }
+      );
+  }
+
+  /**
+   * Dibujar línea recta como fallback
+   */
+  private drawDirectLine() {
+    if (!this.order?.address?.coordinates || !this.deliveryLocation) return;
+
+    const customerLat = this.getCoordinateLat(this.order.address.coordinates);
+    const customerLng = this.getCoordinateLng(this.order.address.coordinates);
+
+    if (this.map && this.map.getSource('route')) {
+      this.map.getSource('route').setData({
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [this.deliveryLocation.lng, this.deliveryLocation.lat],
+            [customerLng, customerLat]
+          ]
+        }
+      });
+    }
+    this.fitMapToMarkers();
+  }
+
+  /**
+   * Ajustar zoom del mapa para mostrar ambos marcadores
+   */
+  private fitMapToMarkers() {
+    if (!this.map || !this.order?.address?.coordinates || !this.deliveryLocation) return;
+
+    const customerLat = this.getCoordinateLat(this.order.address.coordinates);
+    const customerLng = this.getCoordinateLng(this.order.address.coordinates);
+
+    const bounds = new this.mapboxgl.LngLatBounds();
+    bounds.extend([customerLng, customerLat]);
+    bounds.extend([this.deliveryLocation.lng, this.deliveryLocation.lat]);
+
+    this.map.fitBounds(bounds, { padding: 50 });
   }
 
   /**
@@ -250,44 +392,8 @@ export class OrderTrackingPage implements OnInit, OnDestroy {
   private updateMapMarkers() {
     if (!this.map || !this.deliveryLocation) return;
 
-    const mapboxgl = (window as any).mapboxgl;
-
-    // Actualizar marcador de delivery
-    if (this.deliveryMarker) {
-      this.deliveryMarker.setLngLat([
-        this.deliveryLocation.lng,
-        this.deliveryLocation.lat,
-      ]);
-    } else {
-      const deliveryMarkerEl = document.createElement('div');
-      deliveryMarkerEl.className = 'marker delivery-marker';
-      deliveryMarkerEl.innerHTML =
-        '🚗 <span style="color: #4CAF50;">Delivery</span>';
-
-      this.deliveryMarker = new mapboxgl.Marker(deliveryMarkerEl)
-        .setLngLat([this.deliveryLocation.lng, this.deliveryLocation.lat])
-        .addTo(this.map);
-    }
-
-    // Ajustar zoom para mostrar ambos marcadores
-    this.fitMapToMarkers();
-  }
-
-  /**
-   * Ajustar zoom del mapa para mostrar ambos marcadores
-   */
-  private fitMapToMarkers() {
-    if (!this.map || !this.order?.address?.coordinates || !this.deliveryLocation)
-      return;
-
-    const bounds = new (window as any).mapboxgl.LngLatBounds();
-    bounds.extend([
-      this.order.address.coordinates.lng,
-      this.order.address.coordinates.lat,
-    ]);
-    bounds.extend([this.deliveryLocation.lng, this.deliveryLocation.lat]);
-
-    this.map.fitBounds(bounds, { padding: 50 });
+    this.addDeliveryMarker();
+    this.drawRoute();
   }
 
   /**
@@ -296,16 +402,29 @@ export class OrderTrackingPage implements OnInit, OnDestroy {
   private calculateDistance() {
     if (!this.deliveryLocation || !this.order?.address?.coordinates) return;
 
-    this.distance = this.trackingService.calculateDistance(
-      this.deliveryLocation.lat,
-      this.deliveryLocation.lng,
-      this.order.address.coordinates.lat,
-      this.order.address.coordinates.lng
-    );
+    const customerLat = this.getCoordinateLat(this.order.address.coordinates);
+    const customerLng = this.getCoordinateLng(this.order.address.coordinates);
 
-    this.estimatedTime = this.trackingService.estimateDeliveryTime(
-      this.distance
-    );
+    // Usar Mapbox para distancia más precisa si es posible
+    this.mapboxRoutingService
+      .getDistanceAndETA([this.deliveryLocation.lng, this.deliveryLocation.lat], [customerLng, customerLat])
+      .subscribe(
+        (result) => {
+          this.distance = result.distance;
+          this.estimatedTime = result.duration;
+        },
+        (error) => {
+          console.warn('Could not get route ETA, using estimate:', error);
+          // Fallback a cálculo rápido
+          this.distance = this.trackingService.calculateDistance(
+            this.deliveryLocation!.lat,
+            this.deliveryLocation!.lng,
+            customerLat,
+            customerLng
+          );
+          this.estimatedTime = this.trackingService.estimateDeliveryTime(this.distance);
+        }
+      );
   }
 
   /**

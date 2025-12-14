@@ -10,6 +10,7 @@ import {
   Unsubscribe,
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { MapboxRoutingService } from './mapbox-routing.service';
 
 export interface LocationUpdate {
   lat: number;
@@ -30,7 +31,7 @@ export class TrackingService {
   private unsubscribe: Unsubscribe | null = null;
   private isMobileDevice = Capacitor.isNativePlatform();
 
-  constructor() {}
+  constructor(private mapboxRoutingService: MapboxRoutingService) {}
 
   /**
    * Obtener ubicación del dispositivo (móvil o navegador)
@@ -262,4 +263,80 @@ export class TrackingService {
   async getCurrentDeviceLocation(): Promise<LocationUpdate> {
     return this.getDeviceLocation();
   }
+
+  /**
+   * Obtener ruta con distancia y ETA usando Mapbox
+   */
+  async getRouteWithETA(
+    origin: [number, number],
+    destination: [number, number]
+  ): Promise<{
+    distance: number;
+    duration: number;
+    distanceMeters: number;
+    durationSeconds: number;
+  }> {
+    return this.mapboxRoutingService
+      .getDistanceAndETA(origin, destination)
+      .toPromise()
+      .then(result => {
+        if (!result) throw new Error('No route found');
+        return result;
+      });
+  }
+
+  /**
+   * Obtener ruta completa con geometría
+   */
+  async getRoute(
+    origin: [number, number],
+    destination: [number, number]
+  ): Promise<{
+    distance: number;
+    duration: number;
+    geometry: {
+      coordinates: [number, number][];
+      type: string;
+    };
+  }> {
+    return this.mapboxRoutingService
+      .getRoute(origin, destination)
+      .toPromise()
+      .then(response => {
+        if (!response || !response.routes || response.routes.length === 0) {
+          throw new Error('No route found');
+        }
+        const route = response.routes[0];
+        return {
+          distance: Math.round((route.distance / 1000) * 100) / 100,
+          duration: Math.ceil(route.duration / 60),
+          geometry: route.geometry
+        };
+      });
+  }
+
+  /**
+   * Geocodificar una dirección
+   */
+  geocodeAddress(query: string, proximity?: [number, number]): Observable<any> {
+    return this.mapboxRoutingService.geocodeAddress(query, proximity);
+  }
+
+  /**
+   * Geocodificación inversa
+   */
+  reverseGeocode(coordinates: [number, number]): Observable<any> {
+    return this.mapboxRoutingService.reverseGeocode(coordinates);
+  }
+
+  /**
+   * Calcular distancia rápida usando Haversine
+   */
+  getQuickDistance(
+    origin: [number, number],
+    destination: [number, number]
+  ): number {
+    return this.mapboxRoutingService.calculateHaversineDistance(origin, destination);
+  }
 }
+

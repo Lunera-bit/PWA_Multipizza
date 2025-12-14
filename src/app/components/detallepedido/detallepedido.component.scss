@@ -319,4 +319,39 @@
       grid-template-columns: 80px 1fr;
     }
   }
+
+  // Tracking map styles
+  .tracking-btn {
+    margin-top: 15px;
+  }
+
+  .tracking-map-container {
+    margin-top: 15px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .loading-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      z-index: 10;
+    }
+
+    .tracking-map {
+      width: 100%;
+      height: 300px;
+      background: #f0f0f0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+  }
 }

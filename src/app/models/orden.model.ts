@@ -15,7 +15,7 @@ export interface Address {
   coordinates?: {
     lat: number;
     lng: number;
-  };
+  } | [number, number];
   lat?: number;
   lng?: number;
   details?: string;
@@ -49,6 +49,11 @@ export interface DeliveryPerson {
   phone?: string;
 }
 
+export interface RouteGeometry {
+  type: string;
+  coordinates: [number, number][];
+}
+
 export interface Order {
   id?: string;
   address?: Address;
@@ -63,4 +68,8 @@ export interface Order {
   deliveryPerson?: DeliveryPerson;
   acceptedAt?: any;
   estimatedDeliveryTime?: number; // en minutos
+  routeGeometry?: RouteGeometry; // Geometría de la ruta
+  routeDistance?: number; // Distancia en km
+  routeDuration?: number; // Duración en minutos
+  deliveredAt?: any; // Timestamp de entrega
 }
