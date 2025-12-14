@@ -1,0 +1,343 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Seguimiento de Pedido</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-spinner *ngIf="isLoading" name="crescent" class="spinner-center"></ion-spinner>
+
+  <div *ngIf="!isLoading && order" class="tracking-container">
+    <!-- Estado del Pedido -->
+    <ion-card class="status-card">
+      <ion-card-header>
+        <ion-card-title>
+          Pedido #{{ order.id?.substring(0, 8).toUpperCase() }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="status-section">
+          <ion-badge [color]="getStatusColor(order.status!)">
+            <ion-icon [name]="getStatusIcon(order.status!)"></ion-icon>
+            {{ order.status }}
+          </ion-badge>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Mapa de Seguimiento -->
+    <div *ngIf="order.status === 'en camino' && deliveryLocation" class="map-section">
+      <div #mapContainer class="mapbox-container"></div>
+    </div>
+
+    <!-- Información de Distancia y Tiempo -->
+    <ion-card *ngIf="distance !== null && estimatedTime !== null" class="distance-card">
+      <ion-card-content>
+        <div class="distance-info">
+          <div class="info-item">
+            <ion-icon name="location-outline"></ion-icon>
+            <div>
+              <p class="label">Distancia</p>
+              <p class="value">{{ (distance | number: '1.1-2') }} km</p>
+            </div>
+          </div>
+          <div class="separator"></div>
+          <div class="info-item">
+            <ion-icon name="time-outline"></ion-icon>
+            <div>
+              <p class="label">Tiempo Estimado</p>
+              <p class="value">{{ estimatedTime }} min</p>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Información del Delivery -->
+    <ion-card *ngIf="order.deliveryPerson && order.status === 'en camino'">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="person-outline"></ion-icon>
+          Tu Repartidor
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="delivery-info">
+          <div class="delivery-photo" *ngIf="order.deliveryPerson.photoURL">
+            <img [src]="order.deliveryPerson.photoURL" [alt]="order.deliveryPerson.displayName" />
+          </div>
+          <div class="delivery-details">
+            <h3>{{ order.deliveryPerson.displayName }}</h3>
+            <p *ngIf="order.deliveryPerson.phone" class="phone">
+              📞 {{ order.deliveryPerson.phone }}
+            </p>
+          </div>
+          <ion-button
+            *ngIf="order.deliveryPerson.phone"
+            fill="solid"
+            color="primary"
+            (click)="callDelivery()"
+            class="call-btn"
+          >
+            <ion-icon name="call-outline"></ion-icon>
+            Llamar
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Dirección de Entrega -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Dirección de Entrega</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p class="address-street">
+          📍 {{ order.address?.street }}
+        </p>
+        <p *ngIf="order.address?.details" class="address-details">
+          {{ order.address.details }}
+        </p>
+        <p *ngIf="order.address?.instructions" class="address-instructions">
+          <strong>Instrucciones:</strong> {{ order.address.instructions }}
+        </p>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Resumen de Items -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Resumen del Pedido</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="items-list">
+          <div *ngFor="let item of order.items" class="item-row">
+            <span class="item-name">{{ item.qty }}x {{ item.title }}</span>
+            <span class="item-price">${{ item.price }}</span>
+          </div>
+        </div>
+        <div class="total-row">
+          <strong>Total:</strong>
+          <strong class="total-price">${{ order.total }}</strong>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Notas -->
+    <ion-card *ngIf="order.notes">
+      <ion-card-header>
+        <ion-card-title>Notas Especiales</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>{{ order.notes }}</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<style scoped>
+  .tracking-container {
+    padding: 16px;
+    background: #f8f9fa;
+  }
+
+  .spinner-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  ion-card {
+    --background: white;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  ion-card-header {
+    padding-bottom: 12px;
+  }
+
+  .status-card {
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .status-section {
+    padding: 20px 0;
+  }
+
+  .status-section ion-badge {
+    font-size: 16px;
+    padding: 8px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .map-section {
+    margin: 0 -16px 16px -16px;
+    padding: 12px;
+    background: white;
+    border-radius: 0;
+  }
+
+  .mapbox-container {
+    width: 100%;
+    height: 350px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .distance-card {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+  }
+
+  .distance-info {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 16px 0;
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .info-item ion-icon {
+    font-size: 24px;
+  }
+
+  .label {
+    margin: 0;
+    font-size: 12px;
+    opacity: 0.9;
+  }
+
+  .value {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .separator {
+    width: 1px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .delivery-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .delivery-photo {
+    flex-shrink: 0;
+  }
+
+  .delivery-photo img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #f0f0f0;
+  }
+
+  .delivery-details {
+    flex: 1;
+  }
+
+  .delivery-details h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+  }
+
+  .phone {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .call-btn {
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --border-radius: 8px;
+  }
+
+  .address-street {
+    margin: 0 0 8px 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .address-details {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .address-instructions {
+    margin: 8px 0 0 0;
+    padding: 12px;
+    background: #f0f0f0;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #555;
+  }
+
+  .items-list {
+    margin-bottom: 12px;
+  }
+
+  .item-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+  }
+
+  .item-name {
+    flex: 1;
+  }
+
+  .item-price {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    margin-top: 8px;
+    border-top: 2px solid #f0f0f0;
+    font-size: 16px;
+  }
+
+  .total-price {
+    color: #4CAF50;
+    font-size: 18px;
+  }
+
+  ion-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+
+  ion-card-title ion-icon {
+    font-size: 20px;
+  }
+</style>

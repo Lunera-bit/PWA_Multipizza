@@ -38,12 +38,15 @@ export class RoleGuard implements CanActivate {
           } else {
             if (userRole === 'admin') {
               resolve(this.router.createUrlTree(['/dashboard']));
+            } else if (userRole === 'delivery') {
+              resolve(this.router.createUrlTree(['/delivery-pedidos']));
             } else {
               resolve(this.router.createUrlTree(['/inicio']));
             }
           }
         } catch (error) {
           console.error('Error verificando rol:', error);
+          resolve(this.router.createUrlTree(['/inicio']));
         }
       });
     });

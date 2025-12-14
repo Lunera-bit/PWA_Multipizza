@@ -38,6 +38,17 @@ export interface User {
   uid: string;
 }
 
+export interface DeliveryPerson {
+  uid: string;
+  displayName: string;
+  photoURL?: string;
+  currentLocation?: {
+    lat: number;
+    lng: number;
+  };
+  phone?: string;
+}
+
 export interface Order {
   id?: string;
   address?: Address;
@@ -49,4 +60,7 @@ export interface Order {
   notes?: string;
   createdAt?: any;
   updatedAt?: any;
+  deliveryPerson?: DeliveryPerson;
+  acceptedAt?: any;
+  estimatedDeliveryTime?: number; // en minutos
 }

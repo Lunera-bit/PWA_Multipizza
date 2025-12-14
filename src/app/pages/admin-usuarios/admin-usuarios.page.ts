@@ -24,7 +24,7 @@ export class DashboardPage implements OnInit {
     uid: '',
     email: '',
     displayName: '',
-    rol: 'cliente' as 'cliente' | 'admin',
+    rol: 'cliente' as 'cliente' | 'admin' | 'delivery',
     provider: 'email'
   };
 
@@ -65,7 +65,7 @@ export class DashboardPage implements OnInit {
       uid: usuario.uid,
       email: usuario.email || '',
       displayName: usuario.displayName || '',
-      rol: usuario.rol || 'cliente',
+      rol: (usuario.rol || 'cliente') as 'cliente' | 'admin' | 'delivery',
       provider: usuario.provider || 'email'
     };
     this.isModalOpen = true;

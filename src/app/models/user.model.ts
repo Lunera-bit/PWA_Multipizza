@@ -6,5 +6,5 @@ export interface AppUser {
   provider?: string;
   createdAt?: any;
   lastLogin?: any;
-  rol?: 'cliente' | 'admin'; // cambiado a 'cliente' y 'delivery'
+  rol?: 'cliente' | 'admin' | 'delivery';
 }
