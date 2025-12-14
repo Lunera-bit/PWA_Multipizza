@@ -68,12 +68,48 @@ export class OrdenService {
   }
 
   /**
-   * Obtener órdenes de un usuario específico
+   * Obtener órdenes de un usuario específico (cliente)
    */
   async getOrdenesByUserId(userId: string): Promise<Order[]> {
     const q = query(
       collection(this.db, 'pedidos'),
       where('user.uid', '==', userId),
+      orderBy('createdAt', 'desc')
+    );
+
+    const snapshot = await getDocs(q);
+    const ordenes: Order[] = [];
+    snapshot.forEach((doc) => {
+      ordenes.push({ id: doc.id, ...doc.data() } as Order);
+    });
+    return ordenes;
+  }
+
+  /**
+   * Obtener órdenes disponibles para delivery (sin asignar)
+   */
+  async getAvailableOrdersForDelivery(): Promise<Order[]> {
+    const q = query(
+      collection(this.db, 'pedidos'),
+      where('status', '==', 'pendiente'),
+      orderBy('createdAt', 'desc')
+    );
+
+    const snapshot = await getDocs(q);
+    const ordenes: Order[] = [];
+    snapshot.forEach((doc) => {
+      ordenes.push({ id: doc.id, ...doc.data() } as Order);
+    });
+    return ordenes;
+  }
+
+  /**
+   * Obtener órdenes aceptadas por un delivery
+   */
+  async getOrdersByDeliveryId(deliveryId: string): Promise<Order[]> {
+    const q = query(
+      collection(this.db, 'pedidos'),
+      where('deliveryPerson.uid', '==', deliveryId),
       orderBy('createdAt', 'desc')
     );
 

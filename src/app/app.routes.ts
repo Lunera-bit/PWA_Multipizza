@@ -118,4 +118,29 @@ export const routes: Routes = [
         (m) => m.AdminPedidosPage
       ),
   },
+  {
+    path: 'delivery-pedidos',
+    loadComponent: () =>
+      import('./pages/delivery-pedidos/delivery-pedidos.page').then(
+        (m) => m.DeliveryPedidosPage
+      ),
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'delivery' },
+  },
+  {
+    path: 'order-tracking/:orderId',
+    loadComponent: () =>
+      import('./pages/order-tracking/order-tracking.page').then(
+        (m) => m.OrderTrackingPage
+      ),
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'delivery-order-tracking/:orderId',
+    loadComponent: () =>
+      import('./pages/delivery-order-tracking/delivery-order-tracking.page').then(
+        (m) => m.DeliveryOrderTrackingPage
+      ),
+    canActivate: [AuthGuard],
+  },
 ];

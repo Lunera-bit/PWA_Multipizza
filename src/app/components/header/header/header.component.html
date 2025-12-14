@@ -154,6 +154,26 @@
             </ion-list>
           </div>
         </ion-accordion>
+
+        <ion-accordion value="delivery" *ngIf="rol === 'delivery'">
+          <ion-item slot="header" button>
+            <ion-label>
+              <h3>Mis Entregas</h3>
+              <p>Gestión de pedidos para entregar</p>
+            </ion-label>
+          </ion-item>
+
+          <div class="accordion-content" slot="content">
+            <ion-list>
+              <div>
+                <ion-item button [routerLink]="['/delivery-pedidos']" menuClose detail="false">
+                  <ion-icon name="car-outline" slot="start"></ion-icon>
+                  <ion-label>Pedidos para Entregar</ion-label>
+                </ion-item>
+              </div>
+            </ion-list>
+          </div>
+        </ion-accordion>
       </ion-accordion-group>
     </ng-container>
   </ion-content>

@@ -103,6 +103,43 @@
         </div>
       </ion-card-content>
     </ion-card>
+
+    <!-- Mapa de tracking si el pedido está en camino -->
+    <ion-button 
+      *ngIf="pedido.status === 'en camino'"
+      color="primary" 
+      fill="outline"
+      expand="block"
+      (click)="toggleMap()"
+      class="tracking-btn"
+      style="margin-top: 15px;">
+      <ion-icon name="map-outline" slot="start"></ion-icon>
+      {{ showMap ? 'Ocultar Mapa' : 'Ver Ubicación en Vivo' }}
+    </ion-button>
+
+    <!-- Mapa de tracking -->
+    <div *ngIf="showMap && pedido.status === 'en camino'" class="tracking-map-container" style="margin-top: 15px;">
+      <div *ngIf="isLoadingMap" class="loading-overlay">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+      <div #mapContainer class="tracking-map"></div>
+      
+      <!-- Info de distancia y ETA -->
+      <ion-card *ngIf="distance !== null && estimatedTime !== null" style="margin-top: 10px;">
+        <ion-card-content>
+          <div style="display: flex; justify-content: space-around; text-align: center;">
+            <div>
+              <p style="color: #666; font-size: 12px; margin: 0;">Distancia</p>
+              <p style="font-size: 16px; font-weight: bold; margin: 5px 0;">{{ (distance | number: '1.1-2') }} km</p>
+            </div>
+            <div style="border-left: 1px solid #ddd; padding-left: 15px;">
+              <p style="color: #666; font-size: 12px; margin: 0;">ETA</p>
+              <p style="font-size: 16px; font-weight: bold; margin: 5px 0;">{{ estimatedTime }} min</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
   </div>
 
   <!-- Instrucciones especiales -->

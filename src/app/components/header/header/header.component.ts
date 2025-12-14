@@ -33,7 +33,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   isLoggedIn = false;
 
-  rol: 'cliente' | 'admin' | undefined;
+  rol: 'cliente' | 'admin' | 'delivery' | undefined;
 
   private sub?: Subscription;
   private notifsUnsub?: () => void;

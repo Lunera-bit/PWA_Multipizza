@@ -1,0 +1,127 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Ruta de Entrega</ion-title>
+    <ion-buttons slot="end">
+      <ion-button *ngIf="isTracking" (click)="stopTracking()" color="danger">
+        <ion-icon name="stop-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-spinner *ngIf="isLoading" name="crescent" class="spinner-center"></ion-spinner>
+
+  <div *ngIf="!isLoading && order" class="tracking-container">
+    <!-- Estado del Pedido -->
+    <ion-card class="status-card">
+      <ion-card-header>
+        <ion-card-title>
+          Pedido #{{ order.id?.substring(0, 8).toUpperCase() }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="status-section">
+          <ion-badge [color]="getStatusColor(order.status!)">
+            <ion-icon [name]="getStatusIcon(order.status!)"></ion-icon>
+            {{ order.status }}
+          </ion-badge>
+        </div>
+        <p class="address-info">
+          📍 {{ order.address?.street }}, {{ order.address?.details }}
+        </p>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Mapa de ruta -->
+    <div class="map-section">
+      <div #mapContainer class="mapbox-container"></div>
+    </div>
+
+    <!-- Información de Distancia y Tiempo -->
+    <ion-card *ngIf="distance !== null && estimatedTime !== null" class="distance-card">
+      <ion-card-content>
+        <div class="distance-info">
+          <div class="info-item">
+            <ion-icon name="location-outline"></ion-icon>
+            <div>
+              <p class="label">Distancia</p>
+              <p class="value">{{ (distance | number: '1.1-2') }} km</p>
+            </div>
+          </div>
+          <div class="separator"></div>
+          <div class="info-item">
+            <ion-icon name="time-outline"></ion-icon>
+            <div>
+              <p class="label">Tiempo Estimado</p>
+              <p class="value">{{ estimatedTime }} min</p>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Información del Cliente -->
+    <ion-card *ngIf="order.user">
+      <ion-card-header>
+        <ion-card-title>Información del Cliente</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Nombre:</strong> {{ order.user.name }}</p>
+        <p><strong>Teléfono:</strong> 
+          <a [href]="'tel:' + order.user.phone">{{ order.user.phone }}</a>
+        </p>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Acciones -->
+    <div class="actions-section">
+      <ion-button
+        *ngIf="!isTracking"
+        color="success"
+        fill="solid"
+        expand="block"
+        (click)="startTracking()"
+        class="action-btn">
+        <ion-icon name="locate" slot="start"></ion-icon>
+        Iniciar Seguimiento
+      </ion-button>
+
+      <ion-button
+        color="primary"
+        fill="solid"
+        expand="block"
+        (click)="openNavigation()"
+        class="action-btn">
+        <ion-icon name="navigate" slot="start"></ion-icon>
+        Abrir Navegador
+      </ion-button>
+
+      <ion-button
+        *ngIf="isTracking && order.status === 'en camino'"
+        color="tertiary"
+        fill="solid"
+        expand="block"
+        (click)="markAsDelivered()"
+        class="action-btn">
+        <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
+        Marcar Entregado
+      </ion-button>
+
+      <ion-button
+        color="medium"
+        fill="outline"
+        expand="block"
+        (click)="cerrar()"
+        class="action-btn">
+        Volver
+      </ion-button>
+    </div>
+
+    <!-- Espacio al final -->
+    <div style="height: 20px;"></div>
+  </div>
+</ion-content>
