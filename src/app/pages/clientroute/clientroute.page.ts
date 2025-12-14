@@ -117,12 +117,21 @@ export class ClientroutePage implements OnInit, OnDestroy {
           this.showToast('Por favor completa todos los datos.');
           return false;
         }
+        const phoneDigits = this.userPhone.replace(/\D/g, '');
+        if (phoneDigits.length < 9) {
+          this.showToast('El teléfono debe tener mínimo 9 dígitos.');
+          return false;
+        }
         return true;
       case 3:
         return true;
       case 4:
         if (!this.address.trim()) {
           this.showToast('Por favor ingresa una dirección.');
+          return false;
+        }
+        if (this.latitude === undefined || this.longitude === undefined) {
+          this.showToast('Por favor selecciona una ubicación en el mapa.');
           return false;
         }
         return true;
@@ -158,7 +167,11 @@ export class ClientroutePage implements OnInit, OnDestroy {
         enableHighAccuracy: true
       },
       trackUserLocation: true,
-      showUserHeading: true
+      showUserHeading: true,
+      fitBoundsOptions: {
+        maxZoom: 18,
+        padding: 50
+      }
     }), 'top-left');
 
     this.geocoder = new MapboxGeocoder({
@@ -345,6 +358,13 @@ export class ClientroutePage implements OnInit, OnDestroy {
   getSizeLabel(sizeId: string): string {
     const size = this.sizes.find(s => s.id === sizeId);
     return size?.label || sizeId || '';
+  }
+
+  onPhoneInput(event: any) {
+    // Permitir solo números
+    let input = event.target.value.replace(/\D/g, '');
+    this.userPhone = input;
+    event.target.value = input;
   }
 
 }

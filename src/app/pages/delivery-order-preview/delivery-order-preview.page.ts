@@ -186,7 +186,7 @@ export class DeliveryOrderPreviewPage implements OnInit, AfterViewInit, OnDestro
       try {
         this.map = new this.mapboxgl.Map({
           container: this.mapContainer.nativeElement,
-      style: 'mapbox://styles/hola231341/cmif5i96h00if01qmchq96rxm',
+          style: 'mapbox://styles/hola231341/cmif5i96h00if01qmchq96rxm',
           center: [customerLng, customerLat],
           zoom: 14,
         });

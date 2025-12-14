@@ -49,3 +49,13 @@ ion-textarea {
   width: 100%;
   max-width: 100%;
 }
+
+/* Reducir el área de geolocalización */
+:deep(.mapboxgl-user-location-dot) {
+  width: 12px;
+  height: 12px;
+}
+
+:deep(.mapboxgl-user-location-dot::after) {
+  display: none;
+}
