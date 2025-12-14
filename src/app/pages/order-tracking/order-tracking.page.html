@@ -11,7 +11,7 @@
   <ion-spinner *ngIf="isLoading" name="crescent" class="spinner-center"></ion-spinner>
 
   <div *ngIf="!isLoading && order" class="tracking-container">
-    <!-- Estado del Pedido -->
+    <!-- Estado y ID del Pedido -->
     <ion-card class="status-card">
       <ion-card-header>
         <ion-card-title>
@@ -28,63 +28,16 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- Mapa de Seguimiento -->
-    <div *ngIf="order.status === 'en camino' && deliveryLocation" class="map-section">
-      <div #mapContainer class="mapbox-container"></div>
-    </div>
-
-    <!-- Información de Distancia y Tiempo -->
-    <ion-card *ngIf="distance !== null && estimatedTime !== null" class="distance-card">
-      <ion-card-content>
-        <div class="distance-info">
-          <div class="info-item">
-            <ion-icon name="location-outline"></ion-icon>
-            <div>
-              <p class="label">Distancia</p>
-              <p class="value">{{ (distance | number: '1.1-2') }} km</p>
-            </div>
-          </div>
-          <div class="separator"></div>
-          <div class="info-item">
-            <ion-icon name="time-outline"></ion-icon>
-            <div>
-              <p class="label">Tiempo Estimado</p>
-              <p class="value">{{ estimatedTime }} min</p>
-            </div>
-          </div>
-        </div>
-      </ion-card-content>
-    </ion-card>
-
-    <!-- Información del Delivery -->
-    <ion-card *ngIf="order.deliveryPerson && order.status === 'en camino'">
+    <!-- Información del Cliente -->
+    <ion-card>
       <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="person-outline"></ion-icon>
-          Tu Repartidor
-        </ion-card-title>
+        <ion-card-title>👤 Cliente</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <div class="delivery-info">
-          <div class="delivery-photo" *ngIf="order.deliveryPerson.photoURL">
-            <img [src]="order.deliveryPerson.photoURL" [alt]="order.deliveryPerson.displayName" />
-          </div>
-          <div class="delivery-details">
-            <h3>{{ order.deliveryPerson.displayName }}</h3>
-            <p *ngIf="order.deliveryPerson.phone" class="phone">
-              📞 {{ order.deliveryPerson.phone }}
-            </p>
-          </div>
-          <ion-button
-            *ngIf="order.deliveryPerson.phone"
-            fill="solid"
-            color="primary"
-            (click)="callDelivery()"
-            class="call-btn"
-          >
-            <ion-icon name="call-outline"></ion-icon>
-            Llamar
-          </ion-button>
+        <div class="client-info">
+          <p><strong>Nombre:</strong> {{ order.user?.name }}</p>
+          <p><strong>Teléfono:</strong> {{ order.user?.phone }}</p>
+          <p *ngIf="order.user?.email"><strong>Email:</strong> {{ order.user?.email }}</p>
         </div>
       </ion-card-content>
     </ion-card>
@@ -92,11 +45,11 @@
     <!-- Dirección de Entrega -->
     <ion-card>
       <ion-card-header>
-        <ion-card-title>Dirección de Entrega</ion-card-title>
+        <ion-card-title>📍 Dirección de Entrega</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <p class="address-street">
-          📍 {{ order.address?.street }}
+          {{ order.address?.street }}
         </p>
         <p *ngIf="order.address?.details" class="address-details">
           {{ order.address.details }}
@@ -107,24 +60,29 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- Resumen de Items -->
+    <!-- Resumen de Pedido -->
     <ion-card>
       <ion-card-header>
-        <ion-card-title>Resumen del Pedido</ion-card-title>
+        <ion-card-title>📦 Resumen del Pedido</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <div class="items-list">
           <div *ngFor="let item of order.items" class="item-row">
             <span class="item-name">{{ item.qty }}x {{ item.title }}</span>
-            <span class="item-price">${{ item.price }}</span>
+            <span class="item-price">S/. {{ item.price }}</span>
           </div>
         </div>
         <div class="total-row">
           <strong>Total:</strong>
-          <strong class="total-price">${{ order.total }}</strong>
+          <strong class="total-price">S/. {{ order.total }}</strong>
         </div>
       </ion-card-content>
     </ion-card>
+
+    <!-- Mapa de Seguimiento -->
+    <div *ngIf="order.status === 'en camino' && deliveryLocation" class="map-section">
+      <div #mapContainer class="mapbox-container"></div>
+    </div>
 
     <!-- Notas -->
     <ion-card *ngIf="order.notes">
@@ -180,6 +138,18 @@
     gap: 8px;
   }
 
+  .client-info p {
+    margin: 8px 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .client-info strong {
+    display: inline-block;
+    min-width: 100px;
+    color: #667eea;
+  }
+
   .map-section {
     margin: 0 -16px 16px -16px;
     padding: 12px;
@@ -192,86 +162,6 @@
     height: 350px;
     border-radius: 8px;
     overflow: hidden;
-  }
-
-  .distance-card {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: white;
-  }
-
-  .distance-info {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 16px 0;
-  }
-
-  .info-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .info-item ion-icon {
-    font-size: 24px;
-  }
-
-  .label {
-    margin: 0;
-    font-size: 12px;
-    opacity: 0.9;
-  }
-
-  .value {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 600;
-  }
-
-  .separator {
-    width: 1px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.3);
-  }
-
-  .delivery-info {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .delivery-photo {
-    flex-shrink: 0;
-  }
-
-  .delivery-photo img {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #f0f0f0;
-  }
-
-  .delivery-details {
-    flex: 1;
-  }
-
-  .delivery-details h3 {
-    margin: 0 0 8px 0;
-    font-size: 16px;
-  }
-
-  .phone {
-    margin: 0;
-    font-size: 14px;
-    color: #666;
-  }
-
-  .call-btn {
-    --padding-start: 12px;
-    --padding-end: 12px;
-    --border-radius: 8px;
   }
 
   .address-street {

@@ -106,7 +106,7 @@
               <span class="item-qty">{{ item.qty }}x</span>
               <span class="item-name">{{ item.title }}</span>
               <span *ngIf="item.size" class="item-size">({{ item.size }})</span>
-              <span class="item-price">${{ item.price }}</span>
+              <span class="item-price">S/. {{ item.price }}</span>
             </div>
           </div>
 
@@ -117,7 +117,7 @@
 
           <div class="total-section">
             <span class="label">Total:</span>
-            <ion-badge color="success" class="total-value">${{ order.total }}</ion-badge>
+            <ion-badge color="success" class="total-value">S/. {{ order.total }}</ion-badge>
           </div>
         </ion-card-content>
       </ion-card>

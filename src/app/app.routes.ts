@@ -109,7 +109,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/admin-usuarios/admin-usuarios.page').then(
         (m) => m.DashboardPage
-      )
+      ),
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'admin' },
   },
   {
     path: 'admin-pedidos',
@@ -117,6 +119,8 @@ export const routes: Routes = [
       import('./pages/admin-pedidos/admin-pedidos.page').then(
         (m) => m.AdminPedidosPage
       ),
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'admin' },
   },
   {
     path: 'delivery-pedidos',
@@ -142,7 +146,8 @@ export const routes: Routes = [
       import('./pages/order-tracking/order-tracking.page').then(
         (m) => m.OrderTrackingPage
       ),
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'delivery' },
   },
   {
     path: 'delivery-order-tracking/:orderId',
@@ -150,6 +155,7 @@ export const routes: Routes = [
       import('./pages/delivery-order-tracking/delivery-order-tracking.page').then(
         (m) => m.DeliveryOrderTrackingPage
       ),
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'delivery' },
   },
 ];

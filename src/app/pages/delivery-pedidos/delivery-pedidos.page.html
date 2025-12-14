@@ -70,14 +70,14 @@
           <div class="item-list">
             <div *ngFor="let item of order.items" class="item-row">
               <span>{{ item.qty }}x {{ item.title }}</span>
-              <span>${{ item.price }}</span>
+              <span>S/. {{ item.price }}</span>
             </div>
           </div>
         </div>
 
         <!-- Total -->
         <div class="total-section">
-          <h3>Total: <ion-badge color="success">{{ order.total }}</ion-badge></h3>
+          <h3>Total: <ion-badge color="success">S/. {{ order.total }}</ion-badge></h3>
           <p *ngIf="order.notes" class="notes">
             <strong>Notas:</strong> {{ order.notes }}
           </p>
@@ -143,16 +143,6 @@
           >
             <ion-icon slot="start" name="map-outline"></ion-icon>
             Ver Ubicación
-          </ion-button>
-
-          <ion-button
-            expand="block"
-            color="success"
-            (click)="markAsDelivered(order)"
-            [disabled]="isLoading"
-          >
-            <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
-            Marcar Entregado
           </ion-button>
         </div>
       </ion-card-content>

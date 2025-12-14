@@ -116,16 +116,22 @@ export class DeliveryPedidosPage implements OnInit, OnDestroy {
 
     const db = getFirestore();
 
-    // Órdenes pendientes (sin asignar) - sin orderBy para evitar índices
+    // Órdenes pendientes (sin asignar)
     const pendingQuery = query(
       collection(db, 'pedidos'),
       where('status', '==', 'pendiente')
     );
 
-    // Órdenes aceptadas por este delivery - sin order by para evitar índices
-    const acceptedQuery = query(
+    // Órdenes en camino
+    const inTransitQuery = query(
       collection(db, 'pedidos'),
       where('status', '==', 'en camino')
+    );
+
+    // Órdenes entregadas
+    const deliveredQuery = query(
+      collection(db, 'pedidos'),
+      where('status', '==', 'entregado')
     );
 
     if (this.unsubscribe) this.unsubscribe();
@@ -147,26 +153,45 @@ export class DeliveryPedidosPage implements OnInit, OnDestroy {
       (error) => console.error('Error loading pending orders:', error)
     );
 
-    const unsubscribeAccepted = onSnapshot(
-      acceptedQuery,
+    const unsubscribeInTransit = onSnapshot(
+      inTransitQuery,
       (snapshot) => {
-        // Filtrar en el cliente para obtener solo los de este delivery
-        // También incluir pedidos en estado 'pendiente' si fueron aceptados por este delivery
-        this.acceptedOrders = snapshot.docs
+        const inTransitOrders = snapshot.docs
           .map((doc) => ({ id: doc.id, ...doc.data() } as Order))
-          .filter(
-            (order) =>
-              order.deliveryPerson?.uid === this.currentUserId ||
-              (order.status === 'pendiente' && order.deliveryPerson?.uid === this.currentUserId)
-          );
+          .filter((order) => order.deliveryPerson?.uid === this.currentUserId);
+        
+        // Actualizar con los que están en camino
+        this.acceptedOrders = inTransitOrders;
       },
-      (error) => console.error('Error loading accepted orders:', error)
+      (error) => console.error('Error loading in-transit orders:', error)
+    );
+
+    const unsubscribeDelivered = onSnapshot(
+      deliveredQuery,
+      (snapshot) => {
+        const deliveredOrders = snapshot.docs
+          .map((doc) => ({ id: doc.id, ...doc.data() } as Order))
+          .filter((order) => order.deliveryPerson?.uid === this.currentUserId)
+          .sort(
+            (a, b) =>
+              (b.updatedAt?.toMillis?.() || 0) -
+              (a.updatedAt?.toMillis?.() || 0)
+          );
+        
+        // Combinar pedidos en camino y entregados
+        this.acceptedOrders = [
+          ...this.acceptedOrders.filter((o) => o.status === 'en camino'),
+          ...deliveredOrders,
+        ];
+      },
+      (error) => console.error('Error loading delivered orders:', error)
     );
 
     // Guardar para limpiar luego
     this.unsubscribe = () => {
       unsubscribePending();
-      unsubscribeAccepted();
+      unsubscribeInTransit();
+      unsubscribeDelivered();
     };
   }
 
