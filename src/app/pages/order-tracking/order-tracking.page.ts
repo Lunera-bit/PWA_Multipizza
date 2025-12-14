@@ -220,7 +220,7 @@ export class OrderTrackingPage implements OnInit, OnDestroy {
 
     this.map = new this.mapboxgl.Map({
       container: this.mapContainer.nativeElement,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: 'mapbox://styles/hola231341/cmif5i96h00if01qmchq96rxm',
       center: [centerLng, centerLat],
       zoom: 14,
     });
