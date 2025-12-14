@@ -1,0 +1,421 @@
+ion-content {
+  --overflow: hidden;
+  --background: transparent;
+}
+
+.preview-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  gap: 20px;
+
+  p {
+    font-size: 14px;
+    color: var(--ion-text-color-step-600, #999);
+  }
+}
+
+.map-section {
+  position: relative;
+  width: 100%;
+  height: 50%;
+  min-height: 350px;
+  flex-shrink: 0;
+  background: #f0f0f0;
+
+  #mapContainer {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    background: white;
+
+    .mapboxgl-canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  }
+
+  .marker {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    &.marker-customer {
+      border: 3px solid #ff3b30;
+    }
+
+    &.marker-delivery {
+      border: 3px solid #0066cc;
+      animation: pulse 2s infinite;
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+    }
+    50% {
+      box-shadow: 0 2px 16px rgba(0, 102, 204, 0.6);
+    }
+  }
+}
+
+.distance-card {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .distance-info,
+  .time-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+
+    ion-icon {
+      font-size: 24px;
+      color: #0066cc;
+      min-width: 24px;
+    }
+
+    .info-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .label {
+        font-size: 12px;
+        color: var(--ion-text-color-step-600, #999);
+        margin: 0;
+      }
+
+      .value {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--ion-text-color);
+        margin: 0;
+      }
+    }
+  }
+
+  .divider {
+    width: 1px;
+    height: 40px;
+    background: var(--ion-border-color, #e0e0e0);
+  }
+}
+
+.order-details {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 100px;
+}
+
+ion-card {
+  margin: 12px;
+  border-radius: 12px;
+
+  &.order-header {
+    margin-top: 16px;
+    background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+
+    ion-card-header {
+      padding-bottom: 8px;
+    }
+
+    ion-card-title {
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    ion-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+    }
+  }
+
+  ion-card-header {
+    padding: 16px;
+    border-bottom: none;
+  }
+
+  ion-card-content {
+    padding: 16px;
+  }
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ion-text-color);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--ion-border-color, #f0f0f0);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .label {
+    font-size: 14px;
+    color: var(--ion-text-color-step-600, #999);
+    font-weight: 500;
+  }
+
+  .value {
+    font-size: 14px;
+    color: var(--ion-text-color);
+    font-weight: 500;
+    text-align: right;
+    max-width: 60%;
+    word-break: break-word;
+  }
+}
+
+.address-street {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ion-text-color);
+  margin: 0;
+  padding: 8px 0;
+}
+
+.address-details {
+  font-size: 13px;
+  color: var(--ion-text-color-step-600, #999);
+  margin: 4px 0;
+  padding: 4px 0;
+  font-style: italic;
+}
+
+.address-instructions {
+  font-size: 13px;
+  color: #ff9500;
+  margin: 8px 0;
+  padding: 8px;
+  background: rgba(255, 149, 0, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid #ff9500;
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  .item-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--ion-color-light, #f9f9f9);
+    border-radius: 8px;
+
+    .item-qty {
+      font-weight: 600;
+      color: #0066cc;
+      min-width: 35px;
+    }
+
+    .item-name {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ion-text-color);
+    }
+
+    .item-size {
+      font-size: 12px;
+      color: var(--ion-text-color-step-600, #999);
+    }
+
+    .item-price {
+      font-weight: 600;
+      color: var(--ion-text-color);
+      min-width: 60px;
+      text-align: right;
+    }
+  }
+}
+
+.notes-section {
+  margin: 16px 0;
+  padding: 12px;
+  background: var(--ion-color-light, #f9f9f9);
+  border-radius: 8px;
+  border-left: 3px solid #ffc107;
+
+  .label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ion-text-color-step-600, #999);
+    margin: 0 0 8px 0;
+  }
+
+  .notes-text {
+    font-size: 14px;
+    color: var(--ion-text-color);
+    margin: 0;
+    font-style: italic;
+  }
+}
+
+.total-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px solid var(--ion-border-color, #e0e0e0);
+
+  .label {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ion-text-color);
+  }
+
+  .total-value {
+    font-size: 18px;
+    font-weight: 700;
+    padding: 8px 12px;
+  }
+}
+
+.action-buttons {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px;
+  background: white;
+  border-top: 1px solid var(--ion-border-color, #e0e0e0);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+
+  ion-button {
+    --border-radius: 8px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+
+    &.accept-button {
+      --background: linear-gradient(135deg, #34c759 0%, #30b84f 100%);
+      font-weight: 600;
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .map-section {
+    height: 45%;
+    min-height: 250px;
+  }
+
+  .distance-card {
+    padding: 12px;
+    gap: 8px;
+
+    .distance-info,
+    .time-info {
+      gap: 8px;
+
+      ion-icon {
+        font-size: 20px;
+      }
+
+      .info-text {
+        .label {
+          font-size: 11px;
+        }
+
+        .value {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .divider {
+      height: 35px;
+    }
+  }
+
+  ion-card {
+    margin: 10px;
+  }
+
+  .action-buttons {
+    padding: 10px;
+    gap: 8px;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .distance-card {
+    background: #1e1e1e;
+    color: #fff;
+  }
+
+  .marker {
+    background: #2d2d2d;
+  }
+
+  .address-instructions {
+    background: rgba(255, 149, 0, 0.2);
+    color: #ffb84d;
+  }
+
+  .items-list .item-row {
+    background: #2d2d2d;
+  }
+
+  .notes-section {
+    background: #2d2d2d;
+  }
+
+  .action-buttons {
+    background: #1e1e1e;
+    border-top-color: #333;
+  }
+}

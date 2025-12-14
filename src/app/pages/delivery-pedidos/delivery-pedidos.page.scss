@@ -1,1 +1,126 @@
 /* styles for delivery-pedidos page */
+.orders-container {
+  padding: 16px;
+}
+
+.empty-message {
+  text-align: center;
+  color: var(--ion-text-color-step-600, #999);
+  padding: 40px 20px;
+  font-size: 14px;
+}
+
+.section {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ion-border-color, #e0e0e0);
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: var(--ion-text-color-step-600, #999);
+  }
+
+  p {
+    margin: 4px 0;
+    font-size: 14px;
+    color: var(--ion-text-color);
+
+    &.details {
+      font-size: 12px;
+      color: var(--ion-text-color-step-600, #999);
+      font-style: italic;
+    }
+  }
+}
+
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background: var(--ion-color-light, #f9f9f9);
+    border-radius: 6px;
+    font-size: 13px;
+  }
+}
+
+.total-section {
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--ion-color-light, #f9f9f9);
+  border-radius: 8px;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .notes {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--ion-text-color-step-600, #999);
+  }
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+
+  ion-button {
+    --border-radius: 8px;
+  }
+}
+
+ion-card {
+  border-radius: 12px;
+  margin-bottom: 12px;
+
+  ion-card-header {
+    background: var(--ion-color-light, #f9f9f9);
+    border-radius: 12px 12px 0 0;
+  }
+
+  ion-card-title {
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  ion-card-content {
+    padding: 16px;
+  }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .orders-container {
+    padding: 12px;
+  }
+
+  ion-card {
+    margin-bottom: 10px;
+  }
+
+  .action-buttons {
+    gap: 8px;
+    margin-top: 12px;
+  }
+}

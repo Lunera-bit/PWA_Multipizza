@@ -1,0 +1,163 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/delivery-pedidos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Vista Previa del Pedido</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Spinner de carga inicial (solo mientras se cargan datos del pedido) -->
+  <div *ngIf="isLoading && !order" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando información del pedido...</p>
+  </div>
+
+  <!-- Contenido principal (se muestra apenas llega el pedido, no espera al mapa) -->
+  <div *ngIf="order" class="preview-container">
+    <!-- Mapa -->
+    <div class="map-section">
+      <div #mapContainer id="mapContainer" class="map-container"></div>
+
+      <!-- Información de distancia superpuesta -->
+      <div class="distance-card">
+        <div class="distance-info">
+          <ion-icon name="time-outline"></ion-icon>
+          <div class="info-text">
+            <p class="label">Distancia Estimada</p>
+            <p class="value">
+              {{ distance ? (distance | number: '1.1-1') + ' km' : 'Calculando...' }}
+            </p>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="time-info">
+          <ion-icon name="navigate-outline"></ion-icon>
+          <div class="info-text">
+            <p class="label">Tiempo Estimado</p>
+            <p class="value">
+              {{ estimatedTime ? estimatedTime + ' min' : 'Calculando...' }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información del Pedido -->
+    <div class="order-details">
+      <!-- Encabezado del pedido -->
+      <ion-card class="order-header">
+        <ion-card-header>
+          <ion-card-title>Pedido #{{ order.id?.substring(0, 8).toUpperCase() }}</ion-card-title>
+          <ion-badge color="warning">{{ order.status }}</ion-badge>
+        </ion-card-header>
+      </ion-card>
+
+      <!-- Información del Cliente -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title class="section-title">👤 Cliente</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="info-row">
+            <span class="label">Nombre:</span>
+            <span class="value">{{ order.user?.name }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Teléfono:</span>
+            <span class="value">{{ order.user?.phone }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Email:</span>
+            <span class="value">{{ order.user?.email }}</span>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Dirección de Entrega -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title class="section-title">📍 Dirección de Entrega</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="info-row">
+            <p class="address-street">{{ order.address?.street }}</p>
+          </div>
+          <div *ngIf="order.address?.details" class="info-row">
+            <p class="address-details">{{ order.address.details }}</p>
+          </div>
+          <div *ngIf="order.address?.instructions" class="info-row">
+            <p class="address-instructions">⚠️ {{ order.address.instructions }}</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Detalles del Pedido -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title class="section-title">📦 Detalle del Pedido</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="items-list">
+            <div *ngFor="let item of order.items" class="item-row">
+              <span class="item-qty">{{ item.qty }}x</span>
+              <span class="item-name">{{ item.title }}</span>
+              <span *ngIf="item.size" class="item-size">({{ item.size }})</span>
+              <span class="item-price">${{ item.price }}</span>
+            </div>
+          </div>
+
+          <div *ngIf="order.notes" class="notes-section">
+            <p class="label">Notas especiales:</p>
+            <p class="notes-text">{{ order.notes }}</p>
+          </div>
+
+          <div class="total-section">
+            <span class="label">Total:</span>
+            <ion-badge color="success" class="total-value">${{ order.total }}</ion-badge>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Botones de Acción -->
+      <div class="action-buttons">
+        <ion-button
+          expand="block"
+          color="secondary"
+          fill="outline"
+          (click)="openNavigation()"
+          [disabled]="isAccepting"
+        >
+          <ion-icon slot="start" name="navigate-outline"></ion-icon>
+          Abrir en Google Maps
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          color="success"
+          (click)="acceptOrder()"
+          [disabled]="isAccepting"
+          class="accept-button"
+        >
+          <ion-spinner *ngIf="isAccepting" name="dots" slot="start"></ion-spinner>
+          <ion-icon *ngIf="!isAccepting" slot="start" name="checkmark-done-outline"></ion-icon>
+          {{ isAccepting ? 'Aceptando...' : 'Aceptar Pedido' }}
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          color="danger"
+          fill="outline"
+          (click)="cancelPreview()"
+          [disabled]="isAccepting"
+        >
+          <ion-icon slot="start" name="close-outline"></ion-icon>
+          Cancelar
+        </ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

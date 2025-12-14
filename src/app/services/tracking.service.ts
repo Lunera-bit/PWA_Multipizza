@@ -26,12 +26,19 @@ export interface DistanceInfo {
 @Injectable({ providedIn: 'root' })
 export class TrackingService {
   private currentLocation$ = new BehaviorSubject<LocationUpdate | null>(null);
-  private locationWatchId: number | null = null;
+  private locationWatchId: any = null;
   private db = getFirestore();
   private unsubscribe: Unsubscribe | null = null;
   private isMobileDevice = Capacitor.isNativePlatform();
 
   constructor(private mapboxRoutingService: MapboxRoutingService) {}
+
+  /**
+   * Obtener ubicación del dispositivo (móvil o navegador) - Método público
+   */
+  async getCurrentDeviceLocation(): Promise<LocationUpdate> {
+    return this.getDeviceLocation();
+  }
 
   /**
    * Obtener ubicación del dispositivo (móvil o navegador)
@@ -254,14 +261,6 @@ export class TrackingService {
   estimateDeliveryTime(distanceKm: number): number {
     const averageSpeed = 30; // km/h
     return Math.ceil((distanceKm / averageSpeed) * 60); // minutos
-  }
-
-  /**
-   * Obtener ubicación actual del dispositivo (una sola vez)
-   * Usa Capacitor en móvil o Geolocation API en navegador
-   */
-  async getCurrentDeviceLocation(): Promise<LocationUpdate> {
-    return this.getDeviceLocation();
   }
 
   /**

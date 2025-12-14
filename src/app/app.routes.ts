@@ -128,6 +128,15 @@ export const routes: Routes = [
     data: { role: 'delivery' },
   },
   {
+    path: 'delivery-order-preview/:orderId',
+    loadComponent: () =>
+      import('./pages/delivery-order-preview/delivery-order-preview.page').then(
+        (m) => m.DeliveryOrderPreviewPage
+      ),
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'delivery' },
+  },
+  {
     path: 'order-tracking/:orderId',
     loadComponent: () =>
       import('./pages/order-tracking/order-tracking.page').then(

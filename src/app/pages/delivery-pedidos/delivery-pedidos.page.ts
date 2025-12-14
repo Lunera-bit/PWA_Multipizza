@@ -171,6 +171,13 @@ export class DeliveryPedidosPage implements OnInit, OnDestroy {
   }
 
   /**
+   * Ver previsualizacion de pedido antes de aceptar
+   */
+  viewOrderPreview(orderId: string) {
+    this.router.navigate(['/delivery-order-preview', orderId]);
+  }
+
+  /**
    * Aceptar una orden
    */
   async acceptOrder(order: Order) {
